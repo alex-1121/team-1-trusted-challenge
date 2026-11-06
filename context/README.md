@@ -12,6 +12,7 @@ One line per file. Read in this order if you are new: `challenge-digest.md`, the
 | `video-transcript.md` | Transcript of the organiser video | Optional, for tone and emphasis |
 | `source-files.md` | List of the organiser zip contents with sizes and hashes | You need to find or verify an original file |
 | `proving-ground/` | 29 verbatim organiser docs (see below) | Choosing a dataset, scenario or PET; reading the metrics |
+| `originals/` | The unconverted organiser files (docx, pdf) and where the big ones live (release asset) | You distrust a conversion or need the video or the data zip |
 
 ## In team/
 
