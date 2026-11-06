@@ -122,3 +122,19 @@ Within A, the free-text module on `clinical_notes` is the cut line: ship rules o
 Suggested timing, whatever we pick: the key and join design first (for A, the stable patient pseudonym), scorecard running on raw data by Saturday 09:00, video script by Saturday 18:00.
 
 Sources: `../context/what-is-expected.md`, `../context/trusted-project.md`, `../context/scenarios-at-a-glance.md`, `../context/proving-ground/docs/BENCHMARK.md`, `../context/proving-ground/docs/SCENARIOS.md`, `../context/proving-ground/docs/EVALUATION.md`, `../context/proving-ground/docs/DATA_DICTIONARY.md`, `../context/proving-ground/docs/PET_PLAYBOOK.md`, `../context/proving-ground/docs/THREAT_MODEL.md`, `../context/proving-ground/START_HERE.md`, and the local toolkit source under `../data/proving-ground/toolkit/` (gitignored, restore per `../data/README.md`).
+
+## Review: Fable with an Opus checker, 2026-11-07 (after the HEALTH-S1 pick)
+
+Reviewer: Claude Fable 5.1 in Arda's session proposed the day plan; a blind Opus agent (`gauntlet-lens`) checked it against `brief.md`, `SCENARIOS.md`, `EVALUATION.md`, `BENCHMARK.md`, `metadata/scenarios.json` and the toolkit code (`scorecard.py`, `attacks.py`, `utility/health.py`). Nothing was run. Decision row: HEALTH-S1 is the scored story (PR #10). Nothing below is a team decision.
+
+**Verdict on the day plan: REVISE.** HEALTH-S1 stays the right pick. The plan as first stated walked into one scoring trap and spent a lane on a table no S1 task reads.
+
+**The arrival-time trap.** H-U8 needs a clock time in `arrival_ts` in more than half the rows (`health.py:65`), and `arrival_ts` is also a catalogued quasi-identifier scored for k at exact values (`scorecard.py:101-107`). Rounding it kills H-U8; keeping it exact keeps most rows unique, and the worst risk carries half the privacy score (`scorecard.py:267`). That is how B2-k fell to 0.40 utility. Likely escape, unverified: keep the hour of day only and drop the date, and drop `discharge_ts`, `ambulance_unit`, `postcode` and `dob`, which no S1 task needs (H-U6 can use `readmit_30d`, H-U2 uses `los_minutes`). Also drop `lab_results.sampled_ts` (a k-QI) and `chief_complaint`. Run one scorecard on a hand-made protected copy with this design before writing the program; if H-U8 is still zero, change the time design first.
+
+**Municipality.** H-U4 needs the eight largest municipalities exact (`health.py:266-267`). Lump only the rare ones into "other".
+
+**Hours.** No S1 task reads `clinical_notes`; a withheld table scores zero leakage (`scorecard.py:199-200`), and the research group does not need it, so leave it out and state that as the choice. S3 as a second story has no headroom (B2-k utility 1.00 on HEALTH-S3). The same protected folder can be re-scored under another scenario, so a second story costs no second output. The detector must be validated on a dataset it was not trained on (catalog-on-catalog measures nothing) and must write `pets_submission/unseen_field_labels.csv`, since the unseen labels are private. A keyed HMAC pseudonym passes the hash attack; a plain hash does not.
+
+**Still open.** The repo goes public but the organiser check wants row maps in `pets_submission/`; ask on the TrustED Discord. The before-and-after scorecard against B0 (`baseline-scores/`) and a stated guarantee (k at least 5 on the named columns) are deliverables, not extras.
+
+Not checked: `privacy.k_anonymity` internals, `parse.to_datetime` on date-free strings, `THREAT_MODEL.md`, `LIMITATIONS.md`, `attack_analysis.md`. The hour-only escape is a reading of the code, not a measured result.
