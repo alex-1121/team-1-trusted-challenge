@@ -55,7 +55,7 @@ The proving ground is Since AI's own work, "inspired by" TrustED, and says so (`
 - They think in purposes, not files. Their phrase is "GDPR data minimisation as a technical capability": disclose exactly what a purpose needs, prove the rest. Our scenario-bound PET selection (demo item 5) is the same idea on a single dataset. Lead with the purpose, then the minimal release.
 - They distrust aggregates that are too small. Minimum group sizes and differential privacy on aggregates are their own guard rails. Small-cell suppression and stated epsilon will read as fluent to them.
 - They expect a stated guarantee with parameters. Their SASS article names its own limits. A residual-risk section that says which attack still works, at what rate, speaks their language.
-- Health is their flagship domain, and training a model on data that cannot leave the controller is their central use case. The `health` dataset, and in particular a scenario where an external party trains a model (HEALTH-S3) or receives published statistics (HEALTH-S2), sits closest to their world. This is a fit observation, not a decision; the dataset pick is the team's (see `../team/plan.md`).
+- Health is their flagship domain. Their central use case is a model trained on hospital data without the records leaving the hospital. The challenge has no federated option, so the nearest matches are the `health` scenarios where the controller releases less than the raw data: published statistics under a stated privacy budget (HEALTH-S2), or a minimised, synthetic or pseudonymised extract for an outside model builder (HEALTH-S3). This is a fit observation, not a decision; the dataset pick is the team's (see `../team/plan.md`).
 - Phrases that match their vocabulary and can go into the pitch unchanged in meaning: "prove what needs to be proven", "the data stays under the control of the institution", "data minimisation as a technical capability".
 
 What not to do: do not claim the tool is a TrustED component, do not frame it as federated learning if it is not, and do not use their PET names (SMPC, HE, TEE) for things we did not build.
@@ -70,7 +70,6 @@ What not to do: do not claim the tool is a TrustED component, do not frame it as
 6. Same as 3, Fraunhofer ISST role
 7. https://mondodigitale.org/en/news/digital-trust (4 Sep 2026)
 8. https://trustedproject.eu/protecting-sensitive-personal-data-through-federated-data-processing/ (2 Apr 2026)
-9. https://infocert.digital/?p=88906 (seen as a search hit only)
 10. https://trustedproject.eu/sass-secure-aggregation-with-secret-sharing/ (20 Oct 2026)
 11. https://www.biometricupdate.com/202609/trusted-tests-whether-europes-digital-identity-model-can-preserve-privacy-in-the-real-world (10 Sep 2026)
 12. https://trustedproject.eu/europe-is-building-the-rulebook-for-digital-trust-trusted-is-already-testing-it-on-real-people/ (13 Jul 2026)
