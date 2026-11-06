@@ -41,7 +41,7 @@ Related: `../team/plan.md` (schedule, roles, demo requirements), `../context/pro
 
 ## 2. Does this fit the challenge, or fight it?
 
-Checked against the five required demo items in `../team/plan.md`:
+Checked against the five required demo items in `../context/challenge-digest.md` ("What we must build"):
 
 | Brief requires | How this proposal covers it | Strength |
 |---|---|---|
