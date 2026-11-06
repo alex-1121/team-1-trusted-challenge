@@ -1,6 +1,8 @@
 # The 27 sharing scenarios at a glance
 
-One row per scenario, condensed from `proving-ground/docs/SCENARIOS.md` on 2026-11-06. Use it to shortlist; read the full entry before designing. Rule from the top of that file: a PET choice is right or wrong only for a given recipient and purpose, so pick one scenario per dataset and design for it. `pets-eval scorecard --scenario <ID>` runs that scenario's utility tasks. The privacy targets in the full file are suggestions, not official thresholds.
+One row per scenario, condensed from `proving-ground/docs/SCENARIOS.md` on 2026-11-06. Use it to shortlist; read the full entry before designing. Rule from the top of that file: a PET choice is right or wrong only for a given recipient and purpose, so pick one scenario per dataset and design for it. `pets-eval scorecard --scenario <ID>` runs that scenario's utility tasks. The privacy targets in the full file are suggestions, not official thresholds. The task IDs mean different things per dataset; `pets-eval tasks --dataset <name>` lists what each one measures.
+
+Terms: DPA is a data processing agreement (the recipient may only process the data for us). MSSP is a managed security service provider. CERT is a national computer emergency response team and ISAC an information-sharing group in one sector. DP is differential privacy. Art. 9 is the GDPR article on special categories of personal data (health, religion and similar), which need extra care.
 
 | ID | Dataset | Recipient and purpose | Utility tasks | Hardest privacy problem |
 |---|---|---|---|---|
