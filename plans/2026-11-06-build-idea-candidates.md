@@ -70,6 +70,17 @@ Facts about the datasets, baselines and scenarios come from the organiser files;
 - Risks: narrow; the detect and transform verbs are thin on an aggregate table, so pair it with A's pipeline on `ed_visits` or it fails demo items 1 to 3 on its own. In the toolkit (`../data/proving-ground/toolkit/pets_eval/utility/health.py`, local copy), H-U1 and H-U8 are computed from a row-level `ed_visits` in the protected folder; `dp_answers.csv` only feeds H-DP. An aggregate-only release therefore scores H-U1 and H-U8 as not answerable (0), so HEALTH-S2 utility tops out at about a third.
 - Size: S alone, M combined with A.
 
+## G. Tadek's query vault (see `2026-11-06-query-vault.md`)
+
+Tadek's proposal, merged while this file was drafted, is candidate F with an innovation layer: a plain-English agent that compiles questions into DP queries and refuses unsafe ones, a hash-chained public log of every question, and a per-person privacy wallet. It targets HEALTH-S2, the 254-query workload and B3's 0.69 at epsilon 1, the same numbers as F. His option B (a standard detect, select, transform pipeline on `ed_visits` plus the DP engine as the strongest module) is the A+F hybrid this file first recommended.
+
+Two things to settle before picking it (agent's reading):
+
+- Scoring. `pets-eval scorecard --scenario HEALTH-S2` averages H-U1, H-U8 and H-DP. In the toolkit code H-U1 and H-U8 read a row-level `ed_visits`, so DP answers alone score about 0.33 utility however good the workload error is. The fix is to release a protected row-level `ed_visits` next to `dp_answers.csv` in the same folder, which is what his option B does. B2-k scores 0.00 on HEALTH-S2's row-level tasks, so that half is not free. Confirm with one scorecard run on Friday night before adopting.
+- Innovation points. The agent, log and wallet are where F was weak and this is strong. They are also the parts that cannot be scored by `pets-eval`, so the video has to carry them.
+
+With that layer, the DP track and candidate A are the two live options in this file: A wins on covering the four verbs with one scored story; G wins on a novel, explainable mechanism and a strong pitch. Both are health, so the dataset question is settled either way.
+
 ## Comparison
 
 | | Dataset | Visual demo | AI needed | Hidden organiser check available | Fit with TrustED's own work | Size |
@@ -80,6 +91,7 @@ Facts about the datasets, baselines and scenarios come from the organiser files;
 | D trajectories | mobility | map | little | hidden attacker | low | L |
 | E share the attack | cyber | log diff | little | hidden attacker | high (cybersecurity call) | S to M |
 | F privacy budget | health stats | charts | none | none | high (aggregates) | S, M with A |
+| G query vault (Tadek) | health stats + ed_visits | app demo | yes (agent) | none | high (aggregates) | L |
 
 ## Recommendation (agent's, for the team to overrule)
 
