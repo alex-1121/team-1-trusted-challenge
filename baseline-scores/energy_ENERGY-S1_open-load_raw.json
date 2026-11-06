@@ -1,0 +1,376 @@
+{
+  "tool": "pets-eval 1.0.0",
+  "dataset": "energy",
+  "scenario": {
+    "id": "ENERGY-S1",
+    "dataset": "energy",
+    "title": "Open data: neighbourhood electricity load",
+    "recipient": "Anyone (municipal open-data portal)",
+    "purpose": "Urban energy planning, journalism, research on heating transition.",
+    "trust_level": "public",
+    "threat_model": "Public: vacation_posts + public_directory; neighbours who know their own consumption (differencing).",
+    "legal_context": "Only anonymous information may be published; aggregated small areas with few households can still be personal data.",
+    "utility_requirements": [
+      "ENERGY-U1",
+      "ENERGY-U2",
+      "ENERGY-U3"
+    ],
+    "suggested_privacy_targets": "Aggregate ≥10 metering points per cell; no individual series; consider DP noise on hourly sums (state ε).",
+    "notes": "Weather table is public context."
+  },
+  "original": "data/energy",
+  "protected": "results/raw/energy",
+  "tables": {
+    "customers": {
+      "table": "customers",
+      "status": "released",
+      "rows_original": 757,
+      "rows_protected": 757,
+      "columns_dropped": [],
+      "columns_added": [],
+      "direct_identifiers_retained": {
+        "customer_name": 1.0,
+        "hetu": 1.0,
+        "street_address": 1.0,
+        "email": 1.0,
+        "phone": 1.0,
+        "iban": 1.0
+      },
+      "k_anonymity": {
+        "qis": [
+          "birth_date",
+          "postcode",
+          "municipality",
+          "heating_type",
+          "floor_area_m2",
+          "ev_charger",
+          "solar_pv_kw",
+          "contract_start"
+        ],
+        "n": 757,
+        "n_classes": 757,
+        "min_k": 1,
+        "median_k": 1.0,
+        "share_below": {
+          "k<2": 1.0,
+          "k<5": 1.0,
+          "k<10": 1.0
+        },
+        "sample_uniqueness": 1.0
+      },
+      "k_anonymity_original": {
+        "qis": [
+          "birth_date",
+          "postcode",
+          "municipality",
+          "heating_type",
+          "floor_area_m2",
+          "ev_charger",
+          "solar_pv_kw",
+          "contract_start"
+        ],
+        "n": 757,
+        "n_classes": 757,
+        "min_k": 1,
+        "median_k": 1.0,
+        "share_below": {
+          "k<2": 1.0,
+          "k<5": 1.0,
+          "k<10": 1.0
+        },
+        "sample_uniqueness": 1.0
+      },
+      "l_diversity": {
+        "evaluated": true,
+        "sensitive": "late_payment_count",
+        "qis": [
+          "birth_date",
+          "postcode",
+          "municipality",
+          "heating_type",
+          "floor_area_m2",
+          "ev_charger",
+          "solar_pv_kw",
+          "contract_start"
+        ],
+        "min_distinct_l": 1,
+        "min_entropy_l": 1.0,
+        "share_records_l1": 1.0,
+        "share_classes_l1": 1.0,
+        "n_classes": 757
+      },
+      "row_alignment": "row map",
+      "linkage": {
+        "public_directory": {
+          "evaluated": true,
+          "qis_used": [
+            {
+              "kind": "name",
+              "adversary": [
+                "name"
+              ],
+              "protected": [
+                "customer_name"
+              ]
+            },
+            {
+              "kind": "postcode",
+              "adversary": [
+                "postcode"
+              ],
+              "protected": [
+                "postcode"
+              ]
+            },
+            {
+              "kind": "exact",
+              "adversary": [
+                "city"
+              ],
+              "protected": [
+                "municipality"
+              ]
+            }
+          ],
+          "n_adversary_rows_tested": 3000,
+          "n_targets_in_data": 27,
+          "reidentification_rate": 0.8148,
+          "claim_precision": 0.8462,
+          "n_unique_claims": 26,
+          "share_targets_in_candidate_set_le5": 0.8519,
+          "median_candidate_set": 1.0,
+          "attribute_inference": {
+            "sensitive": "medical_device_priority",
+            "inferred": 23,
+            "base_rate_majority_guess": 1.0,
+            "advantage_over_base_rate": 0.0,
+            "success_rate": 0.8519
+          },
+          "attack": "Directory lookup of electricity customers.",
+          "baseline_reidentification_rate_original": 0.8148,
+          "risk_reduction": 0.0
+        }
+      },
+      "free_text": {
+        "dso_notes": {
+          "evaluated": true,
+          "leakage_rate": 1.0,
+          "leakage_rate_chars": 1.0,
+          "identifying_leakage_rate": 1.0,
+          "per_label": {
+            "ADDRESS": {
+              "n": 6,
+              "leaked": 6,
+              "rate": 1.0
+            },
+            "DATE": {
+              "n": 66,
+              "leaked": 66,
+              "rate": 1.0
+            },
+            "EMAIL": {
+              "n": 14,
+              "leaked": 14,
+              "rate": 1.0
+            },
+            "HEALTH": {
+              "n": 36,
+              "leaked": 36,
+              "rate": 1.0
+            },
+            "PERSON": {
+              "n": 50,
+              "leaked": 50,
+              "rate": 1.0
+            },
+            "PHONE": {
+              "n": 65,
+              "leaked": 65,
+              "rate": 1.0
+            },
+            "PROPERTY_ID": {
+              "n": 9,
+              "leaked": 9,
+              "rate": 1.0
+            }
+          },
+          "n_values": 246
+        }
+      },
+      "regex_residuals": {
+        "hetu": {
+          "NATIONAL_ID": 671,
+          "PHONE": 32
+        },
+        "email": {
+          "EMAIL": 587
+        },
+        "phone": {
+          "PHONE": 723
+        },
+        "iban": {
+          "IBAN": 231
+        },
+        "dso_notes": {
+          "EMAIL": 14,
+          "PHONE": 67
+        }
+      },
+      "risks": {
+        "direct identifiers retained": 1.0,
+        "records with k<5": 1.0,
+        "linkage re-identification": 0.8148,
+        "free-text identifier leakage": 1.0
+      },
+      "seconds": 0.2
+    },
+    "meter_readings_hourly": {
+      "table": "meter_readings_hourly",
+      "status": "released",
+      "rows_original": 1635120,
+      "rows_protected": 1635120,
+      "columns_dropped": [],
+      "columns_added": [],
+      "direct_identifiers_retained": {},
+      "k_anonymity": {
+        "qis": [
+          "ts"
+        ],
+        "n": 1635120,
+        "n_classes": 2160,
+        "min_k": 757,
+        "median_k": 757.0,
+        "share_below": {
+          "k<2": 0.0,
+          "k<5": 0.0,
+          "k<10": 0.0
+        },
+        "sample_uniqueness": 0.0
+      },
+      "k_anonymity_original": {
+        "qis": [
+          "ts"
+        ],
+        "n": 1635120,
+        "n_classes": 2160,
+        "min_k": 757,
+        "median_k": 757.0,
+        "share_below": {
+          "k<2": 0.0,
+          "k<5": 0.0,
+          "k<10": 0.0
+        },
+        "sample_uniqueness": 0.0
+      },
+      "l_diversity": {
+        "evaluated": true,
+        "sensitive": "kwh",
+        "qis": [
+          "ts"
+        ],
+        "min_distinct_l": 488,
+        "min_entropy_l": 393.644,
+        "share_records_l1": 0.0,
+        "share_classes_l1": 0.0,
+        "n_classes": 2160
+      },
+      "row_alignment": "row map",
+      "linkage": {
+        "note": "no attack spec targets this table (metadata/attack_specs.json)"
+      },
+      "regex_residuals": {},
+      "risks": {
+        "direct identifiers retained": 0.0,
+        "records with k<5": 0.0
+      },
+      "seconds": 2.2
+    },
+    "weather_hourly": {
+      "table": "weather_hourly",
+      "status": "released",
+      "rows_original": 2160,
+      "rows_protected": 2160,
+      "columns_dropped": [],
+      "columns_added": [],
+      "direct_identifiers_retained": {},
+      "k_anonymity": {
+        "note": "no catalogued quasi-identifier kept"
+      },
+      "row_alignment": "row map",
+      "regex_residuals": {},
+      "risks": {
+        "direct identifiers retained": 0.0
+      },
+      "seconds": 0.0
+    }
+  },
+  "extra_protected_files": [],
+  "utility": [
+    {
+      "id": "ENERGY-U1",
+      "table": "meter_readings_hourly",
+      "kind": "aggregate",
+      "description": "Mean load per 3-digit postcode area × hour of day",
+      "required": true,
+      "score": 1.0,
+      "metric": "1 - MAPE/0.5 of mean kWh per postcode area x hour",
+      "detail": {
+        "mape": 0.0
+      }
+    },
+    {
+      "id": "ENERGY-U2",
+      "table": "meter_readings_hourly",
+      "kind": "aggregate",
+      "description": "System peak hours (top 50) and daily peak hour",
+      "required": true,
+      "score": 1.0,
+      "metric": "0.5*Jaccard(top-50 peak hours) + 0.5*share of days with daily peak hour within ±1 h",
+      "detail": {
+        "jaccard": 1.0,
+        "daily_peak_agreement": 1.0
+      }
+    },
+    {
+      "id": "ENERGY-U3",
+      "table": "meter_readings_hourly",
+      "kind": "relationship",
+      "description": "Temperature sensitivity (kWh/day per °C) by heating type",
+      "required": true,
+      "score": 1.0,
+      "metric": "mean over heating types of 1 - rel.error/0.5 of kWh-per-°C slope",
+      "detail": {
+        "slopes_orig": {
+          "air_to_water_heat_pump": -2.6894898533639804,
+          "direct_electric": -3.841749045202545,
+          "district": 0.004633652038576559,
+          "ground_source_heat_pump": -1.5095664013651693,
+          "oil_and_electric": -0.5908579347835512
+        },
+        "slopes_prot": {
+          "air_to_water_heat_pump": -2.6894898533639804,
+          "direct_electric": -3.841749045202545,
+          "district": 0.004633652038576559,
+          "ground_source_heat_pump": -1.5095664013651693,
+          "oil_and_electric": -0.5908579347835512
+        }
+      }
+    }
+  ],
+  "summary": {
+    "privacy": 0.2275,
+    "utility": 1.0,
+    "composite": 0.3506,
+    "label": "self-assessment, not the official judging score",
+    "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+  },
+  "risk_components": {
+    "customers: direct identifiers retained": 1.0,
+    "customers: records with k<5": 1.0,
+    "customers: linkage re-identification": 0.8148,
+    "customers: free-text identifier leakage": 1.0,
+    "meter_readings_hourly: direct identifiers retained": 0.0,
+    "meter_readings_hourly: records with k<5": 0.0,
+    "weather_hourly: direct identifiers retained": 0.0
+  }
+}

@@ -1,0 +1,573 @@
+{
+  "tool": "pets-eval 1.0.0",
+  "dataset": "health",
+  "scenario": {
+    "id": "HEALTH-S3",
+    "dataset": "health",
+    "title": "AI vendor training a triage-support model",
+    "recipient": "External AI vendor under a data-processing agreement",
+    "purpose": "Train a model predicting admission from triage-time information",
+    "trust_level": "contractual",
+    "threat_model": "Vendor staff or a breach; membership inference on synthetic data; memorised rare patients.",
+    "legal_context": "Processor relationship; data minimisation; synthetic data must not reproduce real records (check distance to closest record and membership inference).",
+    "utility_requirements": [
+      "H-U3",
+      "H-U5",
+      "H-U2"
+    ],
+    "suggested_privacy_targets": "Fully synthetic or strongly generalised training table without free text; membership-inference AUC close to 0.5 against holdout; no record closer to a real one than real records are to each other.",
+    "notes": "Use holdout/health as non-members for membership-inference tests."
+  },
+  "original": "data/health",
+  "protected": "results/raw/health",
+  "tables": {
+    "clinical_notes": {
+      "table": "clinical_notes",
+      "status": "released",
+      "rows_original": 30103,
+      "rows_protected": 30103,
+      "columns_dropped": [],
+      "columns_added": [],
+      "direct_identifiers_retained": {
+        "author_name": 1.0
+      },
+      "k_anonymity": {
+        "qis": [
+          "written_ts",
+          "language"
+        ],
+        "n": 30103,
+        "n_classes": 29181,
+        "min_k": 1,
+        "median_k": 1.0,
+        "share_below": {
+          "k<2": 0.9397,
+          "k<5": 1.0,
+          "k<10": 1.0
+        },
+        "sample_uniqueness": 0.9397
+      },
+      "k_anonymity_original": {
+        "qis": [
+          "written_ts",
+          "language"
+        ],
+        "n": 30103,
+        "n_classes": 29181,
+        "min_k": 1,
+        "median_k": 1.0,
+        "share_below": {
+          "k<2": 0.9397,
+          "k<5": 1.0,
+          "k<10": 1.0
+        },
+        "sample_uniqueness": 0.9397
+      },
+      "row_alignment": "row map",
+      "linkage": {
+        "note": "no attack spec targets this table (metadata/attack_specs.json)"
+      },
+      "free_text": {
+        "note_text": {
+          "evaluated": true,
+          "leakage_rate": 1.0,
+          "leakage_rate_chars": 1.0,
+          "identifying_leakage_rate": 1.0,
+          "per_label": {
+            "ADDRESS": {
+              "n": 863,
+              "leaked": 863,
+              "rate": 1.0
+            },
+            "DATE": {
+              "n": 19740,
+              "leaked": 19740,
+              "rate": 1.0
+            },
+            "LOCATION": {
+              "n": 1554,
+              "leaked": 1554,
+              "rate": 1.0
+            },
+            "NATIONAL_ID": {
+              "n": 1637,
+              "leaked": 1637,
+              "rate": 1.0
+            },
+            "ORG": {
+              "n": 2122,
+              "leaked": 2122,
+              "rate": 1.0
+            },
+            "PERSON": {
+              "n": 47910,
+              "leaked": 47910,
+              "rate": 1.0
+            },
+            "PHONE": {
+              "n": 4877,
+              "leaked": 4877,
+              "rate": 1.0
+            }
+          },
+          "n_values": 78703
+        }
+      },
+      "regex_residuals": {
+        "note_text": {
+          "NATIONAL_ID": 1061,
+          "PHONE": 3229
+        }
+      },
+      "risks": {
+        "direct identifiers retained": 1.0,
+        "records with k<5": 1.0,
+        "free-text identifier leakage": 1.0
+      },
+      "seconds": 2.2
+    },
+    "ed_visits": {
+      "table": "ed_visits",
+      "status": "released",
+      "rows_original": 46398,
+      "rows_protected": 46398,
+      "columns_dropped": [],
+      "columns_added": [],
+      "direct_identifiers_retained": {
+        "patient_hetu": 1.0,
+        "patient_name": 1.0,
+        "phone": 1.0,
+        "home_address": 1.0,
+        "attending_physician_name": 1.0
+      },
+      "k_anonymity": {
+        "qis": [
+          "date_of_birth",
+          "sex",
+          "postcode",
+          "municipality",
+          "arrival_ts",
+          "arrival_mode",
+          "ambulance_unit",
+          "discharge_ts"
+        ],
+        "n": 46398,
+        "n_classes": 46398,
+        "min_k": 1,
+        "median_k": 1.0,
+        "share_below": {
+          "k<2": 1.0,
+          "k<5": 1.0,
+          "k<10": 1.0
+        },
+        "sample_uniqueness": 1.0
+      },
+      "k_anonymity_original": {
+        "qis": [
+          "date_of_birth",
+          "sex",
+          "postcode",
+          "municipality",
+          "arrival_ts",
+          "arrival_mode",
+          "ambulance_unit",
+          "discharge_ts"
+        ],
+        "n": 46398,
+        "n_classes": 46398,
+        "min_k": 1,
+        "median_k": 1.0,
+        "share_below": {
+          "k<2": 1.0,
+          "k<5": 1.0,
+          "k<10": 1.0
+        },
+        "sample_uniqueness": 1.0
+      },
+      "l_diversity": {
+        "evaluated": true,
+        "sensitive": "triage",
+        "qis": [
+          "date_of_birth",
+          "sex",
+          "postcode",
+          "municipality",
+          "arrival_ts",
+          "arrival_mode",
+          "ambulance_unit",
+          "discharge_ts"
+        ],
+        "min_distinct_l": 1,
+        "min_entropy_l": 1.0,
+        "share_records_l1": 1.0,
+        "share_classes_l1": 1.0,
+        "n_classes": 46398
+      },
+      "row_alignment": "row map",
+      "linkage": {
+        "news_clips_health": {
+          "evaluated": true,
+          "qis_used": [
+            {
+              "kind": "time",
+              "adversary": [
+                "event_date",
+                "published_date"
+              ],
+              "protected": [
+                "arrival_ts"
+              ]
+            },
+            {
+              "kind": "exact",
+              "adversary": [
+                "place"
+              ],
+              "protected": [
+                "municipality"
+              ]
+            },
+            {
+              "kind": "age",
+              "adversary": [
+                "age_mentioned"
+              ],
+              "protected": [
+                "date_of_birth"
+              ]
+            },
+            {
+              "kind": "sex",
+              "adversary": [
+                "sex_mentioned"
+              ],
+              "protected": [
+                "sex"
+              ]
+            },
+            {
+              "kind": "name",
+              "adversary": [
+                "name_mentioned"
+              ],
+              "protected": [
+                "patient_name"
+              ]
+            }
+          ],
+          "n_adversary_rows_tested": 220,
+          "n_targets_in_data": 200,
+          "reidentification_rate": 0.185,
+          "claim_precision": 0.925,
+          "n_unique_claims": 40,
+          "share_targets_in_candidate_set_le5": 0.61,
+          "median_candidate_set": 4.0,
+          "attribute_inference": {
+            "sensitive": "icd10_primary",
+            "inferred": 40,
+            "base_rate_majority_guess": 0.19,
+            "advantage_over_base_rate": 0.0062,
+            "success_rate": 0.195
+          },
+          "attack": "Local news: date and place of an accident, approximate age, sex, sometimes a name.",
+          "baseline_reidentification_rate_original": 0.185,
+          "risk_reduction": 0.0
+        },
+        "social_posts_health": {
+          "evaluated": true,
+          "qis_used": [
+            {
+              "kind": "time",
+              "adversary": [
+                "posted_ts"
+              ],
+              "protected": [
+                "arrival_ts"
+              ]
+            },
+            {
+              "kind": "exact",
+              "adversary": [
+                "profile_city"
+              ],
+              "protected": [
+                "municipality"
+              ]
+            },
+            {
+              "kind": "name",
+              "adversary": [
+                "display_name"
+              ],
+              "protected": [
+                "patient_name"
+              ]
+            }
+          ],
+          "n_adversary_rows_tested": 948,
+          "n_targets_in_data": 850,
+          "reidentification_rate": 0.5424,
+          "claim_precision": 0.9767,
+          "n_unique_claims": 472,
+          "share_targets_in_candidate_set_le5": 0.6329,
+          "median_candidate_set": 1.0,
+          "attribute_inference": {
+            "sensitive": "icd10_primary",
+            "inferred": 472,
+            "base_rate_majority_guess": 0.1106,
+            "advantage_over_base_rate": 0.4921,
+            "success_rate": 0.5482
+          },
+          "attack": "Someone posts from the ED: time, first name, home city.",
+          "baseline_reidentification_rate_original": 0.5424,
+          "risk_reduction": 0.0
+        }
+      },
+      "free_text": {
+        "chief_complaint": {
+          "evaluated": true,
+          "leakage_rate": 1.0,
+          "leakage_rate_chars": 1.0,
+          "identifying_leakage_rate": 0.0,
+          "per_label": {
+            "LOCATION": {
+              "n": 313,
+              "leaked": 313,
+              "rate": 1.0
+            },
+            "ORG": {
+              "n": 190,
+              "leaked": 190,
+              "rate": 1.0
+            }
+          },
+          "n_values": 503
+        }
+      },
+      "regex_residuals": {
+        "patient_hetu": {
+          "NATIONAL_ID": 19816,
+          "PHONE": 827
+        },
+        "phone": {
+          "PHONE": 15855
+        }
+      },
+      "risks": {
+        "direct identifiers retained": 1.0,
+        "records with k<5": 1.0,
+        "linkage re-identification": 0.5424,
+        "free-text identifier leakage": 0.0
+      },
+      "seconds": 5.3
+    },
+    "lab_results": {
+      "table": "lab_results",
+      "status": "released",
+      "rows_original": 130341,
+      "rows_protected": 130341,
+      "columns_dropped": [],
+      "columns_added": [],
+      "direct_identifiers_retained": {},
+      "k_anonymity": {
+        "qis": [
+          "sampled_ts"
+        ],
+        "n": 130341,
+        "n_classes": 109711,
+        "min_k": 1,
+        "median_k": 1.0,
+        "share_below": {
+          "k<2": 0.7049,
+          "k<5": 0.9988,
+          "k<10": 1.0
+        },
+        "sample_uniqueness": 0.7049
+      },
+      "k_anonymity_original": {
+        "qis": [
+          "sampled_ts"
+        ],
+        "n": 130341,
+        "n_classes": 109711,
+        "min_k": 1,
+        "median_k": 1.0,
+        "share_below": {
+          "k<2": 0.7049,
+          "k<5": 0.9988,
+          "k<10": 1.0
+        },
+        "sample_uniqueness": 0.7049
+      },
+      "l_diversity": {
+        "evaluated": true,
+        "sensitive": "value",
+        "qis": [
+          "sampled_ts"
+        ],
+        "min_distinct_l": 1,
+        "min_entropy_l": 1.0,
+        "share_records_l1": 0.7081,
+        "share_classes_l1": 0.8393,
+        "n_classes": 109711
+      },
+      "row_alignment": "row map",
+      "linkage": {
+        "note": "no attack spec targets this table (metadata/attack_specs.json)"
+      },
+      "regex_residuals": {},
+      "risks": {
+        "direct identifiers retained": 0.0,
+        "records with k<5": 0.9988
+      },
+      "seconds": 0.5
+    },
+    "published_weekly_stats": {
+      "table": "published_weekly_stats",
+      "status": "released",
+      "rows_original": 30169,
+      "rows_protected": 30169,
+      "columns_dropped": [],
+      "columns_added": [],
+      "direct_identifiers_retained": {},
+      "k_anonymity": {
+        "qis": [
+          "week",
+          "municipality",
+          "age_band",
+          "sex"
+        ],
+        "n": 30169,
+        "n_classes": 13058,
+        "min_k": 1,
+        "median_k": 3.0,
+        "share_below": {
+          "k<2": 0.2073,
+          "k<5": 0.6573,
+          "k<10": 0.9454
+        },
+        "sample_uniqueness": 0.2073
+      },
+      "k_anonymity_original": {
+        "qis": [
+          "week",
+          "municipality",
+          "age_band",
+          "sex"
+        ],
+        "n": 30169,
+        "n_classes": 13058,
+        "min_k": 1,
+        "median_k": 3.0,
+        "share_below": {
+          "k<2": 0.2073,
+          "k<5": 0.6573,
+          "k<10": 0.9454
+        },
+        "sample_uniqueness": 0.2073
+      },
+      "l_diversity": {
+        "evaluated": true,
+        "sensitive": "diagnosis_group",
+        "qis": [
+          "week",
+          "municipality",
+          "age_band",
+          "sex"
+        ],
+        "min_distinct_l": 1,
+        "min_entropy_l": 1.0,
+        "share_records_l1": 0.2073,
+        "share_classes_l1": 0.4789,
+        "n_classes": 13058
+      },
+      "row_alignment": "row map",
+      "regex_residuals": {},
+      "risks": {
+        "direct identifiers retained": 0.0,
+        "records with k<5": 0.6573
+      },
+      "seconds": 0.2
+    }
+  },
+  "extra_protected_files": [],
+  "utility": [
+    {
+      "id": "H-U2",
+      "table": "ed_visits",
+      "kind": "aggregate",
+      "description": "Median length of stay by triage level",
+      "required": true,
+      "score": 1.0,
+      "metric": "mean relative error of median LOS by triage",
+      "detail": {
+        "rel_error": 0.0,
+        "orig": {
+          "A": 302.0,
+          "B": 348.0,
+          "C": 315.0,
+          "D": 221.0,
+          "E": 157.0
+        },
+        "prot": {
+          "A": 302.0,
+          "B": 348.0,
+          "C": 315.0,
+          "D": 221.0,
+          "E": 157.0
+        }
+      }
+    },
+    {
+      "id": "H-U3",
+      "table": "ed_visits",
+      "kind": "model",
+      "description": "Admission prediction: train on protected, test on original/holdout (AUC ratio)",
+      "required": true,
+      "score": 1.0,
+      "metric": "(AUC_protected-0.5)/(AUC_original-0.5), train on X, test on original",
+      "detail": {
+        "auc_orig": 0.7846,
+        "auc_prot": 0.8081,
+        "test_rows": 13887
+      }
+    },
+    {
+      "id": "H-U5",
+      "table": "ed_visits",
+      "kind": "distribution",
+      "description": "Distributions of systolic BP, heart rate, temperature and SpO2",
+      "required": true,
+      "score": 1.0,
+      "metric": "1 - mean Wasserstein distance / IQR over 4 vitals",
+      "detail": {
+        "per_vital": {
+          "systolic_bp": 0.0,
+          "heart_rate": 0.0,
+          "temp_c": 0.0,
+          "spo2": 0.0
+        }
+      }
+    }
+  ],
+  "summary": {
+    "privacy": 0.1728,
+    "utility": 1.0,
+    "composite": 0.2769,
+    "label": "self-assessment, not the official judging score",
+    "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+  },
+  "risk_components": {
+    "clinical_notes: direct identifiers retained": 1.0,
+    "clinical_notes: records with k<5": 1.0,
+    "clinical_notes: free-text identifier leakage": 1.0,
+    "ed_visits: direct identifiers retained": 1.0,
+    "ed_visits: records with k<5": 1.0,
+    "ed_visits: linkage re-identification": 0.5424,
+    "ed_visits: free-text identifier leakage": 0.0,
+    "lab_results: direct identifiers retained": 0.0,
+    "lab_results: records with k<5": 0.9988,
+    "published_weekly_stats: direct identifiers retained": 0.0,
+    "published_weekly_stats: records with k<5": 0.6573
+  }
+}
