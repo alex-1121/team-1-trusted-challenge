@@ -6,21 +6,21 @@ Status: draft, not adopted. Drafted by Arda's agent on 2026-11-06 from `../conte
 
 Seven ideas. Each one is a tool that takes a dataset full of personal details, hides what could identify a person, and proves the result is both safer and still useful to someone. They differ in which data we use and what the demo shows. Details, numbers and risks are in the sections below.
 
-**A. One hospital, two recipients.** Hospital emergency-room records go to a research group, then to an outside company. Our tool decides, column by column, what to hide, blur or keep, and the choice changes when the recipient changes. The demo: switch the recipient and watch the protection and the scores change.
+**A. One hospital, two recipients.** Hospital emergency-room records go either to a university research group or to an outside company that trains a prediction model. Our tool decides, column by column, what to hide, blur or keep, and the choice changes when the recipient changes. The demo: switch the recipient and watch the protection and the privacy and usefulness scores change.
 
-**B. The leak hunter.** Telecom customer-service chats go to a cloud AI vendor. Our tool finds and blacks out names, phone numbers, spelled-out emails and passwords that simple pattern matching misses. The demo: before and after text, plus a score the organisers can check against hidden answers.
+**B. The leak hunter.** Telecom customer-service chats go to a cloud AI vendor. Our tool finds and blacks out what simple pattern matching misses: names, phone numbers read out as words, spelled-out emails and passwords typed into the chat. The demo: before and after text, plus a score the organisers can recheck on test chats only they hold.
 
-**C. Guess the columns.** A spreadsheet arrives with its column names hidden. Our tool works out from the values alone which columns are names, IDs, birth dates, salaries or health flags, then protects a second dataset the same way. The demo: our guesses against the organisers' private answer key.
+**C. Guess the columns.** An HR payroll export arrives with its column names hidden. Our tool works out from the values alone which columns are names, IDs, birth dates, salaries or health flags, then protects a second dataset (school records) the same way. The demo: our guesses against the organisers' simple reference detector, and against their private answer key if they agree to score it.
 
-**D. Trips that stop pointing home.** Bus-card and city-bike journeys go to a planning consultancy. Our tool blurs times and places so nobody can be singled out from a few known stops, while the traffic flows planners need stay intact. The demo: a map, before and after.
+**D. Trips that stop pointing home.** Bus-card and city-bike journeys go to a planning consultancy. Our tool blurs times and places so nobody can be singled out from a few known stops, while the traffic flows planners need stay usable. The demo: a map, before and after.
 
-**E. Share the attack, hide the company.** A company's security logs go to national cyber-defence partners. Our tool renames people and machines consistently, keeps the attackers' addresses exact, and shows that the attack can still be detected afterwards. The demo: the same alarm fires on raw and protected logs.
+**E. Share the attack, hide the company.** A company's security logs go to national cyber-defence partners or into a public research download. Our tool renames or removes people and machines, keeps the attackers' addresses exact, and shows that the attack can still be detected afterwards. The demo: the same alarm fires on raw and protected logs.
 
-**F. Statistics with a privacy budget.** The hospital publishes weekly numbers to the public. Our tool adds calibrated noise and hides tiny groups so nobody can be found by comparing releases, and states exactly how strong the guarantee is. The demo: accuracy against the organisers' reference method.
+**F. Statistics with a privacy budget.** The hospital publishes weekly numbers to the public. Our tool adds small, measured random noise and hides tiny groups so nobody can be found by comparing releases, and states exactly how strong the guarantee is. The demo: accuracy against the organisers' reference method; on its own it covers only part of the brief.
 
-**G. Ask the population, not the person (Tadek).** Idea F plus a question desk: people ask in plain English, get noisy aggregate answers, and unsafe questions are refused and logged. See `2026-11-06-query-vault.md` and the review at its end.
+**G. Ask the population, not the person (Tadek).** Idea F with a question desk on top: researchers never see the data, they ask in plain English and get noisy totals back. Unsafe questions are refused, and every question goes into a public log. The demo: the desk answering and refusing questions live; full plan in `2026-11-06-query-vault.md`, with a review at its end.
 
-Where things stand: A and G are the two live options; both use the hospital data. The pick is the team's.
+Agent's reading, not a decision: A and G are the two strongest, both on the hospital data, and the recommendation below leans to A. The pick is the team's.
 
 ## How to read this
 
