@@ -4,7 +4,7 @@
 
 To restore it:
 
-1. Get `TRUSTED_SinceAI2026_FINAL.zip` from the organiser materials in sinceai.app or from a teammate who has it (210 MB, not in any repo). Inside it is `TRUSTED_PETS_PROVING_GROUND_2026 (1).zip`.
+1. Get `TRUSTED_SinceAI2026_FINAL.zip` (210 MB) from the organiser materials in sinceai.app, or from a teammate by a private channel (never a public link: it contains truth/, holdout/ and row maps). Inside it is `TRUSTED_PETS_PROVING_GROUND_2026 (1).zip`.
 2. Unzip that inner archive into `data/`. It unpacks into a folder named `TRUSTED_PETS_PROVING_GROUND_2026`; rename that folder to `proving-ground` so that `data/proving-ground/START_HERE.md` exists.
 3. Read `START_HERE.md` first. Read every CSV with `dtype=str`.
 

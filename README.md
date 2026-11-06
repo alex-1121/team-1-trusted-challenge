@@ -27,10 +27,7 @@ Status: Context pack landed 2026-11-06; dataset, scenario and demo shape are dec
 
 ## Rules we hold ourselves to
 
-- Only the synthetic proving-ground data, public data, or data we are explicitly allowed to use.
-- No "anonymised", "GDPR compliant" or "differentially private" claim without the method and its parameters next to it.
-- Every number on a slide comes from a scorecard run committed as JSON.
-- Nothing from `truth/`, `holdout/` or `rowmap_*.csv` in the repo or the submission zip.
+The rules live in `AGENTS.md` (data, claims, writing). Short version: synthetic or allowed data only, no privacy claim without method and parameters, every number from a committed scorecard, nothing from truth/, holdout/ or rowmap_*.csv in git or the zip.
 
 ## Attribution
 

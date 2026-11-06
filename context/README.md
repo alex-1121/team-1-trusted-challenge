@@ -12,6 +12,7 @@ One line per file. Read in this order if you are new: `challenge-digest.md`, the
 | `video-transcript.md` | Transcript of the organiser video | Optional, for tone and emphasis |
 | `source-files.md` | List of the organiser zip contents with sizes and hashes | You need to find or verify an original file |
 | `proving-ground/` | 29 verbatim organiser docs (see below) | Choosing a dataset, scenario or PET; reading the metrics |
+| `originals/` | The unconverted organiser files (docx, pdf) and where the video lives (release asset) | You distrust a conversion or need the video (the data zip is never published) |
 
 ## In team/
 
@@ -24,7 +25,6 @@ One line per file. Read in this order if you are new: `challenge-digest.md`, the
 
 | File | What it is | Read when |
 |---|---|---|
-| `../README.md` | Landing page | First visit |
 | `../AGENTS.md` | Rules for coding agents | Before an agent touches the repo |
 | `../decisions.md` | Team decision log | Before reopening a choice |
 | `../plans/README.md` | How planning works | Before writing a plan |
@@ -34,4 +34,4 @@ One line per file. Read in this order if you are new: `challenge-digest.md`, the
 
 Copies live in `context/proving-ground/` now. The same files sit in `data/proving-ground/` once the data is restored. After restore, `data/proving-ground/` is the authoritative one.
 
-Start with `proving-ground/START_HERE.md`, then `docs/SCENARIOS.md`, `docs/PET_PLAYBOOK.md`, `docs/EVALUATION.md` and `docs/BENCHMARK.md`.
+Start with `proving-ground/START_HERE.md`, then `proving-ground/docs/SCENARIOS.md`, `proving-ground/docs/PET_PLAYBOOK.md`, `proving-ground/docs/EVALUATION.md` and `proving-ground/docs/BENCHMARK.md`.

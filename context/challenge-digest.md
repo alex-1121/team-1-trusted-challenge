@@ -58,7 +58,7 @@ Source: `proving-ground/START_HERE.md` ("Choose your path").
 Three separate things:
 
 - Self-assessment (ours): `pets-eval scorecard` gives privacy, utility and a composite score. It builds our before/after evidence. It is not the official judging score.
-- Official judging: Since AI's existing four criteria, applied by TrustED's evaluators remotely, with no weighted rubric. (1) Technical implementation: correct, reliable PET choices. (2) Innovation: an intelligent, explainable approach. (3) Impact: evidence of reduced disclosure risk with preserved utility. (4) Presentation: clear scenario, before/after comparison, honest limitations.
+- Official judging: Since AI's existing four criteria (brief section 06), with no weighted rubric. TrustED's own evaluators apply them remotely (sinceai.ai partner page). (1) Technical implementation: correct, reliable PET choices. (2) Innovation: an intelligent, explainable approach. (3) Impact: evidence of reduced disclosure risk with preserved utility. (4) Presentation: clear scenario, before/after comparison, honest limitations.
 - Optional organiser checks, on request: a stronger hidden attacker per domain, private labels for `unseen`, hidden eval spans for `customer_service`. Outputs go in a folder `pets_submission/`, and `docs/EVALUATION.md` asks for it in the repository together with the row maps. That collides with the rule never to publish row maps once the repo is public. Open question for the team: ask on the TrustED Discord channel how to hand `pets_submission/` over privately. Until answered, row maps stay out of git.
 
 Scorecard maths: privacy = 1 - (0.5 x worst risk + 0.5 x mean risk). Composite = weighted harmonic mean of privacy (weight 30) and utility (weight 25). Releasing nothing or everything both score low.
@@ -79,7 +79,7 @@ Source: `proving-ground/README.md`, `proving-ground/docs/BENCHMARK.md`.
 - Demo video: a YouTube link, public or unlisted, ideally under 2 minutes. YouTube is the only accepted format.
 - Source code zip: up to 100 MB, without data files or node_modules.
 - Builder vote card: voters see only the tagline, the first lines of the description, the demo video, the deck and five tech chips. They never see the repo.
-- Support: TrustED answers on its Discord channel only. No stand, no in-person Q&A.
+- Support: Since AI organisers, event mentors and the event Discord (brief section 08). TrustED itself answers on its Discord channel only, no stand.
 - Row maps: `rowmap_*.csv` are never published. We also keep `truth/` and `holdout/` out of the repo and the zip.
 - Licence line on anything we publish: "TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0)".
 - Say what the guarantee is. "Anonymised" and "differentially private" need a method and parameters.

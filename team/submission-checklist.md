@@ -1,6 +1,6 @@
 # Submission checklist - sinceai.app, Sunday 8 November 10:00 Turku time
 
-Hard deadline. The platform, not Devpost. Source: the organiser builder guide on sinceai.ai and `../context/brief.md` section 07.
+Hard deadline. The platform, not Devpost. Source: the organiser builder guide on sinceai.ai and `../context/brief.md` section 07. Guide: https://sinceai.ai/hackathon-2026/guide
 
 ## Required fields
 
@@ -15,13 +15,16 @@ Hard deadline. The platform, not Devpost. Source: the organiser builder guide on
 ## Optional
 
 - [ ] Demo URL
-- [ ] Pitch deck
 - [ ] Up to two supporting documents (the scorecard HTML is a natural one)
+
+## Must do even though the form calls it optional
+
+- [ ] Pitch deck. The builder vote card shows the deck.
 
 ## Before pressing submit
 
 - [ ] A fresh clone of the repo runs the demo from the README
 - [ ] The video shows all five required demo items
 - [ ] Attribution line present: "TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0)"
-- [ ] No real personal data, no secrets, no em-dash anywhere public
+- [ ] No real personal data, no secrets, no em-dash in anything we wrote (verbatim organiser files are exempt, see AGENTS.md)
 - [ ] Every number in the description matches a scorecard run that is committed as JSON
