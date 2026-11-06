@@ -22,6 +22,8 @@ Status: Context pack landed 2026-11-06; dataset, scenario and demo shape are dec
 | `team/` | Team plan and the submission checklist |
 | `plans/` | Specs, tickets and plans (see `plans/README.md`) |
 | `data/` | The proving-ground data, gitignored; `data/README.md` says how to restore it |
+| `baseline-scores/` | "Before" scorecards: every original table scored unprotected, one HTML + JSON pair per scenario, named `<dataset>_<SCENARIO>_<recipient>_raw` |
+| `attack_analysis.md` | What `pets-eval` actually measures: risk checks, utility tasks, how the score is aggregated, blind spots |
 | `decisions.md` | Team decision log |
 | `AGENTS.md` | Rules for every teammate's coding agent |
 
