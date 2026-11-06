@@ -19,9 +19,16 @@ The team build for the TrustED PETs Transformer challenge at Since AI Hackathon 
 - Every number in a slide, video, README or submission text comes from a scorecard run whose JSON is committed. No invented metrics.
 - Attribution for anything we publish: "TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0)".
 
+## Licences and people
+
+- The proving ground is CC BY 4.0 (data) and MIT (code), (c) 2026 Since AI ry. Attribution line: "TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0)".
+- The brief, one-pager and video are organiser materials, redistributed for the team only.
+- The licence for our own code is an open decision (row in `decisions.md`).
+
 ## Writing rules
 
 - No em-dash. Use " - ".
+- Verbatim organiser files (context/brief.md, context/brief-onepager.md, context/video-transcript.md, everything under context/proving-ground/ and context/originals/) keep their own text, em-dashes included.
 - Plain English, short sentences. Explain a term the first time it appears.
 - No secrets, tokens or real personal data in any file. The repo goes public for the submission.
 

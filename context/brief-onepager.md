@@ -1,4 +1,4 @@
-Source: Challenge_TRUSTED_PETs_Transformer_EN.pdf (one-page challenge sheet) from the organiser zip, converted 2026-11-06 with pdftotext. Verbatim text, only formatting added and spaced-out heading letters rejoined.
+Source: Challenge_TRUSTED_PETs_Transformer_EN.pdf (the downloaded copy carried a ' (1)' suffix, see source-files.md) (one-page challenge sheet) from the organiser zip, converted 2026-11-06 with pdftotext. Verbatim text, only formatting added and spaced-out heading letters rejoined.
 
 Hackathon · Technology challenge
 

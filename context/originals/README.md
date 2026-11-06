@@ -12,19 +12,17 @@ The unconverted files, so nobody has to trust our markdown conversions. Everythi
 
 The filenames lost the " (1)" download suffixes; the bytes are untouched. Hashes of each file are in `../source-files.md`.
 
-## Too big for git: the release
+## The video: a release asset. The proving ground: never published
 
-The GitHub release **originals-2026-11-06** on this repository holds the whole organiser zip as one asset. Download it from the Releases page or with:
+The GitHub release **originals-2026-11-06** on this repository holds only the organiser intro video. Download it from the Releases page or with:
 
 ```bash
-gh release download originals-2026-11-06 --repo alex-1121/team-1-trusted --pattern 'TRUSTED_SinceAI2026_FINAL.zip'
+gh release download originals-2026-11-06 --repo alex-1121/team-1-trusted --pattern '*.mp4'
 ```
-
-Inside it:
 
 | File | Bytes | sha256 | What |
 |---|---|---|---|
-| `2026.11_SinceAI_TrustEDpresentation.mp4` | 99543132 | `c759e8c2f63d74dd360a82a33902fa35ab7f524bbdef1013bb92f852f1cda016` | the organiser intro video |
-| `TRUSTED_PETS_PROVING_GROUND_2026 (1).zip` | 116628228 | `b4f1b78b795812ad0b616e423d96097f262328d4635f0c6b14e0dbce9291eb77` | the proving ground: data, toolkit, baselines, docs; restore steps in `../../data/README.md` |
+| `2026.11_SinceAI_TrustEDpresentation.mp4` | 99543132 | `c759e8c2f63d74dd360a82a33902fa35ab7f524bbdef1013bb92f852f1cda016` | the organiser intro video (in the release) |
+| `TRUSTED_PETS_PROVING_GROUND_2026 (1).zip` | 116628228 | `b4f1b78b795812ad0b616e423d96097f262328d4635f0c6b14e0dbce9291eb77` | NOT in the release on purpose: it contains truth/, holdout/ and row maps, which must never be published; get it from sinceai.app or a teammate privately; restore steps in `../../data/README.md` |
 
 Licences: the proving ground is CC BY 4.0 (data) and MIT (code), (c) 2026 Since AI ry, see `../proving-ground/LICENSE-DATA.md`. The brief, one-pager and video are organiser materials of the TrustED challenge (Horizon Europe grant agreement No. 101168467); redistributed here for the team, not as a TrustED deliverable.

@@ -15,4 +15,5 @@ Zip: `TRUSTED_SinceAI2026_FINAL.zip`, 210127444 bytes, sha256 `7962a6139902c96f7
 - Unzipped size: 580990504 bytes, 261 files plus folders (`unzip -l`, `__MACOSX` entries excluded).
 - In this repo (`proving-ground/`, verbatim, 29 files): all `.md` files, `LICENSE`, `MANIFEST.json`, `docs/*`, `metadata/*.md`, `data/*/README.md`, `baselines/README.md`, `toolkit/README.md`. `START_HERE.html` and the `baselines/*.py` files are left out.
 - NOT in this repo: all CSV and parquet data, `adversary/`, `truth/`, `holdout/`, toolkit code, baselines code, `examples/`, `tests/`, `results/`.
-- The build repo is where the data gets extracted, gitignored.
+- This repository is where the data gets extracted, gitignored; see `../data/README.md`.
+- The ' (1)' suffixes in the filenames are download artefacts; the hashes are of the bytes.
