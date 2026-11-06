@@ -1,6 +1,6 @@
 # Challenge digest - TrustED PETs Transformer
 
-The whole challenge in about 10 minutes. Details live in the files named in each "Source:" line.
+The whole challenge in about 10 minutes. Details live in the files named in each "Source:" line. For the why behind it, read `what-is-expected.md`; for who is judging and what they build, `trusted-project.md`.
 
 ## What we must build
 
