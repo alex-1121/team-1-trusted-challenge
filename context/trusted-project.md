@@ -15,7 +15,7 @@ Ten consortium members from Spain, Italy, Portugal, Germany and Turkey, plus one
 | Partner | Country | Role in TrustED |
 |---|---|---|
 | Gradiant | Spain | Coordinator, research centre |
-| Tree Technology (TREE) | Spain | SME, AI, big data, cybersecurity; co-funds the challenge |
+| Tree Technology (TREE) | Spain | SME, AI, big data, cybersecurity; named co-funding partner in the brief |
 | Fundacion Cibervoluntarios | Spain | NGO, runs the volunteering pilot |
 | TINEXTA InfoCert | Italy | Qualified trust service provider, attribute issuance |
 | CyberSocial Lab | Italy | Ethics and law, consent and selective-disclosure system |
@@ -33,7 +33,7 @@ Data-provider collaborators: ELSAN (France) and HM Hospitales (Spain). Sister pr
 - A minimum viable data space on the Eclipse Dataspace Components framework, following Gaia-X and the IDSA data space protocol. [2][3]
 - An identity layer: an EUDI-compliant wallet for verifiable credentials, selective disclosure with BBS+ signatures (open-source libbbs), zero-knowledge proofs (for example "no relevant convictions" without showing the record), AI document validation and biometrics, and a consent system that keeps a cryptographic proof of the policy a person accepted. [2][5][6][8]
 - A federated learning layer for clinical data: hospitals train a shared model without moving records. Its named building block is SASS, Secure Aggregation with Secret Sharing (Shamir threshold sharing, distributed aggregators, a minimum group size), combined with differential privacy and trusted execution environments. The project itself lists SASS's limits: small groups leak through the aggregate, collusion assumptions, communication overhead, and poisoned inputs that need validation. [2][6][10]
-- Their PET vocabulary: zero-knowledge proofs, homomorphic encryption, differential privacy, secure multiparty computation, trusted execution environments, federated learning, secret sharing. Masking, generalisation, k-anonymity, tokenisation and synthetic data, the techniques the challenge lists, do not appear on the site. [2][10][11]
+- Their PET vocabulary: zero-knowledge proofs, homomorphic encryption, differential privacy, secure multiparty computation, trusted execution environments, federated learning, secret sharing. Masking, generalisation, tokenisation and synthetic data (techniques the challenge lists) and k-anonymity do not appear on the site. [2][10][11]
 
 ## Pilots
 

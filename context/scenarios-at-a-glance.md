@@ -12,7 +12,7 @@ One row per scenario, condensed from `proving-ground/docs/SCENARIOS.md` on 2026-
 | MOB-S3 | mobility | University group: bus vs city-bike mode choice | MOB-U4, MOB-U6, MOB-U7, MOB-U8 | Bike GPS end points near homes |
 | CITY-S1 | smart_city | Anyone, open data: hourly footfall by zone | CITY-U1, CITY-U5 | Night-time small counts |
 | CITY-S2 | smart_city | Retail association under contract: dwell time, repeat visits, parking | CITY-U1 to CITY-U6 | Member's loyalty-app device list plus plate sightings |
-| CITY-S3 | smart_city | Police and parking enforcement: bulk plates and payments at one car park | CITY-U3 | Function creep: parking data reused for surveillance |
+| CITY-S3 | smart_city | Police or parking enforcement: bulk plates and payments at one car park | CITY-U3 | Function creep: parking data reused for surveillance |
 | ENERGY-S1 | energy | Anyone, open portal: neighbourhood load for planning | ENERGY-U1, ENERGY-U2, ENERGY-U3 | Neighbours differencing against their own consumption |
 | ENERGY-S2 | energy | Demand-response aggregator: find and forecast flexible loads | ENERGY-U2, ENERGY-U4, ENERGY-U5, ENERGY-U6 | Absence inference; series must stay linkable over time |
 | ENERGY-S3 | energy | University group: heating, payment problems, winter use | ENERGY-U3, ENERGY-U4, ENERGY-U7 | Broker-profile linkage; medical-device flag (Art. 9) |
@@ -39,4 +39,4 @@ Flags inside the full file:
 - PUB-S1: text is where most value and most risk sit. FIN-S1: linkability across banks is the whole point. CYBER-S1: random per-row tokens make cross-log detection impossible.
 - HEALTH-S1 needs a stable patient pseudonym and joinable visit and lab keys.
 
-Source: `proving-ground/docs/SCENARIOS.md` (315 lines). The "hardest privacy problem" column is taken from each scenario's threat-model or notes lines; the file has no column with that name.
+Source: `proving-ground/docs/SCENARIOS.md` (314 lines). The "hardest privacy problem" column is taken from each scenario's threat-model or notes lines; the file has no column with that name.
