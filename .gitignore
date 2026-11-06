@@ -1,5 +1,6 @@
 # Proving-ground data stays local: 580 MB, CC BY 4.0, re-extract from the organiser zip (see data/README.md)
 data/proving-ground/
+data/proving-ground
 # Answer keys for the attacks: never committed, never zipped (organiser rule for rowmaps; our caution for the rest)
 **/rowmap_*.csv
 **/truth/

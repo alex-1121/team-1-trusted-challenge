@@ -10,6 +10,7 @@ One line per file. Read in this order if you are new: `what-is-expected.md`, `ch
 | `challenge-digest.md` | One-page summary of the whole challenge (written by us) | Always |
 | `trusted-project.md` | What the real TrustED project builds and how its evaluators think (researched 2026-11-06) | Before choosing the pitch and the scenario |
 | `scenarios-at-a-glance.md` | The 27 sharing scenarios in one table | Shortlisting a scenario |
+| `pets-eval-howto.md` | Install and use the organisers' scoring toolkit | Setting up, and before every scorecard run |
 | `brief.md` | The official 8-section challenge brief, converted | You need the exact wording of the task or judging |
 | `brief-onepager.md` | The official one-page challenge sheet | You need the five required demo items or the PET list |
 | `video-transcript.md` | Transcript of the organiser video | Optional, for tone and emphasis |
