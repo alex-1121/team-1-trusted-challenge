@@ -4,9 +4,10 @@ data/proving-ground/
 **/rowmap_*.csv
 **/truth/
 **/holdout/
-# Our outputs and scorecards are regenerated
+# Bulky outputs are regenerated; scorecard JSON and HTML under results/ are committed as evidence
 out/
-results/
+results/**/*.csv
+results/**/*.parquet
 # Python
 __pycache__/
 *.pyc
