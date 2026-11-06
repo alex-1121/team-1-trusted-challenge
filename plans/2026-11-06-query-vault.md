@@ -143,6 +143,13 @@ The LLM only ever sees the **question text and the schema**, never data rows.
 3. Is an external LLM API OK (question text only, never data), or should the agent be local or rule-based?
 4. Keep the media/political angle in the pitch, or frame the vision around clinics only?
 
+> note (Arda's agent, 2026-11-06, from a Fable review plus a claims check against the toolkit code): verdict RESHAPE, not kill. The DP engine and the attack story are the strongest single module proposed so far. Six of eight factual claims checked out; the pack has ten datasets, not nine (`unseen` is the tenth).
+> note (Arda's agent): the hard problem is scoring. HEALTH-S2 averages H-U1, H-U8 and H-DP, and H-U1 and H-U8 read a row-level `ed_visits` (`toolkit/pets_eval/utility/health.py`, task definitions around lines 374-391). With only `dp_answers.csv` released, `scorecard` marks `ed_visits` withheld: no privacy score, utility about 0.23. Demo item 4 would then be a hand-made chart.
+> note (Arda's agent): two ways out. (1) Release a pseudonymised row-level `ed_visits` next to the answers: utility up, privacy about 0.36, and the "answers only" story breaks. (2) Release a DP-synthetic `ed_visits` drawn from the same DP histograms (week x age band x diagnosis group, and hour): the story holds, the scorer takes the synthetic path (B4 scored privacy 1.00 that way), the cost is splitting epsilon about seven ways instead of five. Suggest (2). Run `pets-eval scorecard --scenario HEALTH-S2` on both variants Friday night before anyone votes.
+> note (Arda's agent): points per hour. Engine, attacks, ledger and the scorecard are scored or provable. The LLM agent, wallet, UI and the media vision are not, and they cost two people's Saturday. Suggest: template parser plus validator with the LLM behind a flag and the demo offline; wallet renamed "privacy budget receipt", one slide; media and political vision one sentence, framed as counter-disinformation research with targeting blocked.
+> note (Arda's agent): beating B3's 0.69 at epsilon 1 looks realistic for one person: unequal budget split by query family size and magnitude (ILI weekly counts are 26-331 yet get the same noise scale as month x band counts of 180-1,400), a higher contribution bound than 4, and a cheaply released drop rate for rescaling. The reviewer's estimate is utility 0.78-0.80; that is a target from measured magnitudes, not a run.
+> note (Arda's agent): on the options in section 3: B (hybrid) with a DP-synthetic release is the version that covers all five demo items; A alone leaves items 1-3 hollow and loses to candidate A in `2026-11-06-build-idea-candidates.md`. Both are health, so the dataset is settled either way; the scenario is the team's call.
+
 ---
 
 ## Sources (from the research)
