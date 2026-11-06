@@ -143,12 +143,23 @@ The LLM only ever sees the **question text and the schema**, never data rows.
 3. Is an external LLM API OK (question text only, never data), or should the agent be local or rule-based?
 4. Keep the media/political angle in the pitch, or frame the vision around clinics only?
 
-> note (Fable review, 2026-11-06): the lines below are a review by Claude Fable 5.1, run by Arda's agent over this plan, the organiser docs and the `pets-eval` code. A second agent checked the plan's facts: six of eight hold, one is partly right, one is wrong (the pack has ten datasets, not nine). Nothing here is a team decision.
-> note (Fable review): verdict RESHAPE. Keep the DP engine, the attacks and the public log. They are the strongest single module anyone has proposed. Three things need to change before it can win.
-> note (Fable review): 1. The score problem. The scorecard for HEALTH-S2 averages three tasks. Two of them (H-U1, H-U8) need a row-level `ed_visits` table. If we only release `dp_answers.csv`, the scorecard shows no privacy score and about 0.23 utility, so our slide would have no official number. Fix: also release a synthetic `ed_visits` generated from the same DP histograms. The story "we never share the data" still holds, and the scorer treats it as synthetic data (baseline B4 got privacy 1.00 that way). Test both variants with one `pets-eval scorecard --scenario HEALTH-S2` run on Friday night, before we vote.
-> note (Fable review): 2. Spend the hours where the points are. The engine, attacks, log and scorecard earn points. The LLM agent, wallet, UI and media vision do not, and they would cost two people their Saturday. Suggest: a fixed set of question templates with a validator, the LLM behind a switch, demo offline; the wallet becomes one slide ("privacy budget receipt"); the media and political vision becomes one sentence, framed as counter-disinformation research with targeting blocked.
-> note (Fable review): 3. Beating B3 (0.69 utility at epsilon 1) looks doable for one person in a day: give more of the privacy budget to the small weekly counts and less to the large monthly ones, raise the per-patient contribution cap above 4, and put every parameter on the slide. The reviewer estimates 0.78 to 0.80; that is a target from the data sizes, not a run.
-> note (Fable review): on section 3: option B (hybrid, plus the synthetic release from point 1) covers all five demo items. Option A alone leaves demo items 1 to 3 hollow and loses to candidate A in `2026-11-06-build-idea-candidates.md`. Either way the dataset is health; the scenario is the team's call.
+---
+
+## Review: Fable, 2026-11-06
+
+Reviewer: Claude Fable 5.1, run by Arda's agent over this plan, the organiser docs and the `pets-eval` code. A second agent checked the plan's facts: six of eight hold, one partly, one is wrong (the pack has ten datasets, not nine). Nothing in this section is a team decision.
+
+**Verdict: RESHAPE.** Keep the DP engine, the attacks and the public log. They are the strongest module anyone has proposed. Three things must change for it to win.
+
+**1. The score problem.** The HEALTH-S2 scorecard averages three tasks, and two of them need a row-level `ed_visits` table. Release only `dp_answers.csv` and the scorecard shows no privacy score and about 0.23 utility, so the slide has no official number. Fix: also release a synthetic `ed_visits` built from the same DP histograms. "We never share the data" still holds, and the scorer treats it as synthetic (baseline B4 scored privacy 1.00 that way). Test both variants with one scorecard run on Friday night, before the vote.
+
+**2. Hours where the points are.** The engine, attacks, log and scorecard earn points. The LLM agent, wallet, UI and media vision do not, and they cost two people their Saturday. Use fixed question templates with a validator, keep the LLM behind a switch and demo offline. Wallet: one slide, called "privacy budget receipt". Media and political vision: one sentence, framed as counter-disinformation research with targeting blocked.
+
+**3. Beating B3** (0.69 utility at epsilon 1) is doable for one person in a day: give more budget to the small weekly counts and less to the large monthly ones, raise the per-patient cap above 4, put every parameter on the slide. Estimated 0.78 to 0.80, a target from the data sizes, not a run.
+
+**On the options in section 3.** Option B (hybrid, plus the synthetic release from point 1) covers all five demo items. Option A alone leaves demo items 1 to 3 hollow and loses to candidate A in `2026-11-06-build-idea-candidates.md`. Either way the dataset is health; the scenario is the team's call.
+
+Not checked: no scorecard was run; the differencing attack on `published_weekly_stats.csv` was not tried; the venue network for an API is unknown.
 
 ---
 
