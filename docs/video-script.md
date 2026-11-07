@@ -32,11 +32,11 @@ The hospital's data steward signs the policy that sets the risk limits. Change o
 
 [results/detect-semantic/e2_eu_test.json]
 
-Our word lists know Finnish names, so a German surname looks harmless to them. A small language model on the laptop catches those, and no data leaves it. On fake Czech tables it never saw, letting it label raised the score from 0.60 to 0.77. Today it only flags columns for a person to check, and on those tables all 28 flags were real mistakes. We expect more training data to help.
+Our word lists know Finnish names, so a German surname looks harmless to them. A small language model on the laptop catches those, and no data leaves it. On fake Czech tables it never saw, letting it label raised the score from 0.60 to 0.77. Today it only flags columns for a person to check, and on those tables all 28 flags were real mistakes. The build does not wait for that check. Both the word lists and the model come from made-up data, so a real hospital would rebuild the lists and retrain the model on its own data first.
 
 [results/health-s1-build/checks/informed_attacker.json]
 
-Still open: knowing a visit's diagnosis group, age range, town and hour singles out one visit in ten, 93 percent correctly. Our detector also mislabels triage, how urgent a visit is, as plain, so we count it as known, and then 15 percent of visits stand out. The signature shows which policy was used. Nobody independent has checked our work, and nothing controls the data after it leaves. These scores are our own, separate from official judging.
+Still open: knowing a visit's diagnosis group, age range, town and hour singles out one visit in ten, 93 percent correctly. Our detector also mislabels triage, how urgent a visit is, as plain, so we count it as known, and then 15 percent of visits stand out. The signature shows which policy was used. Two releases that each pass on their own can still be combined by whoever holds both, until people stand out again. We do not test for that. Today only a secure processing room and a data-use agreement forbid it. Nobody independent has checked our work. These scores are our own, separate from official judging.
 
 [attribution card: TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0)]
 
@@ -60,7 +60,8 @@ Still open: knowing a visit's diagnosis group, age range, town and hour singles 
 - One visit in ten (0.0971), 93 percent of them correctly (0.9294): `results/health-s1-build/checks/informed_attacker.json`.
 - Triage a detector error (catalogue sensitive_attribute, predicted non_sensitive): `results/detect/health.json` (errors). 15 percent after the repair (0.1547, line not met): `contracts/HEALTH-S1.json` (triage and arrival_ts reasons).
 - Attribution wording: `AGENTS.md`.
+- The three spoken limitations (releases combined, review flag does not stop the build, word lists and model from made-up data): `context/proving-ground/docs/LIMITATIONS.md`.
 
 Numbers are rounded for speech. The scorecard is our own self-assessment and is separate from the official judging score. The 0.60 to 0.77 score is from the model labelling on its own (hybrid mode); the shipped default is advisor mode, where it only flags.
 
-<!-- spoken words: 397 (counted without the heading, the intro line, screen cues and the sources section) -->
+<!-- spoken words: 457 (counted without the heading, the intro line, screen cues and the sources section) -->
