@@ -83,7 +83,7 @@ def main(argv=None):
     elif a.cmd == "redteam":
         rep = redteam.run(a.protected, a.original, contract.load(a.contract), Path(a.out).parent, a.truth, a.adversary, a.label, a.attack_specs)
         redteam.write(rep, a.out)
-        print(f"gate {rep['gate']}: " + ", ".join(f"{k} {v['value']}" for k, v in rep["attacks"].items()))
+        print(f"gate {rep['gate']}: " + ", ".join(f"{k} {redteam.shown(v)}" for k, v in rep["attacks"].items()))
     else:
         score.run(a.original, a.protected, a.scenario, a.out, a.baseline, a.contract, a.pets_eval, a.proving_ground)
         print(f"wrote score results to {a.out}")
