@@ -59,6 +59,18 @@ The target was macro-F1 above 0.65, the organisers' rule baseline B1 (`results/d
 
 The same detector labelled the organisers' unlabelled HR export: 26 columns in `results/detect/unseen_field_labels.csv`, format `column,privacy_role,subtype`. The organisers hold the answers, so we have no score for it.
 
+**Work in progress: a multilingual model for the columns the word lists cannot place** (branch `feat/semantic-types`, `plans/2026-11-07-eu-column-types.md`). The word lists know Finnish names and towns; a German surname or a Polish occupation falls through to "category", which is treated as harmless. A small multilingual sentence encoder (`intfloat/multilingual-e5-small`, MIT licence, runs offline on CPU) plus a classifier head trained only on fake data gives such columns one of ten types with calibrated probabilities. A word-list match always stands; the model only labels the fall-through columns, and a strong disagreement prints a warning and lands in `needs_review.csv`. Results, development data first and a test split run once (`results/detect-semantic/SPLIT.md`):
+
+| Check (test split) | Word lists only | Word lists + model |
+|---|---|---|
+| Fake tables from countries never trained on, macro-F1 | cs 0.5963, pt 0.5553, hu 0.5053 | cs 0.7709, pt 0.6976, hu 0.6806 (`results/detect-semantic/e2_eu_test.json`) |
+| Name, address, town, occupation and similar columns labelled harmless there | - | 0 in each country (`results/detect-semantic/e2_eu_test.json`) |
+| Calibration error (gap between stated and actual confidence) | - | 0.0218 (`results/detect-semantic/e3_calibration_test.json`) |
+| Proving-ground held-out macro-F1: health, public_admin, customer_service | 0.8202, 0.7241, 0.7821 | 0.7879, 0.7084, 0.7786 (`results/detect-semantic/e1_proving_ground_test.json`) |
+| Detect time, all nine datasets, laptop CPU | 22.1 s | 59.8 s (`results/detect-semantic/e5_cost.json`) |
+
+The last proving-ground row is a miss: the model read lab test codes and a permit type as place or organisation names, confidently, so no warning was raised. That is why `main` keeps the word lists. Limitations: the model is trained on fake data only (Faker and word lists from an open model on Featherless; no real or proving-ground value left the laptop); a word-list match is trusted without question; number formats (phone, national ID, licence plate) are not among its types; warnings do not stop a build.
+
 ### 2. PET per type, selected by the tool
 
 `python -m pets_transformer.cli select --scenario HEALTH-S1` writes `contracts/HEALTH-S1.json` itself. Every column gets a ladder of candidate PETs (privacy-enhancing techniques) for its detected type, most private first; the selector keeps the first candidate under which every required task stays within 0.05 of a release with exact values, measured with the organisers' utility code. The reason in each contract line holds those scores. A second pass then scores every kept quasi-identifier again on the release after the k repair and moves it one rung more private when the tasks keep at least the same mean score, so the selector never keeps a column so fine that the repair wipes it out; on HEALTH-S1 nothing moved. Evidence: `results/selection/HEALTH-S1.json`.
@@ -143,6 +155,8 @@ Source for this release: `results/health-s1-build/redteam.json`. The gate runs i
 ## How to run
 
 Install once, from the repo root: create `.venv` at the repo root, install the organisers' `pets-eval` into it (`uv pip install --python .venv/bin/python -e data/proving-ground/toolkit`, see `context/pets-eval-howto.md`), then install this package into it with `uv pip install --python .venv/bin/python -e .`. The proving-ground data must be in place (`data/README.md`).
+
+Optional, the column-type model (branch `feat/semantic-types`): `uv pip install --python .venv/bin/python -e ".[semantic]"`, then download the encoder once (471 MB, the only network call): `.venv/bin/python -m pets_transformer.semantic.model --download`. With it installed, `detect` and `build` take `--semantic hybrid` (the default when the model is present) or `--semantic lexicon` (word lists only; also set by `PETS_SEMANTIC=lexicon`). Without it, both run on the word lists and print one warning. Training and evaluation: `scripts/semantic/TRAINING.md` and `scripts/semantic/evaluate.py`.
 
 One command does everything for the health scenario:
 
