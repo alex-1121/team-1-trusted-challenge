@@ -36,3 +36,13 @@ def test_rewrite_paths():
 def test_own_k():
     df = pd.DataFrame({"a": ["x"] * 6 + ["y"] * 3 + ["z"], "b": ["1"] * 10})
     assert sc.own_k(df, ["a", "b"]) == (0.4, 1)
+
+
+def test_summary_none_scores_and_zero_risk_still_names_attacker():
+    card = {**CARD, "utility": [{"id": "H-U2", "description": "LOS", "score": None}],
+            "risk_components": {"ed_visits: records with k<5": 0.0, "ed_visits: linkage re-identification": None}}
+    md = sc.build_summary(card, BASE, (0.0, 5), ["sex"], "S")
+    assert "| H-U2 | LOS | 1.0000 | not evaluated |" in md
+    assert "linkage re-identification, was not evaluated" in md
+    assert "Attacker model: the toolkit's shipped attackers only" in md and "dictionary attack" in md
+    assert "Stronger attackers" in md and "were not tested" in md

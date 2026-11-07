@@ -37,7 +37,7 @@ Every number is copied from scorecard.json or computed by `score`. self-assessme
 
 ed_visits, records with k<5, is 0.1817: 18.2% of the records share their quasi-identifier combination with fewer than 5 rows, so an attacker who knows those attributes about a person can narrow the match to a handful of rows or one.
 
-These figures come from the toolkit's shipped attackers only; a stronger attacker is not covered.
+Attacker model: the toolkit's shipped attackers only. Attacks run: linkage re-identification with the shipped attacker files, a dictionary attack on hashed columns, a direct-identifier pattern scan, and k over the quasi-identifiers in the field catalogue. Stronger attackers (more background knowledge, other outside data) were not tested.
 
 ## Scores
 

@@ -31,7 +31,7 @@ def own_k(df, cols):
 
 
 def _f(x):
-    return f"{x:.4f}"
+    return "not evaluated" if x is None else f"{x:.4f}"
 
 
 def _row(cells):
@@ -59,12 +59,16 @@ def build_summary(card, baseline, k_own, k_cols, scenario):
     out += ["", "## Residual risk", ""]
     sentences = []
     for name, v in card["risk_components"].items():
-        if v > 0:
-            table, comp = name.split(": ", 1)
+        table, comp = name.split(": ", 1)
+        if v is None:
+            sentences.append(f"{table}, {comp}, was not evaluated by the scorer.")
+        elif v > 0:
             sentences.append(f"{table}, {comp}, is {v}: " + MEANING.get(comp, "{v:.1%} of this risk remains.").format(v=v))
     out.append(" ".join(sentences) if sentences else "No risk component is above zero.")
     out.append("")
-    out.append("These figures come from the toolkit's shipped attackers only; a stronger attacker is not covered.")
+    out.append("Attacker model: the toolkit's shipped attackers only. Attacks run: linkage re-identification with the shipped attacker files, "
+               "a dictionary attack on hashed columns, a direct-identifier pattern scan, and k over the quasi-identifiers in the field catalogue. "
+               "Stronger attackers (more background knowledge, other outside data) were not tested.")
     out += ["", "## Scores", "", f"- Privacy {s['privacy']}, utility {s['utility']}, composite {s['composite']} ({s['label']})."]
     if b:
         out.append(f"- Before: privacy {b['privacy']}, utility {b['utility']}, composite {b['composite']}.")
