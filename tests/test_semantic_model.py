@@ -66,12 +66,18 @@ def test_tiny_column_returns_none():
 def test_unavailable_model_falls_back(tmp_path, monkeypatch, capsys):
     assert sm.load_model(tmp_path) is None
     assert capsys.readouterr().err.count("\n") == 1
-    monkeypatch.setattr(semantic, "available", lambda: False)
-    assert semantic.resolve_mode("hybrid") == "lexicon"
-    monkeypatch.setattr(semantic, "available", lambda: True)
     monkeypatch.delenv("PETS_SEMANTIC")
-    assert semantic.resolve_mode(None) == "advisor"  # with a model, the default never changes a label
-    assert semantic.resolve_mode("hybrid") == "hybrid"
+    none, some = (lambda: None), (lambda: object())
+    assert semantic.resolve(None, none) == ("lexicon", None)  # unrequested default falls back
+    with pytest.raises(semantic.ModelUnavailable):
+        semantic.resolve("hybrid", none)  # a requested mode never silently becomes lexicon
+    monkeypatch.setenv("PETS_SEMANTIC", "advisor")
+    with pytest.raises(semantic.ModelUnavailable):
+        semantic.resolve(None, none)
+    monkeypatch.delenv("PETS_SEMANTIC")
+    assert semantic.resolve(None, some)[0] == "advisor"  # with a model, the default never changes a label
+    assert semantic.resolve("hybrid", some)[0] == "hybrid"
+    assert semantic.resolve("lexicon", some) == ("lexicon", None)  # lexicon never loads the model
 
 
 def test_env_mode_is_read(monkeypatch):

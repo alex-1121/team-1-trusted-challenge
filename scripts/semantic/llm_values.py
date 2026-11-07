@@ -14,6 +14,7 @@ import json
 import os
 import re
 import sys
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
@@ -118,7 +119,7 @@ def main(argv=None) -> None:
     langs = languages()
     todo = sorted(langs) if a.all else a.langs
     OUT.mkdir(exist_ok=True)
-    tokens = [0, 0]
+    tokens, lock = [0, 0], threading.Lock()
 
     def one(code):
         name, country = langs[code]
@@ -130,8 +131,9 @@ def main(argv=None) -> None:
             try:
                 text, usage = ask(client, a.model, prompt(kind, name, country))
                 data[kind] = clean(kind, parse(text))
-                tokens[0] += usage.prompt_tokens
-                tokens[1] += usage.completion_tokens
+                with lock:  # workers run in threads; += on a shared list is not atomic
+                    tokens[0] += usage.prompt_tokens
+                    tokens[1] += usage.completion_tokens
             except Exception as e:  # noqa: BLE001 (keep what we have; a rerun fills the gap)
                 print(f"{code} {kind}: FAILED {type(e).__name__}: {str(e)[:120]}", file=sys.stderr, flush=True)
                 continue
