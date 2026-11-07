@@ -1,79 +1,66 @@
-# Demo video script (under 2 minutes)
+# Demo video script
 
-English narration, first person plural, about 300 spoken words. Screen cues are in brackets and are not spoken. Every number is followed, below the script, by the file it comes from.
+Spoken English, about two minutes, read by us in first person plural. Lines in square brackets are screen cues and are not spoken.
 
-## Script
+[title card]
 
-**The problem (10 s)**
+A hospital wants to share emergency room records with researchers. TrustED protects the data before it leaves, picks each column's protection by measuring, and refuses a release that an attack breaks.
 
-[Title card: TrustED PETs Transformer, then `demo/the-er-register.html`: the raw sheet of patient records]
+[results/detect/health.json]
 
-Hospitals hold data researchers need. Hand it over as it is and you expose patients. Blank everything and the research dies.
+It reads each column and labels it: does it name a person, or only help pick someone out? On the hospital test tables three in four labels are right.
 
-**The twist: the official score was wrong (25 s)**
+[contracts/HEALTH-S1.json]
 
-[results/redteam/before-7cf541b.json next to the earlier scorecard]
+Then it tries every way to hide a column: drop it, keep only the hour or the month, swap names for codes. A way passes if the researchers' five questions still get their answers and under 5 percent of visits sit in a group of fewer than five lookalikes. It keeps the most useful way that passes. Date plus hour exposes almost every visit, so it keeps the hour.
 
-Our first release scored 0.97 on the organisers' scorecard, with linkage risk zero. Then we attacked it ourselves. We had dropped the arrival date and kept only the hour. But the visit numbers run in arrival order. Sort by them, start a new day whenever the hour goes back, and every date returns. With those dates, ten patients from local news were named, each one correctly, with their diagnosis.
+[demo/the-er-register.html]
 
-**The tool (50 s)**
+Names and phone numbers go, visit numbers become keyed codes, rows are shuffled, and the 3,746 visits still easy to pick out are coarsened until every group has at least five.
 
-[Terminal: python -m pets_transformer.cli build --scenario HEALTH-S1]
+[results/health-s1-build/summary.md]
 
-So now the tool picks its own protection and attacks its own output before anything ships. One command.
+All 46,398 visits stay in. On the organisers' scorer, against its own attackers, privacy rises from 0.17 to 1.0 and usefulness drops from 1.0 to 0.97.
+
+[results/redteam/before-7cf541b.json]
+
+We attacked our own earlier release. Row order gave back almost every hidden date, and 10 of 220 news reports named the right patient. Keyed codes and shuffled rows fixed that. Now no attack works, and one that did would stop the release.
 
 [policy/HEALTH-S1.policy.json and its signature, then the build refusing after one threshold is changed]
 
 The hospital's data steward signs the policy that sets the risk limits. Change one number and the build stops.
 
-[Detector labels]
+[results/detect-semantic/e2_eu_test.json]
 
-[`demo/the-er-register.html`: the blue scan redacts the sheet]
+Our word lists know Finnish names, so a German surname looks harmless to them. A small language model on the laptop catches those, and no data leaves it. On fake Czech tables it never saw, letting it label raised the score from 0.60 to 0.77. Today it only flags columns for a person to check, and on those tables all 28 flags were real mistakes. We expect more training data to help.
 
-Detect. It labels every column from its values alone, macro-F1 0.82 on the held-out health tables.
+[results/health-s1-build/checks/informed_attacker.json]
 
-[contracts/HEALTH-S1.json, one reason line]
+Still open: knowing a visit's diagnosis group, age range, town and hour singles out one visit in ten, 93 percent correctly. Our detector also mislabels triage, how urgent a visit is, as plain, so we count it as known, and then 15 percent of visits stand out. The signature shows which policy was used. Nobody independent has checked our work, and nothing controls the data after it leaves. These scores are our own, separate from official judging.
 
-Select. For each column it tries every technique. It measures how much each one helps the research and how many people it still leaves easy to pick out, then keeps the most useful one under a stated safety line. On the visits table the line does not hold once triage is in, and the tool says so instead of hiding it. Arrival time: month and week break the arrival curve, hour of day keeps it. Sex, most vital signs and the notes go, because no analysis needs them.
-
-[repair_search.md]
-
-Protect and repair. Visit numbers become keyed tokens, rows are shuffled. Then only the rows still at risk are coarsened, until every group has at least five visits and two diagnoses.
-
-[results/health-s1-build/redteam.json: gate pass]
-
-Attack. Our attacks run again. Dates rebuilt: almost none. Patients named: zero. Only then is the release written. Keep a patient key, as the organisers suggest, and the gate refuses: a third of patients are unique by their visit pattern.
-
-**Before and after (20 s)**
-
-[scorecard.html]
-
-Privacy goes from 0.17 raw to 1.0. The composite rises from 0.28 to 0.99, above our earlier 0.97, and now the number holds up. The same command protects the data for an AI vendor and an education vendor without a single hand-written rule.
-
-**Honest limits (10 s)**
-
-[docs/guarantee-and-residual-risk.md]
-
-Someone who already knows a patient's diagnosis can still find one visit in ten. This release is for a trusted research environment, not for the public. The signature shows which policy was used. Nobody independent has checked our work, and nothing controls the data after it leaves.
-
-**Close (5 s)**
-
-[`demo/the-er-register.html`: the folded release is addressed, postmarked and sent; end card. Then the attribution card]
-
-TrustED PETs Proving Ground 2026, synthetic data by Since AI ry, CC BY 4.0.
+[attribution card: TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0)]
 
 ## Sources of the spoken numbers
 
-- Earlier release 0.97 (composite 0.9709), linkage zero: `results/health-s1-build/scorecard.json` at commit 7cf541b.
-- Every date returns (share_rows_date_rebuilt 1.0), ten patients named correctly (10 of 220 clips): `results/redteam/before-7cf541b.json`.
-- macro-F1 0.82 (0.8202): `results/detect/health.json`. Not a clean held-out score: the wide-sample rule was narrowed after seeing held-out results (`results/detect/RESULTS.md`).
-- Month and week break the arrival curve (H-U8 0.0), hour of day keeps it (1.0): `contracts/HEALTH-S1.json` (arrival_ts reason), `results/selection/HEALTH-S1.json`.
-- At least five visits and two diagnoses per group: `results/health-s1-build/scorecard.json` (min k 5), `results/health-s1-build/checks/l_diversity.json`.
-- Dates rebuilt almost none (0.0003), patients named zero: `results/health-s1-build/redteam.json`.
-- A third of patients unique with a patient key (0.2935): `results/health-s1-pseudonym-build/redteam.json`.
-- Privacy 0.17 raw (0.1716), composite 0.28 raw (0.2752): `baseline-scores/health_HEALTH-S1_research-env_raw.json`.
-- Privacy 1.0, composite 0.99 (0.9866): `results/health-s1-build/scorecard.json`.
-- AI vendor and education vendor: `results/health-s3-build/`, `results/edu-s2-build/`.
-- One visit in ten (0.0971): `results/health-s1-build/checks/informed_attacker.json`; closed at composite 0.9647 by `contracts/HEALTH-S1-informed.json` (`results/health-s1-informed-build/`).
+- About three in four labels right (accuracy 0.7358, 53 columns over the four health tables): `results/detect/health.json`.
+- Five questions (required tasks H-U2, H-U4, H-U6, H-U7, H-U8): `contracts/HEALTH-S1.json` (required_tasks), `results/health-s1-build/summary.md`.
+- Fewer than five lookalikes (k 5): `contracts/HEALTH-S1.json` (fitness block, k).
+- Under 5 percent (risk_line 0.05): `contracts/HEALTH-S1.json`, `results/selection/HEALTH-S1.v2.json` (arrival_ts entry).
+- Date plus hour exposes almost every visit (risk 0.999), hour of day chosen (risk 0.0227): `results/selection/HEALTH-S1.v2.json` (arrival_ts entry), `contracts/HEALTH-S1.json` (arrival_ts reason).
+- Names and phone numbers dropped, visit numbers keyed tokens, rows shuffled: `contracts/HEALTH-S1.json` (column rules), `README.md` ("protect writes the release with the chosen order (tokens, shuffled rows, repair)").
+- 3,746 visits coarsened until every group has at least five (at_risk_before 3746, at_risk_after 0): `results/health-s1-build/repair_report.json`.
+- 46,398 visits: `contracts/HEALTH-S1.json` (fitness, ed_visits n_rows), `results/health-s1-build/repair_report.json` (rows, rows_released).
+- Privacy 0.17 raw (0.1716), usefulness 1.0 raw: `baseline-scores/health_HEALTH-S1_research-env_raw.json`.
+- Privacy 1.0, usefulness 0.97 (0.971), against the scorer's own attackers only: `results/health-s1-build/scorecard.json`, `results/health-s1-build/summary.md` ("the toolkit's shipped attackers only").
+- Almost every hidden date returns from row order (file order 0.9975; 1.0 sorted by visit_id), 10 of 220 reports name the right patient: `results/redteam/before-7cf541b.json`.
+- No attack works (all five pass, gate pass; dates rebuilt 0.0003, reports 0.0): `results/health-s1-build/redteam.json`.
+- Signed policy sets the risk limits, build stops when a threshold changes: `policy/HEALTH-S1.policy.json` and its signature, `plans/2026-11-07-release-gate.md`.
+- Label score 0.60 to 0.77 on Czech tables is macro-F1 (0.5963 to 0.7709), word lists alone then word lists plus model labelling (hybrid mode, test split run once on commit 68aa116); the detector line above uses accuracy, so the two are not comparable: `results/detect-semantic/e2_eu_test.json`, `results/detect-semantic/SPLIT.md`.
+- 28 flags, all real mistakes, on the locked fake EU tables only (advisor mode, `eu_locked`): `results/detect-semantic/advisor.json`. On the hospital tables the same advisor raised 7 flags, 3 real and 4 false alarms; over the three held-out proving-ground datasets 11 flags, 5 real (`datasets.health`, `datasets.public_admin`, `datasets.customer_service` in the same file).
+- One visit in ten (0.0971), 93 percent of them correctly (0.9294): `results/health-s1-build/checks/informed_attacker.json`.
+- Triage a detector error (catalogue sensitive_attribute, predicted non_sensitive): `results/detect/health.json` (errors). 15 percent after the repair (0.1547, line not met): `contracts/HEALTH-S1.json` (triage and arrival_ts reasons).
+- Attribution wording: `AGENTS.md`.
 
-Numbers are rounded for speech; the screen shows the full values. The scorecard is our own self-assessment and is separate from the official judging score.
+Numbers are rounded for speech. The scorecard is our own self-assessment and is separate from the official judging score. The 0.60 to 0.77 score is from the model labelling on its own (hybrid mode); the shipped default is advisor mode, where it only flags.
+
+<!-- spoken words: 397 (counted without the heading, the intro line, screen cues and the sources section) -->
