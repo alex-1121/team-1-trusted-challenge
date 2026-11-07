@@ -30,7 +30,7 @@ Detect. It labels every column from its values alone, macro-F1 0.82 on the held-
 
 [contracts/HEALTH-S1.json, one reason line]
 
-Select. For each column it tries techniques from most private to least, and keeps the first one the research still works with. Arrival time: month, week, both break the arrival curve, hour of day keeps it. Sex, most vital signs and the notes go, because no analysis needs them.
+Select. For each column it tries every technique. It measures how much each one helps the research and how many people it still leaves easy to pick out, then keeps the most useful one under a stated safety line. On the visits table the line does not hold once triage is in, and the tool says so instead of hiding it. Arrival time: month and week break the arrival curve, hour of day keeps it. Sex, most vital signs and the notes go, because no analysis needs them.
 
 [repair_search.md]
 
