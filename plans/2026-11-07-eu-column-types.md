@@ -154,6 +154,9 @@ Committed as JSON in `results/detect-semantic/` (AGENTS.md: every published numb
 - Covers the types the word lists covered. National IDs, phones and postcodes outside Finland are the next step.
 - Calibration is measured on countries we generated; a country or format we never generated can still fool it, which is what the warning is for.
 - Warnings do not block a release. Someone must read them.
+- Values tell the kind of data, not its role in the record. A column of towns is towns, but nothing in the values says birth town or home town; a column of dates does not say account created or last updated. No model or word list can recover that from values alone, and neither could a person. Some hints exist (birth dates span decades and fall mostly before 2010, which the detector already uses; last-update dates bunch near the export date and are never before the creation date in the same row; a home town tends to agree with the postcode), but they are statistical, not proof.
+- What we do about it: types are only as fine as values can support (MUNICIPALITY, not BIRTH_MUNICIPALITY). Most such pairs get the same protection anyway (birth town and home town are both places to generalise; created and updated are both timestamps to coarsen). Where the finer meaning would change the protection (a birth date against an ordinary date) and the values cannot settle it, the more protective label wins.
+- The fine meaning comes from the header when there is one. A wrong header (it says `birth_city`, the values are surnames) is caught by the values, and that is the dangerous case. A missing header loses the fine meaning; we protect by kind. Checking headers against values, and rules across columns (updated never before created), are the next step.
 
 ## Left to the builder
 
