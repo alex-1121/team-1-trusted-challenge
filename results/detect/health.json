@@ -1,0 +1,224 @@
+{
+  "n_fields": 53,
+  "n_predicted": 53,
+  "accuracy": 0.717,
+  "macro_f1": 0.8086,
+  "sensitive_recall": 0.7209,
+  "per_role": {
+    "direct_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 6
+    },
+    "quasi_identifier": {
+      "precision": 0.9167,
+      "recall": 0.7333,
+      "f1": 0.8148,
+      "support": 15
+    },
+    "sensitive_attribute": {
+      "precision": 0.8571,
+      "recall": 0.375,
+      "f1": 0.5217,
+      "support": 16
+    },
+    "technical_identifier": {
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1": 0.8889,
+      "support": 4
+    },
+    "free_text": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 2
+    },
+    "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 4
+    },
+    "non_sensitive": {
+      "precision": 0.2941,
+      "recall": 0.8333,
+      "f1": 0.4348,
+      "support": 6
+    }
+  },
+  "confusion": {
+    "direct_identifier": {
+      "direct_identifier": 6,
+      "free_text": 0,
+      "non_sensitive": 0,
+      "quasi_identifier": 0,
+      "record_key": 0,
+      "sensitive_attribute": 0,
+      "technical_identifier": 0
+    },
+    "free_text": {
+      "direct_identifier": 0,
+      "free_text": 2,
+      "non_sensitive": 0,
+      "quasi_identifier": 0,
+      "record_key": 0,
+      "sensitive_attribute": 0,
+      "technical_identifier": 0
+    },
+    "non_sensitive": {
+      "direct_identifier": 0,
+      "free_text": 0,
+      "non_sensitive": 5,
+      "quasi_identifier": 3,
+      "record_key": 0,
+      "sensitive_attribute": 9,
+      "technical_identifier": 0
+    },
+    "quasi_identifier": {
+      "direct_identifier": 0,
+      "free_text": 0,
+      "non_sensitive": 0,
+      "quasi_identifier": 11,
+      "record_key": 0,
+      "sensitive_attribute": 1,
+      "technical_identifier": 0
+    },
+    "record_key": {
+      "direct_identifier": 0,
+      "free_text": 0,
+      "non_sensitive": 0,
+      "quasi_identifier": 0,
+      "record_key": 4,
+      "sensitive_attribute": 0,
+      "technical_identifier": 0
+    },
+    "sensitive_attribute": {
+      "direct_identifier": 0,
+      "free_text": 0,
+      "non_sensitive": 1,
+      "quasi_identifier": 0,
+      "record_key": 0,
+      "sensitive_attribute": 6,
+      "technical_identifier": 0
+    },
+    "technical_identifier": {
+      "direct_identifier": 0,
+      "free_text": 0,
+      "non_sensitive": 0,
+      "quasi_identifier": 1,
+      "record_key": 0,
+      "sensitive_attribute": 0,
+      "technical_identifier": 4
+    }
+  },
+  "subtype_accuracy": 0.6226,
+  "errors": [
+    {
+      "dataset": "health",
+      "table": "ed_visits",
+      "column": "arrival_mode",
+      "privacy_role": "quasi_identifier",
+      "predicted": "non_sensitive"
+    },
+    {
+      "dataset": "health",
+      "table": "ed_visits",
+      "column": "ambulance_unit",
+      "privacy_role": "quasi_identifier",
+      "predicted": "technical_identifier"
+    },
+    {
+      "dataset": "health",
+      "table": "ed_visits",
+      "column": "triage",
+      "privacy_role": "sensitive_attribute",
+      "predicted": "non_sensitive"
+    },
+    {
+      "dataset": "health",
+      "table": "ed_visits",
+      "column": "icd10_secondary",
+      "privacy_role": "sensitive_attribute",
+      "predicted": "non_sensitive"
+    },
+    {
+      "dataset": "health",
+      "table": "ed_visits",
+      "column": "resp_rate",
+      "privacy_role": "sensitive_attribute",
+      "predicted": "quasi_identifier"
+    },
+    {
+      "dataset": "health",
+      "table": "ed_visits",
+      "column": "temp_c",
+      "privacy_role": "sensitive_attribute",
+      "predicted": "non_sensitive"
+    },
+    {
+      "dataset": "health",
+      "table": "ed_visits",
+      "column": "los_minutes",
+      "privacy_role": "sensitive_attribute",
+      "predicted": "non_sensitive"
+    },
+    {
+      "dataset": "health",
+      "table": "ed_visits",
+      "column": "disposition",
+      "privacy_role": "sensitive_attribute",
+      "predicted": "non_sensitive"
+    },
+    {
+      "dataset": "health",
+      "table": "ed_visits",
+      "column": "readmit_30d",
+      "privacy_role": "sensitive_attribute",
+      "predicted": "non_sensitive"
+    },
+    {
+      "dataset": "health",
+      "table": "lab_results",
+      "column": "value",
+      "privacy_role": "sensitive_attribute",
+      "predicted": "non_sensitive"
+    },
+    {
+      "dataset": "health",
+      "table": "lab_results",
+      "column": "abnormal_flag",
+      "privacy_role": "sensitive_attribute",
+      "predicted": "non_sensitive"
+    },
+    {
+      "dataset": "health",
+      "table": "published_weekly_stats",
+      "column": "week",
+      "privacy_role": "quasi_identifier",
+      "predicted": "non_sensitive"
+    },
+    {
+      "dataset": "health",
+      "table": "published_weekly_stats",
+      "column": "age_band",
+      "privacy_role": "quasi_identifier",
+      "predicted": "non_sensitive"
+    },
+    {
+      "dataset": "health",
+      "table": "published_weekly_stats",
+      "column": "diagnosis_group",
+      "privacy_role": "sensitive_attribute",
+      "predicted": "non_sensitive"
+    },
+    {
+      "dataset": "health",
+      "table": "published_weekly_stats",
+      "column": "visits",
+      "privacy_role": "non_sensitive",
+      "predicted": "sensitive_attribute"
+    }
+  ]
+}

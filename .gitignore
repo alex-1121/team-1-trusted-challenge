@@ -8,6 +8,9 @@ data/proving-ground
 # Bulky outputs are regenerated; scorecard JSON and HTML under results/ are committed as evidence
 out/
 results/**/*.csv
+# Detector labels read by the wiring ticket and the submission
+!results/detect/health_labels.csv
+!results/detect/unseen_field_labels.csv
 results/**/*.parquet
 # Python
 __pycache__/
