@@ -62,7 +62,7 @@ Still open: knowing a visit's diagnosis group, age range, town and hour singles 
 - One visit in ten (0.0971), 93 percent of them correctly (0.9294): `results/health-s1-build/checks/informed_attacker.json`.
 - Triage a detector error (catalogue sensitive_attribute, predicted non_sensitive): `results/detect/health.json` (errors). 15 percent after the repair (0.1547, line not met): `contracts/HEALTH-S1.json` (triage and arrival_ts reasons).
 - Attribution wording: `AGENTS.md`.
-- The three spoken limitations (releases combined, review flag does not stop the build, word lists and model from made-up data): `context/proving-ground/docs/LIMITATIONS.md`.
+- The three spoken limitations (releases combined, review flag does not stop the build, word lists and model from made-up data): `LIMITATIONS.md`.
 
 Numbers are rounded for speech. The scorecard is our own self-assessment and is separate from the official judging score. The 0.60 to 0.77 score is from the model labelling on its own (hybrid mode); the shipped default is advisor mode, where it only flags.
 
