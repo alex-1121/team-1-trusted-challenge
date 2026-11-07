@@ -91,6 +91,10 @@
         "pet": "drop",
         "reason": "Direct identifier; no required task needs it (attacker: record linkage by name, phone or address)."
       },
+      "quasi_identifier": {
+        "pet": "drop",
+        "reason": "Quasi-identifier the contract does not name; dropped so it cannot widen the linkage key (attacker: linkage to public directory)."
+      },
       "technical_identifier": {
         "pet": "drop",
         "reason": "Device, staff or foreign-key code; no required task needs it (attacker: linkage)."
@@ -116,6 +120,10 @@
       "direct_identifier": {
         "pet": "drop",
         "reason": "Direct identifier; no required task needs it (attacker: record linkage by name, phone or address)."
+      },
+      "quasi_identifier": {
+        "pet": "drop",
+        "reason": "Quasi-identifier the contract does not name; dropped so it cannot widen the linkage key (attacker: linkage to public directory)."
       },
       "technical_identifier": {
         "pet": "drop",
