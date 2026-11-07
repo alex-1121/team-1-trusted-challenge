@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-REQUIRED = ("recipient", "purpose", "trust_level", "threat_model", "required_tasks", "tables", "columns")
+REQUIRED = ("scenario", "recipient", "purpose", "trust_level", "threat_model", "required_tasks", "tables", "columns")
 PETS = {"pseudonym", "token", "drop", "hour_of_day", "age_band", "top_n_exact_else_other", "keep",
         "month", "week", "day", "date_hour", "duration", "round_decimals", "prefix"}
 

@@ -1,16 +1,20 @@
-"""The release gate: one test per way a release must be refused, and the verdict over the committed results."""
+"""The release gate and the signed policy: one test per way a release must be refused, and the verdict over the
+committed results. Keys are throwaway ones generated at test time."""
 import json
 import re
+import subprocess
 from pathlib import Path
+from types import SimpleNamespace
 
 import pandas as pd
 import pytest
 from pets_eval.check import scan_path
 
-from pets_transformer import build, cli, protect, redteam, score
+from pets_transformer import build, cli, contract as ct, policy, protect, redteam, repair, score
 
 ROOT = Path(__file__).parent.parent
-FLOOR = build.UTILITY_FLOOR
+SHIPPED = policy.load(ROOT / "policy", "HEALTH-S1")
+T = SHIPPED["attack_thresholds"]
 
 
 def clean():
@@ -28,6 +32,7 @@ def clean():
     joined = {"result": {"min_k": 1}, "for_comparison_k_columns_only": {"min_k": 5},
               "per_join": {"labs": {"result": {"min_k": 1}, "for_comparison_k_columns_only": {"min_k": 5}}}}
     return {
+        "policy": {**json.loads(json.dumps(SHIPPED)), "required_tasks": ["U1", "U2"]},
         "contract": {"tables": tables, "k_target": target},
         "report": {"time_column": "ts", "attacks": attacks},
         "card": {"tables": {"visits": {"status": "released", "k_anonymity": {"min_k": 5}}, "labs": {"status": "released"}, "notes": {"status": "withheld"}},
@@ -37,7 +42,6 @@ def clean():
         "scan": {"totals": {}, "n_files_scanned": 7},
         "csv_files": ["labs.csv", "plan.csv", "rowmap_labs.csv", "rowmap_visits.csv", "visits.csv"],
         "required_tasks": ["U1", "U2"],
-        "utility_floor": FLOOR,
     }
 
 
@@ -72,11 +76,17 @@ def test_join_k_under_the_target_fails_on_any_join():
     assert reasons(ev, "joined k:") == ["joined k: min k with other 1 under 5"]
 
 
+def test_a_join_k_result_that_cannot_be_read_fails():
+    ev = clean()
+    ev["check_results"]["joined_k.json"] = {}
+    assert reasons(ev, "joined k:") == ["joined k: min k with the joined tables not measured"]
+
+
 def test_l_under_the_target_fails_and_l_of_one_is_not_checked():
     ev = clean()
     ev["check_results"]["l_diversity.json"]["result"]["worst_group"]["distinct"] = 1
     assert reasons(ev, "l:") == ["l: fewest distinct values in a group 1 under 2"]
-    ev["contract"]["k_target"]["l"] = 1
+    ev["policy"]["l_min"] = 1
     assert redteam.evaluate(**ev)["gate"] == "pass"
 
 
@@ -97,15 +107,16 @@ def test_l_above_one_without_a_sensitive_column_cannot_pass_silently():
 def test_a_contract_without_k_target_needs_no_check():
     ev = clean()
     del ev["contract"]["k_target"]
-    assert verdict(contract=ev["contract"], check_results={})["gate"] == "pass"
+    ev["policy"].update(k_min=None, l_min=None)
+    assert verdict(policy=ev["policy"], contract=ev["contract"], check_results={})["gate"] == "pass"
 
 
 def test_k_target_without_join_or_sensitive_needs_only_the_informed_attacker():
     ev = clean()
     for key in ("join_flags", "sensitive"):
         del ev["contract"]["k_target"][key]
-    ev["contract"]["k_target"]["l"] = 1
-    assert verdict(contract=ev["contract"], check_results={"informed_attacker.json": {}})["gate"] == "pass"
+    ev["policy"]["l_min"] = 1
+    assert verdict(policy=ev["policy"], contract=ev["contract"], check_results={"informed_attacker.json": {}})["gate"] == "pass"
 
 
 def test_stale_check_file_never_satisfies_a_check(tmp_path, monkeypatch):
@@ -144,7 +155,7 @@ def test_stale_not_run_never_fails_a_check(tmp_path, monkeypatch):
     ("scorer_linkage_band_aware", {"value": 0.0, "detail": {"specs": []}}, "ts", "no attack spec"),
 ])
 def test_attack_with_nothing_to_work_on_is_not_applicable_with_a_reason(name, attack, time_col, why):
-    status, reason = redteam.attack_status(name, attack, time_col)
+    status, reason = redteam.attack_status(name, attack, time_col, T)
     assert status == "not_applicable" and why in reason
 
 
@@ -162,20 +173,25 @@ def test_attack_with_nothing_to_work_on_is_not_applicable_with_a_reason(name, at
     ("plain_hash", {"value": float("nan"), "detail": {}}, "did not run"),
 ])
 def test_attack_that_should_have_run_fails(name, attack, why):
-    status, reason = redteam.attack_status(name, attack, "ts")
+    status, reason = redteam.attack_status(name, attack, "ts", T)
     assert status == "fail" and why in reason
 
 
 def test_measured_zero_on_a_real_attack_is_a_pass():
-    assert redteam.attack_status("news_linkage", {"value": 0.0, "detail": {"clips_with_date_and_hour": 25}}, "ts") == ("pass", None)
+    assert redteam.attack_status("news_linkage", {"value": 0.0, "detail": {"clips_with_date_and_hour": 25}}, "ts", T) == ("pass", None)
     ran = {"value": 0.01, "detail": {"applicable": False, "why": "x", "tables_checked": [{"applicable": True}]}}
-    assert redteam.attack_status("person_fingerprint", ran, "ts") == ("pass", None)
+    assert redteam.attack_status("person_fingerprint", ran, "ts", T) == ("pass", None)
 
 
 def test_an_attack_missing_from_the_report_fails():
     ev = clean()
     del ev["report"]["attacks"]["plain_hash"]
     assert reasons(ev, "attack") == ["attack plain_hash: did not run"]
+
+
+def toy_policy(contract_bytes, **changes):
+    return {**json.loads(json.dumps(SHIPPED)), "scenario": "TOY-S1", "k_min": None, "l_min": None, "no_k_target": "no group to count",
+            "required_tasks": ["U1"], "allowed_contracts": {"default": policy.sha256(contract_bytes)}, **changes}
 
 
 def _toy(tmp_path, folder, ts_rule):
@@ -185,7 +201,7 @@ def _toy(tmp_path, folder, ts_rule):
     n = 40
     pd.DataFrame({"rec": [f"R-{i:03d}" for i in range(n)], "colour": ["red", "blue"] * (n // 2),
                   "ts": [f"2025-01-{1 + i // 8:02d} {3 * (i % 8):02d}:15:00" for i in range(n)]}).to_csv(original / "t.csv", index=False)
-    c = {"recipient": "r", "purpose": "p", "trust_level": "t", "threat_model": "m", "required_tasks": ["U1"],
+    c = {"scenario": "TOY-S1", "recipient": "r", "purpose": "p", "trust_level": "t", "threat_model": "m", "required_tasks": ["U1"],
          "tables": {"t": {"action": "release", "record_id": "rec", "reason": "r"}},
          "columns": {"t": {"rec": {"pet": "token", "params": {"prefix": "T"}, "reason": "r"}, "colour": {"pet": "keep", "reason": "r"}, "ts": {**ts_rule, "reason": "r"}}}}
     labels = pd.DataFrame({"table": ["t"] * 3, "column": ["rec", "colour", "ts"], "privacy_role": ["record_key", "non_sensitive", "quasi_identifier"]})
@@ -198,7 +214,7 @@ def _toy(tmp_path, folder, ts_rule):
 
 def test_hour_column_with_the_adversary_file_missing_fails(tmp_path):
     c, original, prot, specs, truth, adversary = _toy(tmp_path, "health", {"pet": "hour_of_day"})
-    rep = redteam.run(prot, original, c, tmp_path, truth, adversary, specs_path=specs)
+    rep = redteam.run(prot, original, c, tmp_path, T, truth, adversary, specs_path=specs)
     news = rep["attacks"]["news_linkage"]
     assert news["status"] == "fail" and news["pass"] is False and news["value"] is None and rep["gate"] == "fail"
     assert "news clips" in news["reason"] and rep["attacks"]["order_attack"]["status"] in ("pass", "fail")
@@ -208,28 +224,30 @@ def test_scorer_linkage_with_its_adversary_file_missing_fails_and_does_not_crash
     c, original, prot, specs, truth, adversary = _toy(tmp_path, "health", {"pet": "hour_of_day"})
     specs.write_text(json.dumps({"attacks": [{"dataset": "health", "table": "t", "adversary": "gone",
                                               "qis": [{"kind": "exact", "adversary": ["x"], "protected": ["colour"]}]}]}))
-    a = redteam.run(prot, original, c, tmp_path, truth, adversary, specs_path=specs)["attacks"]["scorer_linkage_band_aware"]
+    a = redteam.run(prot, original, c, tmp_path, T, truth, adversary, specs_path=specs)["attacks"]["scorer_linkage_band_aware"]
     assert a["status"] == "fail" and "gone.csv" in a["reason"]
 
 
 def test_attacks_without_their_inputs_fail(tmp_path):
     c, original, prot, *_ = _toy(tmp_path, "health", {"pet": "hour_of_day"})
-    a = redteam.run(prot, original, c, tmp_path)["attacks"]
+    a = redteam.run(prot, original, c, tmp_path, T)["attacks"]
     assert a["news_linkage"]["status"] == a["scorer_linkage_band_aware"]["status"] == "fail"
 
 
 def test_health_clips_are_not_applicable_to_other_data_even_with_an_hour_column(tmp_path):
     c, original, prot, specs, truth, adversary = _toy(tmp_path, "toy", {"pet": "hour_of_day"})
-    a = redteam.run(prot, original, c, tmp_path, truth, adversary, specs_path=specs)["attacks"]["news_linkage"]
+    a = redteam.run(prot, original, c, tmp_path, T, truth, adversary, specs_path=specs)["attacks"]["news_linkage"]
     assert a["status"] == "not_applicable" and "health" in a["reason"]
 
 
 def test_not_applicable_reads_as_not_applicable_in_json_and_on_screen(tmp_path, capsys):
     c, original, prot, specs, truth, adversary = _toy(tmp_path, "toy", {"pet": "month"})
-    cpath, out = tmp_path / "c.json", tmp_path / "redteam.json"
+    cpath, out, pdir = tmp_path / "c.json", tmp_path / "redteam.json", tmp_path / "policies"
     cpath.write_text(json.dumps(c))
+    pdir.mkdir()
+    (pdir / "TOY-S1.policy.json").write_text(json.dumps(toy_policy(cpath.read_bytes())))
     cli.main(["redteam", "--protected", str(prot), "--original", str(original), "--contract", str(cpath), "--out", str(out),
-              "--truth", str(truth), "--adversary", str(adversary), "--attack-specs", str(specs)])
+              "--truth", str(truth), "--adversary", str(adversary), "--attack-specs", str(specs), "--policy-dir", str(pdir)])
     printed = capsys.readouterr().out
     rep = json.loads(out.read_text())
     assert rep["gate"] == "pass" and rep["attacks"]["plain_hash"]["status"] == "pass"
@@ -318,9 +336,24 @@ def test_withdrawn_table_cannot_survive_a_rebuild(tmp_path):
     assert sorted(f.name for f in out.glob("*.csv")) == ["plan.csv"]
 
 
+@pytest.fixture(scope="session")
+def keys(tmp_path_factory):
+    """The steward's and an intruder's throwaway key pairs."""
+    d = tmp_path_factory.mktemp("keys")
+    for name in ("steward", "intruder"):
+        subprocess.run(["ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-C", "test", "-f", str(d / name)], check=True)
+    return d
+
+
+def sign(policy_file, key, namespace=policy.NAMESPACE):
+    Path(f"{policy_file}.sig").unlink(missing_ok=True)  # with no one to answer its prompt, ssh-keygen keeps an old signature and exits 0
+    subprocess.run(["ssh-keygen", "-q", "-Y", "sign", "-f", str(key), "-n", namespace, str(policy_file)], check=True, capture_output=True)
+
+
 @pytest.fixture
-def world(tmp_path, monkeypatch):
-    """A whole build on a toy dataset: real protect, red team and gate; only the organisers' scorecard is faked."""
+def world(tmp_path, monkeypatch, keys):
+    """A whole build on a toy dataset under a signed policy: real protect, red team, gate and ssh-keygen; only the
+    organisers' scorecard is faked."""
     pg = tmp_path / "pg"
     for d in ("data/toy", "data/unseen", "metadata", "truth", "adversary"):
         (pg / d).mkdir(parents=True)
@@ -338,6 +371,12 @@ def world(tmp_path, monkeypatch):
                 "columns": {"t": {"rec": {"pet": "token", "params": {"prefix": "T"}, "reason": "r"}, "colour": {"pet": "keep", "reason": "r"}}}}
     cpath = tmp_path / "toy.json"
     cpath.write_text(json.dumps(contract))
+    pdir = tmp_path / "policies"
+    pdir.mkdir()
+    pfile = pdir / "TOY-S1.policy.json"
+    pfile.write_text(json.dumps(toy_policy(cpath.read_bytes()), indent=2))
+    (pdir / "allowed_signers").write_text(f'{policy.PRINCIPAL} namespaces="{policy.NAMESPACE}" {(keys / "steward.pub").read_text()}')
+    sign(pfile, keys / "steward")
 
     def scorecard(original, protected, scenario, out, baseline=None, contract=None, pets_eval=None):
         return {"tables": {"t": {"status": "released"}, "w": {"status": "withheld"}}, "utility": [{"id": "U1", "score": 1.0}],
@@ -346,52 +385,51 @@ def world(tmp_path, monkeypatch):
     monkeypatch.setattr(build, "BASELINE_DIR", base)
     monkeypatch.setattr(build.score, "run", scorecard)
     out, results, submission = tmp_path / "o", tmp_path / "r", tmp_path / "s"
-    return lambda: build.run("TOY-S1", out=out, results=results, submission=submission, contract_path=cpath), out, results, submission
+
+    def go(contract_path=cpath):
+        return build.run("TOY-S1", out=out, results=results, submission=submission, contract_path=contract_path, policy_dir=pdir)
+    return SimpleNamespace(go=go, out=out, results=results, submission=submission, pdir=pdir, pfile=pfile, cpath=cpath, contract=contract, root=tmp_path)
 
 
 def test_build_copies_only_the_contract_files(world):
-    go, out, results, submission = world
-    (submission / "toy").mkdir(parents=True)
-    (submission / "toy" / "earlier.csv").write_text("x\n1\n")
-    go()
-    assert sorted(f.name for f in (submission / "toy").iterdir()) == ["rowmap_t.csv", "t.csv"]
-    assert (results / "checks" / "not_run.txt").exists()  # no k target: legitimate, and it does not fail the gate
-    assert json.loads((results / "redteam.json").read_text())["gate"] == "pass"
+    (world.submission / "toy").mkdir(parents=True)
+    (world.submission / "toy" / "earlier.csv").write_text("x\n1\n")
+    world.go()
+    assert sorted(f.name for f in (world.submission / "toy").iterdir()) == ["rowmap_t.csv", "t.csv"]
+    assert (world.results / "checks" / "not_run.txt").exists()  # no k target: legitimate, and it does not fail the gate
+    assert json.loads((world.results / "redteam.json").read_text())["gate"] == "pass"
 
 
 def test_stray_csv_with_an_email_is_refused_and_nothing_is_copied(world):
-    go, out, results, submission = world
-    (out / "toy").mkdir(parents=True)
-    (out / "toy" / "old_contacts.csv").write_text("name,email\nTest Person,test.person@example.invalid\n")
+    (world.out / "toy").mkdir(parents=True)
+    (world.out / "toy" / "old_contacts.csv").write_text("name,email\nTest Person,test.person@example.invalid\n")
     with pytest.raises(SystemExit) as e:
-        go()
+        world.go()
     assert "files: unexpected CSV old_contacts.csv" in str(e.value) and "identifier scan: found EMAIL 1" in str(e.value)
-    assert not submission.exists()
-    rep = json.loads((results / "redteam.json").read_text())
+    assert not world.submission.exists()
+    rep = json.loads((world.results / "redteam.json").read_text())
     assert rep["gate"] == "fail" and len(rep["reasons"]) == 2
 
 
 def test_refusal_lists_every_reason(world, monkeypatch):
-    go, out, results, submission = world
     real = build.score.run
 
     def worse(*a, **k):
         return {**real(*a, **k), "utility": [], "scan": None}
     monkeypatch.setattr(build.score, "run", worse)
     with pytest.raises(SystemExit) as e:
-        go()
+        world.go()
     assert "utility: required task U1 not measured" in str(e.value) and "identifier scan: did not run" in str(e.value)
-    assert not submission.exists()
+    assert not world.submission.exists()
 
 
 def test_withdrawn_table_stays_out_of_a_rebuilt_submission(world):
-    go, out, results, submission = world
-    (out / "toy").mkdir(parents=True)
-    (out / "toy" / "w.csv").write_text("rec,note\nR-000,n\n")
-    (out / "toy" / "rowmap_w.csv").write_text("protected_row,original_record_id\n0,R-000\n")
-    go()
-    assert sorted(f.name for f in (out / "toy").glob("*.csv")) == ["plan.csv", "rowmap_t.csv", "t.csv"]
-    assert sorted(f.name for f in (submission / "toy").iterdir()) == ["rowmap_t.csv", "t.csv"]
+    (world.out / "toy").mkdir(parents=True)
+    (world.out / "toy" / "w.csv").write_text("rec,note\nR-000,n\n")
+    (world.out / "toy" / "rowmap_w.csv").write_text("protected_row,original_record_id\n0,R-000\n")
+    world.go()
+    assert sorted(f.name for f in (world.out / "toy").glob("*.csv")) == ["plan.csv", "rowmap_t.csv", "t.csv"]
+    assert sorted(f.name for f in (world.submission / "toy").iterdir()) == ["rowmap_t.csv", "t.csv"]
 
 
 def _stub(tmp_path, check_body):
@@ -430,6 +468,263 @@ exit 0""")
     assert verdict(scan=card["scan"])["reasons"] == ["identifier scan: found EMAIL 1"]
 
 
+def assert_refused(world, match):
+    with pytest.raises(SystemExit, match=match):
+        world.go()
+    assert not world.out.exists() and not world.results.exists() and not world.submission.exists()
+
+
+def test_valid_signature_builds(world):
+    world.go()
+    assert (world.submission / "release_record.json").exists()
+
+
+def test_unsigned_policy_is_refused(world):
+    (world.pdir / "TOY-S1.policy.json.sig").unlink()
+    assert_refused(world, "sig is missing")
+
+
+def test_missing_allowed_signers_is_refused(world):
+    (world.pdir / "allowed_signers").unlink()
+    assert_refused(world, "allowed_signers is missing")
+
+
+def test_no_policy_for_the_scenario_is_refused(world):
+    world.pfile.unlink()
+    assert_refused(world, "is missing")
+
+
+def test_one_byte_changed_after_signing_is_refused(world):
+    data = bytearray(world.pfile.read_bytes())
+    data[data.index(b'"utility_floor": 0.5') + len('"utility_floor": 0.')] = ord("4")
+    world.pfile.write_bytes(data)
+    assert_refused(world, "does not verify")
+
+
+def test_wrong_signer_is_refused(world, keys):
+    sign(world.pfile, keys / "intruder")
+    assert_refused(world, "does not verify")
+
+
+def test_a_trusted_key_under_another_principal_is_refused(world, keys):
+    (world.pdir / "allowed_signers").write_text(f'teammate namespaces="{policy.NAMESPACE}" {(keys / "steward.pub").read_text()}')
+    assert_refused(world, "does not verify")
+
+
+def test_a_signature_for_another_namespace_is_refused(world, keys):
+    sign(world.pfile, keys / "steward", "file")
+    assert_refused(world, "does not verify")
+
+
+def test_ssh_keygen_missing_is_refused(world, monkeypatch, tmp_path):
+    (tmp_path / "empty").mkdir()
+    monkeypatch.setenv("PATH", str(tmp_path / "empty"))
+    assert_refused(world, "ssh-keygen could not run")
+
+
+def test_contract_not_allowed_is_refused(world):
+    world.cpath.write_bytes(world.cpath.read_bytes() + b" ")
+    assert_refused(world, "is not the one allowed")
+
+
+def test_a_contract_allowed_for_another_assumption_is_refused(world, keys):
+    informed = world.root / "informed.json"
+    informed.write_text(json.dumps({**world.contract, "purpose": "stricter"}))
+    world.pfile.write_text(json.dumps(toy_policy(world.cpath.read_bytes(), allowed_contracts={
+        "default": policy.sha256(world.cpath.read_bytes()), "informed": policy.sha256(informed.read_bytes())})))
+    sign(world.pfile, keys / "steward")
+    with pytest.raises(SystemExit, match="attacker assumption 'default'"):
+        world.go(informed)
+    world.pfile.write_text(json.dumps(toy_policy(world.cpath.read_bytes(), attacker_assumption="informed", allowed_contracts={
+        "default": policy.sha256(world.cpath.read_bytes()), "informed": policy.sha256(informed.read_bytes())})))
+    sign(world.pfile, keys / "steward")
+    world.go(informed)
+
+
+@pytest.fixture
+def selecting(world, monkeypatch):
+    """The scenario has no contracts/<scenario>.json: the selector runs, in a repo root that is a temporary folder."""
+    monkeypatch.setattr(build, "ROOT", world.root / "repo")
+    monkeypatch.setattr(build.selector, "select", lambda original, scenario, pg: (world.contract, {"scenario": scenario}))
+    world.text = json.dumps(world.contract, indent=2, ensure_ascii=False) + "\n"
+    world.pinned = world.root / "repo" / "contracts" / "generated" / "TOY-S1.auto.json"
+    return world
+
+
+def test_generated_contract_is_compared_after_selection(selecting, keys):
+    w = selecting
+    w.pfile.write_text(json.dumps(toy_policy(w.text.encode())))
+    sign(w.pfile, keys / "steward")
+    w.go(w.root / "no-such-contract.json")
+    assert w.pinned.read_text() == w.text and (w.results / "selection.json").exists()
+
+
+def test_generated_contract_that_differs_is_refused_and_leaves_the_signed_one_alone(selecting):
+    w = selecting
+    w.pinned.parent.mkdir(parents=True)
+    w.pinned.write_text("the contract the steward signed\n")
+    with pytest.raises(SystemExit, match="is not the one allowed"):
+        w.go(w.root / "no-such-contract.json")
+    assert w.pinned.read_text() == "the contract the steward signed\n" and not w.results.exists()
+
+
+def test_record_hashes_match_the_files_and_it_says_what_stays_at_risk(world):
+    world.go()
+    rec = json.loads((world.submission / "release_record.json").read_text())
+    assert rec == json.loads((world.results / "release_record.json").read_text())
+    assert sorted(rec["files_sha256"]) == ["toy/rowmap_t.csv", "toy/t.csv", "toy_field_labels.csv", "unseen_field_labels.csv"]
+    on_disk = {str(f.relative_to(world.submission)) for f in world.submission.rglob("*") if f.is_file()} - {"release_record.json"}
+    assert on_disk == set(rec["files_sha256"])
+    for name, digest in rec["files_sha256"].items():
+        assert policy.sha256((world.submission / name).read_bytes()) == digest
+    assert rec["policy_sha256"] == policy.sha256(world.pfile.read_bytes()) and rec["signature_file"] == "TOY-S1.policy.json.sig"
+    assert rec["contract_sha256"] == policy.sha256(world.cpath.read_bytes())
+    pol = json.loads(world.pfile.read_text())
+    for field in ("recipient", "purpose", "agreement_ref", "recipient_duties", "enforced_after_release"):
+        assert rec[field] == pol[field]
+    assert rec["enforced_after_release"] == "none"
+    assert rec["residual_risks"]["checks"] == "not run: no group to count"
+    assert rec["residual_risks"]["attacks_not_applicable"]["order_attack"] == "no hour-only column in the release"
+
+
+def test_record_carries_the_results_of_the_checks():
+    ev = clean()
+    ev["check_results"]["informed_attacker.json"] = {"result": {"protected": {"correct_rate": 0.09}}}
+    ev["report"] = {"gate": "pass", "attacks": {"person_fingerprint": {"status": "not_applicable", "reason": "no person key"}, "plain_hash": {"status": "pass"}}}
+    r = policy.record(ev["policy"], "p", "s", "c", {}, ev["check_results"], ev["report"])["residual_risks"]
+    assert r["checks"]["informed_attacker"]["protected"]["correct_rate"] == 0.09
+    assert r["checks"]["joined_k"]["labs"]["result"]["min_k"] == 1 and r["checks"]["l_diversity"]["worst_group"]["distinct"] == 2
+    assert r["attacks_not_applicable"] == {"person_fingerprint": "no person key"}
+
+
+def test_a_refused_rebuild_leaves_no_record_in_results(world):
+    world.go()
+    (world.out / "toy" / "stray.csv").write_text("a\n1\n")
+    with pytest.raises(SystemExit):
+        world.go()
+    assert not (world.results / "release_record.json").exists()
+
+
+def test_a_signed_policy_of_another_scenario_is_refused():
+    with pytest.raises(SystemExit, match="is for HEALTH-S1"):
+        policy.parse(json.dumps(SHIPPED).encode(), "HEALTH-S3")
+
+
+@pytest.mark.parametrize("changes, match", [
+    ({"attack_thresholds": {k: v for k, v in T.items() if k != "plain_hash"}}, "attack_thresholds"),
+    ({"attack_thresholds": {**T, "order_attack": None}}, "attack_thresholds"),
+    ({"attack_thresholds": {**T, "extra": 1}}, "attack_thresholds"),
+    ({"utility_floor": "half"}, "utility_floor"),
+    ({"required_tasks": []}, "required_tasks"),
+    ({"k_min": None}, "no_k_target"),
+    ({"k_min": None, "l_min": None, "no_k_target": ""}, "no_k_target"),
+    ({"no_k_target": "says both"}, "no_k_target"),
+    ({"l_min": None}, "integers"),
+    ({"attacker_assumption": "other"}, "allowed_contracts"),
+])
+def test_a_policy_without_a_usable_limit_is_refused_even_when_signed(changes, match):
+    with pytest.raises(SystemExit, match=match):
+        policy.parse(json.dumps({**SHIPPED, **changes}).encode(), "HEALTH-S1")
+
+
+def test_a_policy_missing_a_field_or_not_json_is_refused():
+    with pytest.raises(SystemExit, match="agreement_ref"):
+        policy.parse(json.dumps({k: v for k, v in SHIPPED.items() if k != "agreement_ref"}).encode(), "HEALTH-S1")
+    with pytest.raises(SystemExit, match="not valid JSON"):
+        policy.parse(b"{", "HEALTH-S1")
+    with pytest.raises(SystemExit, match="missing fields"):
+        policy.parse(b"[]", "HEALTH-S1")
+
+
+def test_the_limits_are_the_policys():
+    ev = clean()
+    ev["policy"]["k_min"] = 6
+    assert reasons(ev, "k:") == ["k: scorer min k of visits 5 under 6"] and len(reasons(ev, "joined k:")) == 1
+    ev = clean()
+    ev["policy"]["l_min"] = 3
+    assert len(reasons(ev, "l:")) == 1
+    ev = clean()
+    ev["policy"]["utility_floor"] = 0.95
+    assert len(reasons(ev, "utility:")) == 2
+    ev = clean()
+    ev["policy"]["attack_thresholds"]["order_attack"] = 0.0001
+    assert reasons(ev, "attack") == ["attack order_attack: 0.0002 over the threshold 0.0001"]
+
+
+def test_a_policy_can_add_a_task_but_not_remove_one():
+    ev = clean()
+    ev["policy"]["required_tasks"] = ["U1", "U9"]
+    assert reasons(ev, "utility:") == ["utility: required task U9 not measured"]
+    ev = clean()
+    ev["policy"]["required_tasks"] = ["U1"]
+    ev["card"]["utility"] = ev["card"]["utility"][:1]
+    assert reasons(ev, "utility:") == ["utility: required task U2 not measured"]
+
+
+def test_policy_and_contract_must_agree_on_a_k_target():
+    ev = clean()
+    ev["policy"].update(k_min=None, l_min=None)
+    assert reasons(ev, "policy:") == ["policy: k_min and the contract's k target do not match"]
+    ev = clean()
+    del ev["contract"]["k_target"]
+    assert reasons(ev, "policy:") == ["policy: k_min and the contract's k target do not match"]
+
+
+def test_redteam_run_takes_its_thresholds_from_the_argument(tmp_path):
+    c, original, prot, specs, truth, adversary = _toy(tmp_path, "toy", {"pet": "hour_of_day"})
+    a = redteam.run(prot, original, c, tmp_path, {**T, "order_attack": -1.0}, truth, adversary, specs_path=specs)["attacks"]["order_attack"]
+    assert a["threshold"] == -1.0 and a["status"] == "fail"
+
+
+def test_cli_redteam_needs_the_scenarios_policy(tmp_path):
+    c, original, prot, specs, truth, adversary = _toy(tmp_path, "toy", {"pet": "month"})
+    cpath = tmp_path / "c.json"
+    cpath.write_text(json.dumps(c))
+    with pytest.raises(SystemExit, match="no policy file"):
+        cli.main(["redteam", "--protected", str(prot), "--original", str(original), "--contract", str(cpath), "--out", str(tmp_path / "r.json"),
+                  "--policy-dir", str(tmp_path)])
+
+
+def test_a_contract_must_name_its_scenario(tmp_path):
+    cpath = tmp_path / "c.json"
+    cpath.write_text(json.dumps({"recipient": "r", "purpose": "p", "trust_level": "t", "threat_model": "m", "required_tasks": [], "tables": {}, "columns": {}}))
+    with pytest.raises(ValueError, match="scenario"):
+        ct.load(cpath)
+
+
+@pytest.mark.parametrize("policy_floor, used", [(0.0, 0.85), (0.5, 0.85), (0.9, 0.9)])
+def test_repair_search_uses_the_higher_of_its_floor_and_the_policys(tmp_path, policy_floor, used):
+    original = tmp_path / "toy"
+    original.mkdir()
+    pd.DataFrame({"rec": [f"R-{i}" for i in range(12)], "age": ["30-39"] * 12}).to_csv(original / "t.csv", index=False)
+    c = {"required_tasks": ["U1"], "tables": {"t": {"action": "release", "record_id": "rec", "reason": "r"}},
+         "columns": {"t": {"rec": {"pet": "token", "params": {"prefix": "T"}, "reason": "r"}, "age": {"pet": "keep", "reason": "r"}}},
+         "k_target": {"table": "t", "k": 5, "l": 1, "columns": ["age"], "ladder": {"wide": {"column": "age", "op": "widen_band", "width": 20, "reason": "r"}}, "reason": "r"}}
+    labels = pd.DataFrame({"table": ["t", "t"], "column": ["rec", "age"], "privacy_role": ["record_key", "quasi_identifier"]})
+
+    def card(prot, res):
+        return {"utility": [{"id": "U1", "score": 1.0}], "summary": {"privacy": 1.0, "utility": 1.0, "composite": 1.0}}
+    repair.search(c, original, tmp_path / "o", tmp_path / "r", b"k" * 32, labels, card, policy_floor=policy_floor)
+    assert json.loads((tmp_path / "r" / "repair_search.json").read_text())["floor"] == used
+
+
+SCENARIOS = {"HEALTH-S1": {"default": "HEALTH-S1.json", "informed": "HEALTH-S1-informed.json"}, "HEALTH-S3": {"default": "generated/HEALTH-S3.auto.json"},
+             "EDU-S2": {"default": "generated/EDU-S2.auto.json"}, "ENERGY-S3": {"default": "generated/ENERGY-S3.auto.json"}, "PUB-S3": {"default": "PUB-S3.json"}}
+
+
+@pytest.mark.parametrize("scenario", SCENARIOS)
+def test_shipped_policy_holds_todays_values_and_pins_the_committed_contracts(scenario):
+    p = policy.load(ROOT / "policy", scenario)
+    assert p["attack_thresholds"] == {"order_attack": 0.05, "news_linkage": 0.0, "person_fingerprint": 0.05, "scorer_linkage_band_aware": 0.01, "plain_hash": 0.0}
+    assert p["utility_floor"] == 0.5 and p["enforced_after_release"] == "none" and p["attacker_assumption"] == "default"
+    assert len(p["recipient_duties"]) == 2 and "re-identification" in p["recipient_duties"][0] and "linkage" in p["recipient_duties"][1]
+    assert p["allowed_contracts"] == {a: policy.sha256((ROOT / "contracts" / f).read_bytes()) for a, f in SCENARIOS[scenario].items()}
+    c = json.loads((ROOT / "contracts" / SCENARIOS[scenario]["default"]).read_text())
+    kt = c.get("k_target")
+    assert (p["k_min"], p["l_min"]) == ((kt["k"], kt.get("l", 1)) if kt else (None, None)) and bool(p["no_k_target"]) == (not kt)
+    assert p["recipient"] == c["recipient"] and p["purpose"] == c["purpose"] and sorted(p["required_tasks"]) == sorted(c["required_tasks"])
+
+
 COMMITTED = {
     "health-s1-build": ("HEALTH-S1.json", None),
     "health-s1-informed-build": ("HEALTH-S1-informed.json", None),
@@ -454,8 +749,9 @@ def test_verdict_over_the_committed_results(run):
     check_results = {f.name: json.loads(f.read_text()) for f in (res / "checks").glob("*.json")}
     # the folder is not committed; the scorecard's list of extra tables is what it recorded about it
     csvs = redteam.expected_files(contract) + [f"{t}.csv" for t in card["extra_protected_files"]]
-    v = redteam.evaluate(contract, json.loads((res / "redteam.json").read_text()), card, check_results, scan, csvs,
-                         card["scenario"]["utility_requirements"], FLOOR)
+    limits = policy.load(ROOT / "policy", contract["scenario"])
+    v = redteam.evaluate(limits, contract, json.loads((res / "redteam.json").read_text()), card, check_results, scan, csvs,
+                         card["scenario"]["utility_requirements"])
     if fails_on is None:
         assert v["gate"] == "pass" and v["reasons"] == []
     else:

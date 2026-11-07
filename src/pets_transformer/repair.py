@@ -139,9 +139,11 @@ def choose(rows, required, floor):
     return max(good, key=lambda r: r["composite"])
 
 
-def search(contract, original, out, results, key, labels, score_fn, floor=0.85):
-    """score_fn(protected_dir, results_dir) -> scorecard dict. Writes results/repair_search.{json,md}."""
+def search(contract, original, out, results, key, labels, score_fn, floor=0.85, policy_floor=0.0):
+    """score_fn(protected_dir, results_dir) -> scorecard dict. Writes results/repair_search.{json,md}.
+    The policy floor can only raise floor, so the search never picks an order the gate would refuse."""
     from . import protect
+    floor = max(floor, policy_floor)
     target = contract["k_target"]
     rows = []
     for order in orders(target):

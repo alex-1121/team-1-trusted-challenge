@@ -30,8 +30,7 @@ import pandas as pd
 
 from .generalise import SUPPRESSED, age_ok, hours
 
-GATE = {"order_attack": 0.05, "news_linkage": 0.0, "person_fingerprint": 0.05, "scorer_linkage_band_aware": 0.01,
-        "plain_hash": 0.0}
+ATTACKS = ("order_attack", "news_linkage", "person_fingerprint", "scorer_linkage_band_aware", "plain_hash")
 HOUR = re.compile(r"^\d\d:00")  # an exact hour or the start of a repair block "03:00 to 05:59"
 NO_QI = "no QI of this attacker survives in the release"
 LEAK_RISKS = ("direct identifiers retained", "free-text identifier leakage")
@@ -233,7 +232,7 @@ def _number(v):
     return isinstance(v, (int, float)) and math.isfinite(v)
 
 
-def attack_status(name, attack, time_col):
+def attack_status(name, attack, time_col, thresholds):
     """(status, reason) from an attack's stored fields, so a committed report without a status reads the same way.
     not_applicable only when the release gives the attack nothing to work on; an attack that should have run and
     could not is a fail, whatever value it left behind."""
@@ -260,14 +259,14 @@ def attack_status(name, attack, time_col):
             return "not_applicable", NO_QI if specs else "no attack spec targets a released table"
     if not _number(value):
         return "fail", "did not run"
-    return ("pass", None) if value <= GATE[name] else ("fail", f"{value} over the threshold {GATE[name]}")
+    return ("pass", None) if value <= thresholds[name] else ("fail", f"{value} over the threshold {thresholds[name]}")
 
 
-def attack_failures(attacks, time_col):
+def attack_failures(attacks, time_col, thresholds):
     """One reason per attack that failed; an attack missing from the report is a failure."""
     out = []
-    for name in GATE:
-        status, why = attack_status(name, attacks[name], time_col) if name in attacks else ("fail", "did not run")
+    for name in ATTACKS:
+        status, why = attack_status(name, attacks[name], time_col, thresholds) if name in attacks else ("fail", "did not run")
         if status == "fail":
             out.append(f"attack {name}: {why}")
     return out
@@ -298,37 +297,40 @@ def _under(what, value, floor):
     return f"{what} {value} under {floor}" if value < floor else None
 
 
-def evaluate(contract, report, card, check_results, scan, csv_files, required_tasks, utility_floor):
-    """The release decision. Pure: it sees only what this run produced, already loaded.
+def evaluate(policy, contract, report, card, check_results, scan, csv_files, required_tasks):
+    """The release decision. Pure: it sees only what this run produced, already loaded, and every limit is the policy's.
     report: redteam.run's output. card: the scorecard. check_results: file name -> object from this run's checks.
     scan: the structured identifier scan, None if it did not run. csv_files: every CSV under the protected folder,
-    relative to it. required_tasks: the scenario definition's list. Returns gate, reasons and utility_check."""
-    reasons = attack_failures(report.get("attacks") or {}, report.get("time_column"))
+    relative to it. required_tasks: the scenario definition's list; a policy can add tasks to it, never remove one.
+    Returns gate, reasons and utility_check."""
+    reasons = attack_failures(report.get("attacks") or {}, report.get("time_column"), policy["attack_thresholds"])
     for t, spec in contract["tables"].items():
         if spec["action"] == "release" and _at(card, "tables", t, "status") != "released":
             reasons.append(f"scorecard: table {t} has status {_at(card, 'tables', t, 'status')}")
 
-    kt = contract.get("k_target")
-    if kt:
-        k, l = kt["k"], kt.get("l", 1)
+    kt, k, l = contract.get("k_target"), policy["k_min"], policy["l_min"] or 1
+    if bool(kt) != (k is not None):
+        reasons.append("policy: k_min and the contract's k target do not match")
+    elif kt:
         need = ["informed_attacker.json"]
         need += ["l_diversity.json"] if kt.get("sensitive") or l > 1 else []
         need += ["joined_k.json"] if kt.get("join_flags") else []
         reasons += [f"check did not run: {n}" for n in need if n not in check_results]
         reasons.append(_under(f"k: scorer min k of {kt['table']}", _at(card, "tables", kt["table"], "k_anonymity", "min_k"), k))
-        jk = check_results.get("joined_k.json")
-        if jk:  # the top-level result counts the exact diagnosis code; per_join is the only place every join appears
+        if "joined_k.json" in check_results:  # the top-level result counts the exact diagnosis code; per_join alone holds every join
+            jk = check_results["joined_k.json"]
             for t, j in (jk.get("per_join") or {"the joined tables": jk}).items():
                 reasons.append(_under(f"joined k: min k with {t}", _at(j, "for_comparison_k_columns_only", "min_k"), k))
         if l > 1 and "l_diversity.json" in check_results:
             reasons.append(_under("l: fewest distinct values in a group", _at(check_results["l_diversity.json"], "result", "worst_group", "distinct"), l))
 
     scores = {u.get("id"): u.get("score") for u in card.get("utility") or []}
-    tasks = {t: scores.get(t) for t in required_tasks or []}
+    utility_floor = policy["utility_floor"]
+    tasks = {t: scores.get(t) for t in [*(required_tasks or []), *policy["required_tasks"]]}
     short = {t: _under(f"required task {t}", v, utility_floor) for t, v in tasks.items()}
     short = {t: why for t, why in short.items() if why}
     reasons += [f"utility: {why}" for why in short.values()]
-    if not tasks:
+    if not required_tasks:
         reasons.append("utility: the scenario definition names no required task")
 
     if not isinstance(_at(scan, "totals"), dict) or not _at(scan, "n_files_scanned"):
@@ -346,14 +348,14 @@ def evaluate(contract, report, card, check_results, scan, csv_files, required_ta
 
     reasons = [r for r in reasons if r]
     return {"gate": "fail" if reasons else "pass", "reasons": reasons,
-            "rule": "every attack at or below its threshold or not applicable with a reason; k, joined k and l at the contract's target; "
+            "rule": "every attack at or below its threshold or not applicable with a reason; k, joined k and l at the policy's minimum; "
                     "every check the contract needs has run; every required task at the floor; no identifier found; "
-                    "only the contract's files in the release; thresholds are our choice, stated here",
+                    "only the contract's files in the release; every limit comes from the signed policy",
             "utility_check": {"rule": f"every required task scores at least {utility_floor}", "scores": tasks,
                               "pass": bool(tasks) and not short, "below_floor": {t: tasks[t] for t in short}}}
 
 
-def run(protected, original, contract, out, truth=None, adversary=None, label="", specs_path=None):
+def run(protected, original, contract, out, thresholds, truth=None, adversary=None, label="", specs_path=None):
     protected, original, out = Path(protected), Path(original), Path(out)
     main, time_col = _time_column(contract)
     if main is None:  # no hour-only column: nothing for the order attack to rebuild; red-team the k target table
@@ -420,14 +422,14 @@ def run(protected, original, contract, out, truth=None, adversary=None, label=""
         "plain_hash": {"metric": "worst_share_reversed", "value": ph["worst_share_reversed"], "detail": ph},
     }
     for k, r in results.items():
-        r["threshold"] = GATE[k]
-        r["status"], r["reason"] = attack_status(k, r, time_col)
+        r["threshold"] = thresholds[k]
+        r["status"], r["reason"] = attack_status(k, r, time_col, thresholds)
         r["pass"] = {"pass": True, "fail": False}.get(r["status"])
         if r["status"] == "not_applicable":
             r["value"] = None  # the 0.0 an idle attack returns is not a measurement
     report = {"release": label or str(protected.name), "table": main, "time_column": time_col,
-              "gate": "fail" if attack_failures(results, time_col) else "pass",
-              "rule": "every attack at or below its threshold or not applicable with a reason; thresholds are our choice, stated here",
+              "gate": "fail" if attack_failures(results, time_col, thresholds) else "pass",
+              "rule": "every attack at or below its threshold or not applicable with a reason; thresholds come from the policy",
               "attacks": results}
     out.mkdir(parents=True, exist_ok=True)
     return report
