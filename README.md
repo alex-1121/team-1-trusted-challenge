@@ -24,11 +24,11 @@ One row per top-level file and folder. Files inside `context/` and `team/` are l
 | `team/` | Team plan and the submission checklist |
 | `plans/` | Specs, tickets and plans (see `plans/README.md`) |
 | `data/` | The proving-ground data, gitignored; `data/README.md` says how to restore it |
-| `contracts/` | One JSON contract per scenario: recipient, purpose, role rules (by detected role), named column rules with their reasons, and the k target with its repair ladder. `HEALTH-S1.json` is the selector's output; `HEALTH-S1.handwritten.json` the hand-written start; `-noflag` and `-pseudonym` are variants; `generated/` holds contracts the build wrote for other scenarios |
-| `src/pets_transformer/` | The code: `detect`, `selector`, `protect`, `repair`, `score`, `checks`, `redteam`, `build` and the command line |
-| `tests/` | pytest suite for detect, protect, score, checks, the repair sweep, the release gate and the command-line wiring |
+| `contracts/` | One JSON contract per scenario: recipient, purpose, role rules (by detected role), named column rules with their reasons, and the k target with its repair ladder. `HEALTH-S1.json` is the selector's output; `HEALTH-S1.handwritten.json` the hand-written start; `HEALTH-S1-noflag.json`, `HEALTH-S1-pseudonym.json` and `HEALTH-S1-informed.json` are variants for the team decisions below; `PUB-S3.json` is the selector's PUB-S3 contract after a reviewer's edit; `generated/` holds the contracts the selector wrote for HEALTH-S3, EDU-S2, ENERGY-S3 and PUB-S3 |
+| `src/pets_transformer/` | The code: `detect` (labels), `selector` (writes the contract), `pets` and `protect` (the transformations), `repair` (k and l on the rows at risk), `generalise` (what a coarsened value can stand for), `score` (the organisers' scorecard), `checks` and `redteam` (attacks the scorecard does not run), `build` (one command for all of it), `contract`, `sweep` and the command line `cli` |
+| `tests/` | pytest suite for detect, protect, score, checks, the repair sweep, the release gate (tokens, shuffle, repair, hour ranges, selector, new PETs, attacks) and the command-line wiring |
 | `scripts/` | One-off scripts; `scripts/prototypes/` holds early experiments, such as the first HEALTH-S1 arrival-time gate |
-| `results/` | Committed evidence: detector results, gate runs, and the output of each build |
+| `results/` | Committed evidence: detector results (`detect/`), the selector's evidence (`selection/`), the red-team gate on the earlier release (`redteam/`), the repair sweep (`sweep/`), early gate runs, and one `<scenario>-build/` folder per build (scorecard, repair search, checks, red team), including the HEALTH-S1 variants |
 | `baseline-scores/` | "Before" scorecards: every original table scored unprotected, one HTML + JSON pair per scenario, named `<dataset>_<SCENARIO>_<recipient>_raw` |
 | `pets_submission/` | What goes to the organisers on request; only the two label files are committed |
 | `docs/` | Pitch deck outline, demo video script, what HEALTH-S1 guarantees and its residual risk, and the `pets_submission/` handover |
@@ -50,17 +50,17 @@ The detector labels every column from its values alone; it never reads column na
 
 | Held-out dataset | macro-F1 | accuracy | sensitive recall |
 |---|---|---|---|
-| health | 0.8086 (`results/detect/health.json`) | 0.717 (`results/detect/health.json`) | 0.7209 (`results/detect/health.json`) |
+| health | 0.8202 (`results/detect/health.json`) | 0.7358 (`results/detect/health.json`) | 0.7442 (`results/detect/health.json`) |
 | public_admin | 0.7241 (`results/detect/public_admin.json`) | 0.8108 (`results/detect/public_admin.json`) | 0.8519 (`results/detect/public_admin.json`) |
 | customer_service | 0.7821 (`results/detect/customer_service.json`) | 0.7692 (`results/detect/customer_service.json`) | 0.9565 (`results/detect/customer_service.json`) |
 
-The target was macro-F1 above 0.65, the organisers' rule baseline B1 (`results/detect/SPLIT.md`). macro-F1 is the F1 score (a balance of missed and wrong labels) worked out per privacy role and then averaged, so rare roles count as much as common ones; 1.0 is perfect. One caveat: eight rules were added after reading public_admin's errors and the held-out label rows, so public_admin's 0.7241 and customer_service's 0.7821 are not clean held-out scores. Before those rules they were 0.5431 and 0.7462 (`results/detect/RESULTS.md`). The health score did not change (`results/detect/RESULTS.md`).
+The target was macro-F1 above 0.65, the organisers' rule baseline B1 (`results/detect/SPLIT.md`). macro-F1 is the F1 score (a balance of missed and wrong labels) worked out per privacy role and then averaged, so rare roles count as much as common ones; 1.0 is perfect. One caveat: eight rules were added after reading public_admin's errors and the held-out label rows, so public_admin's 0.7241 and customer_service's 0.7821 are not clean held-out scores. Before those rules they were 0.5431 and 0.7462 (`results/detect/RESULTS.md`). The rules read the first 5000 rows of a table, which on a time-sorted table are its first weeks; so a column judged non-sensitive there gets a second look on 5000 rows drawn from the whole file, and can only move to a more protective label. That moved one held-out column, health `icd10_secondary`, to diagnosis code: health macro-F1 0.8086 to 0.8202. The change was narrowed after seeing held-out results, so this health score is not a clean held-out score either (`results/detect/RESULTS.md`).
 
 The same detector labelled the organisers' unlabelled HR export: 26 columns in `results/detect/unseen_field_labels.csv`, format `column,privacy_role,subtype`. The organisers hold the answers, so we have no score for it.
 
 ### 2. PET per type, selected by the tool
 
-`python -m pets_transformer.cli select --scenario HEALTH-S1` writes `contracts/HEALTH-S1.json` itself. Every column gets a ladder of candidate PETs (privacy-enhancing techniques) for its detected type, most private first; the selector keeps the first candidate under which every required task stays within 0.05 of a release with exact values, measured with the organisers' utility code. The reason in each contract line holds those scores. Evidence: `results/selection/HEALTH-S1.json`.
+`python -m pets_transformer.cli select --scenario HEALTH-S1` writes `contracts/HEALTH-S1.json` itself. Every column gets a ladder of candidate PETs (privacy-enhancing techniques) for its detected type, most private first; the selector keeps the first candidate under which every required task stays within 0.05 of a release with exact values, measured with the organisers' utility code. The reason in each contract line holds those scores. A second pass then scores every kept quasi-identifier again on the release after the k repair and moves it one rung more private when the tasks keep at least the same mean score, so the selector never keeps a column so fine that the repair wipes it out; on HEALTH-S1 nothing moved. Evidence: `results/selection/HEALTH-S1.json`.
 
 | Column | Detected type | Candidates tried | Chosen |
 |---|---|---|---|
@@ -72,6 +72,8 @@ The same detector labelled the organisers' unlabelled HR export: 26 columns in `
 | ed_visits.icd10_primary, triage, temp_c, los_minutes, readmit_30d | sensitive and plain values | drop, keep | keep |
 | patient_hetu, patient_name, phone, home_address, chief_complaint | direct identifiers, free text | drop only | drop |
 | clinical_notes, published_weekly_stats | whole tables | withhold | withheld (no task loses without them) |
+
+The ladders by type: a timestamp tries drop, month, ISO week, hour of day, date, date and hour; a birth date drop, 20-year band, 10-year band; a place drop, 8 most common else "other", exact; coordinates drop, 2-decimal grid (about 1 km), 3-decimal grid (about 100 m); a postcode drop, 2 digits, 3 digits; an identifier code drop, keyed token. A contract can also replace two timestamps by the time between them (the `duration` PET), which a reviewer used for PUB-S3.
 
 A quasi-identifier identifies someone only in combination, such as age band plus municipality. A token is a stand-in code: the same value always gets the same token, and without the secret key the token cannot be turned back into the value or put in order. The hand-written contract the team started from is kept as `contracts/HEALTH-S1.handwritten.json`; the selector drops more (sex, all vital signs but temperature, disposition); `results/health-s1-handwritten-build/` scores the hand-written one.
 
@@ -114,6 +116,23 @@ Source for this release: `results/health-s1-build/redteam.json`. The gate runs i
 
 **Other scenarios, no hand-written rules.** The same build writes its own contract when none is reviewed yet: HEALTH-S3 (an AI vendor; composite 1.0 against 0.2769 raw, `results/health-s3-build/`), EDU-S2 (an edtech vendor; 0.9983 against 0.3395, `results/edu-s2-build/`), and ENERGY-S3 (energy-poverty research on 1.6 million hourly meter readings; 1.0 against 0.3506, `results/energy-s3-build/`). PUB-S3 is refused by the utility check: with a reviewer's edit that releases the time to resolution instead of two timestamps (`contracts/PUB-S3.json`), its research question scores 0.9767, but the area counts (0.3888) and the 1 km hotspot map (0.2987) cannot both survive k of at least 5 in one row-level table (`results/pub-s3-build/`).
 
+**Every build.** All from the same code; `results/<name>-build/` holds each scorecard and gate.
+
+| Build | Contract | Privacy | Utility | Composite | Gate |
+|---|---|---|---|---|---|
+| health-s1 | `contracts/HEALTH-S1.json` (selector) | 1.0 | 0.971 | 0.9866 | pass |
+| health-s1-noflag | without the lab join flag | 1.0 | 0.9826 | 0.992 | pass |
+| health-s1-informed | also closes the informed attacker | 1.0 | 0.9255 | 0.9647 | pass |
+| health-s1-handwritten | the team's hand-written start | 1.0 | 0.9734 | 0.9877 | pass |
+| health-s1-pseudonym | with the organisers' suggested patient key | 1.0 | 0.971 | 0.9866 | fail (fingerprint 0.2935) |
+| health-s3 | selector | 1.0 | 1.0 | 1.0 | pass |
+| edu-s2 | selector | 1.0 | 0.9963 | 0.9983 | pass |
+| energy-s3 | selector | 1.0 | 1.0 | 1.0 | pass |
+| pub-s3-auto | selector | 1.0 | 0.2131 | 0.3734 | fail (utility) |
+| pub-s3 | selector, then reviewed | 1.0 | 0.5547 | 0.7327 | fail (utility) |
+
+**Open for the team** (details and costs in `plans/2026-11-07-release-gate.md`): keep the lab join flag (0.9866, every visit with labs in a group of at least 5 such visits) or drop it (0.992, 0.055 of those visits in smaller groups, `results/health-s1-noflag-build/checks/joined_k.json`); ship the informed contract for a less trusted recipient; the gate thresholds are our choice. The hand-written contract scores 0.0011 higher than the selected one but leaves 0.121 of visits with labs in groups of fewer than 5 and lets the informed attacker single out 0.1599 of visits (`results/health-s1-handwritten-build/checks/`).
+
 **Residual risk** (`docs/guarantee-and-residual-risk.md`): an attacker who already knows a visit's diagnosis group, age band, municipality and arrival hour singles out one row for 0.0971 of the visits, 0.9294 of them correctly (`results/health-s1-build/checks/informed_attacker.json`), and sees that visit's length of stay, temperature and lab values. `contracts/HEALTH-S1-informed.json` closes this (0.0) at composite 0.9647 (`results/health-s1-informed-build/`); the default relies on the research environment and the agreement with a known recipient instead. Neither is fit for public release.
 
 ## How to run
@@ -126,14 +145,14 @@ One command does everything for the health scenario:
 python -m pets_transformer.cli build --scenario HEALTH-S1
 ```
 
-It runs these steps: the detector labels every column of the health tables and of the unseen HR export; if `contracts/<scenario>.json` does not exist, the selector writes one to `contracts/generated/`; the repair search applies the contract with every order of the repair ladder and scores each; `protect` writes the release with the chosen order (tokens, shuffled rows, repair) under a fresh HMAC key; `score` runs the organisers' scorecard and identifier check against the raw baseline; `checks` and the red team run the attacks the scorecard does not run; only if the gate passes is the result assembled into `pets_submission/`. Any scenario id from `metadata/scenarios.json` works: `build --scenario HEALTH-S3`. `--contract` builds from another contract file (for example `contracts/HEALTH-S1.handwritten.json`). `python -m pets_transformer.cli redteam` runs the red team on any release. Options `--original`, `--out`, `--results`, `--submission` and `--pets-eval` override the defaults (the `pets-eval` default is `.venv/bin/pets-eval` at the repo root; the data default is `data/proving-ground`; the baseline is read from `baseline-scores/`).
+It runs these steps: the detector labels every column of the health tables and of the unseen HR export; if `contracts/<scenario>.json` does not exist, the selector writes one to `contracts/generated/`; the repair search applies the contract with every order of the repair ladder and scores each; `protect` writes the release with the chosen order (tokens, shuffled rows, repair) under a fresh HMAC key; `score` runs the organisers' scorecard and identifier check against the raw baseline; `checks` and the red team run the attacks the scorecard does not run; only if the gate passes is the result assembled into `pets_submission/`. Any scenario id from `metadata/scenarios.json` works: `build --scenario HEALTH-S3`. `--contract` builds from another contract file (for example `contracts/HEALTH-S1.handwritten.json`). `python -m pets_transformer.cli select --scenario <id> --out <contract.json>` runs the selector alone; `python -m pets_transformer.cli redteam` runs the red team on any release; `python -m pets_transformer.cli checks --protected <release> --original <data> --contract <contract.json> --out <folder>` runs the three extra checks on any release whose contract has a k target. ENERGY-S3 (1.6 million meter readings) takes several minutes and a few GB of memory on a laptop. Options `--original`, `--out`, `--results`, `--submission` and `--pets-eval` override the defaults (the `pets-eval` default is `.venv/bin/pets-eval` at the repo root; the data default is `data/proving-ground`; the baseline is read from `baseline-scores/`).
 
 What comes out:
 
 - `results/health-s1-build/` (scorecards only, no labels): `scorecard.json` and `scorecard.html` (the organisers' scorecard), `check.txt` (identifier scan), `summary.md` (before and after per task and risk, k-anonymity, residual risk in plain words), `plan.md` (one row per column: detected role, PET, parameters, reason, and a note where a named rule overrides the detected role; tables not in the contract are listed as not released).
 - `pets_submission/health/`: the protected tables and their row maps. Never committed, never published.
 - `pets_submission/unseen_field_labels.csv` and `pets_submission/health_field_labels.csv`: the detector's labels for the unseen export and for the health tables. These are the only committed files in that folder.
-- `results/health-s1-build/repair_search.md` and `repair_report.json`: every repair order scored, and how many rows each step changed. `results/health-s1-build/redteam.json`: the gate. `results/health-s1-build/checks/`: l-diversity, informed attacker, joined-table k. `results/redteam/before-7cf541b.json`: the gate on the earlier release.
+- `results/health-s1-build/repair_search.md` and `repair_report.json`: every repair order scored, and how many rows each step changed. `results/health-s1-build/redteam.json`: the gate. `results/health-s1-build/checks/`: l-diversity, informed attacker, joined-table k (a build whose contract has no k target writes `checks/not_run.txt` instead). `selection.json`: the selector's evidence, when the build ran it. `results/redteam/before-7cf541b.json`: the gate on the earlier release.
 - `out/health-s1-build/hmac.key`: the random key behind the tokens. Never committed.
 
 Where the numbers come from: every number is read from `scorecard.json`, written by the organisers' `pets-eval` (a self-assessment, not the official judging score). The "before" figures come from the committed raw baselines in `baseline-scores/`.
