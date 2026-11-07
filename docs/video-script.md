@@ -69,7 +69,7 @@ TrustED PETs Proving Ground 2026, synthetic data by Since AI ry, CC BY 4.0.
 - macro-F1 0.82 (0.8202): `results/detect/health.json`. Not a clean held-out score: the wide-sample rule was narrowed after seeing held-out results (`results/detect/RESULTS.md`).
 - Month and week break the arrival curve (H-U8 0.0), hour of day keeps it (1.0): `contracts/HEALTH-S1.json` (arrival_ts reason), `results/selection/HEALTH-S1.json`.
 - At least five visits and two diagnoses per group: `results/health-s1-build/scorecard.json` (min k 5), `results/health-s1-build/checks/l_diversity.json`.
-- Dates rebuilt almost none (0.0002), patients named zero: `results/health-s1-build/redteam.json`.
+- Dates rebuilt almost none (0.0003), patients named zero: `results/health-s1-build/redteam.json`.
 - A third of patients unique with a patient key (0.2935): `results/health-s1-pseudonym-build/redteam.json`.
 - Privacy 0.17 raw (0.1716), composite 0.28 raw (0.2752): `baseline-scores/health_HEALTH-S1_research-env_raw.json`.
 - Privacy 1.0, composite 0.99 (0.9866): `results/health-s1-build/scorecard.json`.

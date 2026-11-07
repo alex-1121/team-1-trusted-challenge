@@ -133,7 +133,7 @@ HEALTH-S1: a hospital gives its emergency-department visits and lab results to a
 
 | Attack the scorecard does not run | Main at 7cf541b | This release | Gate |
 |---|---|---|---|
-| Order attack: share of rows whose dropped date is rebuilt from row order, `visit_id` or `lab_id` | 1.0 | 0.0002 | at most 0.05 |
+| Order attack: share of rows whose dropped date is rebuilt from row order, `visit_id` or `lab_id` | 1.0 | 0.0003 | at most 0.05 |
 | News-clip linkage with rebuilt dates: share of the 220 clips that name the right patient | 0.0455 (10 clips) | 0.0 | 0 |
 | Person fingerprint: share of patients unique by their quasi-identifiers and set of arrival hours | 0.3544 | not applicable (no person key) | at most 0.05 |
 | The organisers' linkage attacker, rerun with the age read from the band | 0.0 | 0.0 | at most 0.01 |
