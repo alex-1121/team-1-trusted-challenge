@@ -25,6 +25,9 @@ def main(argv=None):
     b.add_argument("--submission", help="default: pets_submission at the repo root")
     b.add_argument("--pets-eval", default=score.PETS_EVAL)
     b.add_argument("--contract", help="contract JSON (default: contracts/<scenario>.json)")
+    b.add_argument("--semantic", choices=["lexicon", "hybrid"], default=None,
+                   help="detector: word lists only, or word lists then the model (default: env PETS_SEMANTIC, else "
+                        "hybrid when the model is installed)")
     q = sub.add_parser("score", help="run the organisers' scorecard and check, write a summary")
     q.add_argument("--original", required=True)
     q.add_argument("--protected", required=True)
@@ -65,7 +68,8 @@ def main(argv=None):
         plan = protect.protect_folder(c, a.original, a.out, key, labels)
         print(f"wrote {len(plan)} plan rows to {a.out}")
     elif a.cmd == "build":
-        plan = build.run(a.scenario, a.original, a.out, a.results, a.submission, a.pets_eval, a.contract)
+        plan = build.run(a.scenario, a.original, a.out, a.results, a.submission, a.pets_eval, a.contract,
+                         semantic=a.semantic)
         print(f"built {a.scenario}: {len(plan)} plan rows, results in {a.results or 'results/' + a.scenario.lower() + '-build'}")
     elif a.cmd == "checks":
         checks.run(a.protected, a.original, a.out, a.truth, sys.argv[1:] if argv is None else argv, contract.load(a.contract))
