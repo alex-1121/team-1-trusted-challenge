@@ -3,6 +3,7 @@
   "dataset": "health",
   "generated_by": "pets_transformer.selector",
   "tolerance": 0.05,
+  "risk_line": 0.05,
   "recipient": "University research group studying ED crowding and revisits",
   "purpose": "Analyse length of stay, revisits and diagnosis patterns",
   "trust_level": "controlled_research",
@@ -43,15 +44,15 @@
         "params": {
           "prefix": "T"
         },
-        "reason": "Detected record_key (RECORD_ID). Candidates tried, most private first: drop: outside 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 0.9985); keyed token: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: keyed token. A keyed HMAC-SHA256 token keeps joins and carries no order, which a sequential id would give back."
+        "reason": "Detected record_key (RECORD_ID). Candidates tried: drop: outside 0.05 (utility H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 0.9985; risk 0.1848); keyed token: within 0.05 (utility H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985; risk 0.1848). Chosen: keyed token (risk 0.1848), lowest risk among the candidates within 0.05 of the reference; the risk line 0.05 was not met (ties: lower risk, then fewer distinct values, then name). A keyed HMAC-SHA256 token keeps joins and carries no order, which a sequential id would give back."
       },
       "patient_hetu": {
         "pet": "drop",
-        "reason": "Detected direct_identifier (NATIONAL_ID). The only candidate for this type is drop."
+        "reason": "Detected direct_identifier (NATIONAL_ID). The only candidate for this type is drop (utility H-U2 1.0000, H-U4 1.0000, H-U6 1.0000, H-U7 1.0000, H-U8 1.0000; risk 0.1848; risk line 0.05)."
       },
       "patient_name": {
         "pet": "drop",
-        "reason": "Detected direct_identifier (PERSON_NAME). The only candidate for this type is drop."
+        "reason": "Detected direct_identifier (PERSON_NAME). The only candidate for this type is drop (utility H-U2 1.0000, H-U4 1.0000, H-U6 1.0000, H-U7 1.0000, H-U8 1.0000; risk 0.1848; risk line 0.05)."
       },
       "date_of_birth": {
         "pet": "age_band",
@@ -61,151 +62,151 @@
             "age"
           ]
         },
-        "reason": "Detected quasi_identifier (BIRTH_DATE). Candidates tried, most private first: drop: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.0000, H-U7 1.0000, H-U8 1.0000); 20-year age band: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.0271, H-U7 1.0000, H-U8 1.0000); 10-year age band: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: 10-year age band."
+        "reason": "Detected quasi_identifier (BIRTH_DATE). Candidates tried: drop: outside 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.0000, H-U7 1.0000, H-U8 1.0000; risk 0.0000); 20-year age band: outside 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.0271, H-U7 1.0000, H-U8 1.0000; risk 0.0000); 10-year age band: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0000). Chosen: 10-year age band (risk 0.0000), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name). After the k repair, risk on the knowable columns of ed_visits (date_of_birth, municipality, arrival_ts, triage) is 0.1547: line not met after repair."
       },
       "sex": {
         "pet": "drop",
-        "reason": "Detected quasi_identifier (SEX). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+        "reason": "Detected quasi_identifier (SEX). Candidates tried: drop: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0000); exact: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0000). Chosen: drop (risk 0.0000), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "phone": {
         "pet": "drop",
-        "reason": "Detected direct_identifier (PHONE). The only candidate for this type is drop."
+        "reason": "Detected direct_identifier (PHONE). The only candidate for this type is drop (utility H-U2 1.0000, H-U4 1.0000, H-U6 1.0000, H-U7 1.0000, H-U8 1.0000; risk 0.1848; risk line 0.05)."
       },
       "home_address": {
         "pet": "drop",
-        "reason": "Detected direct_identifier (STREET_ADDRESS). The only candidate for this type is drop."
+        "reason": "Detected direct_identifier (STREET_ADDRESS). The only candidate for this type is drop (utility H-U2 1.0000, H-U4 1.0000, H-U6 1.0000, H-U7 1.0000, H-U8 1.0000; risk 0.1848; risk line 0.05)."
       },
       "postcode": {
         "pet": "drop",
-        "reason": "Detected quasi_identifier (POSTCODE). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+        "reason": "Detected quasi_identifier (POSTCODE). Candidates tried: drop: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0000); 2-digit postcode area: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0000); 3-digit postcode area: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0018). Chosen: drop (risk 0.0000), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "municipality": {
         "pet": "top_n_exact_else_other",
         "params": {
           "n": 8
         },
-        "reason": "Detected quasi_identifier (MUNICIPALITY). Candidates tried, most private first: drop: outside 0.05 (H-U2 1.0000, H-U4 0.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000); 8 most common, rest other: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: 8 most common, rest other."
+        "reason": "Detected quasi_identifier (MUNICIPALITY). Candidates tried: drop: outside 0.05 (utility H-U2 1.0000, H-U4 0.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0000); 8 most common, rest other: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0000); exact: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0008). Chosen: 8 most common, rest other (risk 0.0000), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name). After the k repair, risk on the knowable columns of ed_visits (date_of_birth, municipality, arrival_ts, triage) is 0.1547: line not met after repair."
       },
       "arrival_ts": {
         "pet": "hour_of_day",
-        "reason": "Detected quasi_identifier (TIMESTAMP). Candidates tried, most private first: drop: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.0000); month: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.0000); ISO week: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.0000); hour of day: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: hour of day."
+        "reason": "Detected quasi_identifier (TIMESTAMP). Candidates tried: drop: outside 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.0000; risk 0.0000); month: outside 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.0000; risk 0.0030); ISO week: outside 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.0000; risk 0.1005); hour of day: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227); date: outside 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.0000; risk 0.5562); date and hour: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.9990). Chosen: hour of day (risk 0.0227), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name). After the k repair, risk on the knowable columns of ed_visits (date_of_birth, municipality, arrival_ts, triage) is 0.1547: line not met after repair."
       },
       "arrival_mode": {
         "pet": "drop",
-        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried: drop: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227); kept: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0824). Chosen: drop (risk 0.0227), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "ambulance_unit": {
         "pet": "drop",
-        "reason": "Detected technical_identifier (HOSTNAME). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+        "reason": "Detected technical_identifier (HOSTNAME). Candidates tried: drop: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227); keyed token: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227). Chosen: drop (risk 0.0227), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "triage": {
         "pet": "keep",
-        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: outside 0.05 (H-U2 0.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000); kept: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: kept."
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried: drop: outside 0.05 (utility H-U2 0.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227); kept: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.1848). Chosen: kept (risk 0.1848), lowest risk among the candidates within 0.05 of the reference; the risk line 0.05 was not met (ties: lower risk, then fewer distinct values, then name). After the k repair, risk on the knowable columns of ed_visits (date_of_birth, municipality, arrival_ts, triage) is 0.1547: line not met after repair."
       },
       "chief_complaint": {
         "pet": "drop",
-        "reason": "Detected free_text (FREE_TEXT). The only candidate for this type is drop."
+        "reason": "Detected free_text (FREE_TEXT). The only candidate for this type is drop (utility H-U2 1.0000, H-U4 1.0000, H-U6 1.0000, H-U7 1.0000, H-U8 1.0000; risk 0.0227; risk line 0.05)."
       },
       "icd10_primary": {
         "pet": "keep",
-        "reason": "Detected sensitive_attribute (DIAGNOSIS_CODE). Candidates tried, most private first: drop: outside 0.05 (H-U2 1.0000, H-U4 0.0000, H-U6 0.9642, H-U7 0.5000, H-U8 1.0000); kept: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: kept."
+        "reason": "Detected sensitive_attribute (DIAGNOSIS_CODE). Candidates tried: drop: outside 0.05 (utility H-U2 1.0000, H-U4 0.0000, H-U6 0.9642, H-U7 0.5000, H-U8 1.0000; risk 0.0227); kept: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227). Chosen: kept (risk 0.0227), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "icd10_secondary": {
         "pet": "drop",
-        "reason": "Detected sensitive_attribute (DIAGNOSIS_CODE). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+        "reason": "Detected sensitive_attribute (DIAGNOSIS_CODE). Candidates tried: drop: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227); kept: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227). Chosen: drop (risk 0.0227), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "systolic_bp": {
         "pet": "drop",
-        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried: drop: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227); kept: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227). Chosen: drop (risk 0.0227), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "diastolic_bp": {
         "pet": "drop",
-        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried: drop: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227); kept: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227). Chosen: drop (risk 0.0227), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "heart_rate": {
         "pet": "drop",
-        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried: drop: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227); kept: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227). Chosen: drop (risk 0.0227), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "resp_rate": {
         "pet": "drop",
-        "reason": "Detected quasi_identifier (AGE). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+        "reason": "Detected quasi_identifier (AGE). Candidates tried: drop: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227); exact: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.4905). Chosen: drop (risk 0.0227), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "temp_c": {
         "pet": "keep",
-        "reason": "Detected non_sensitive (MEASUREMENT). Candidates tried, most private first: drop: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 1.0000); kept: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: kept."
+        "reason": "Detected non_sensitive (MEASUREMENT). Candidates tried: drop: outside 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 1.0000; risk 0.1848); kept: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.1848). Chosen: kept (risk 0.1848), lowest risk among the candidates within 0.05 of the reference; the risk line 0.05 was not met (ties: lower risk, then fewer distinct values, then name)."
       },
       "spo2": {
         "pet": "drop",
-        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried: drop: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227); kept: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227). Chosen: drop (risk 0.0227), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "pain_nrs": {
         "pet": "drop",
-        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried: drop: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227); kept: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227). Chosen: drop (risk 0.0227), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "attending_physician_id": {
         "pet": "drop",
-        "reason": "Detected technical_identifier (RECORD_ID). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+        "reason": "Detected technical_identifier (RECORD_ID). Candidates tried: drop: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227); keyed token: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227). Chosen: drop (risk 0.0227), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "attending_physician_name": {
         "pet": "drop",
-        "reason": "Detected direct_identifier (PERSON_NAME). The only candidate for this type is drop."
+        "reason": "Detected direct_identifier (PERSON_NAME). The only candidate for this type is drop (utility H-U2 1.0000, H-U4 1.0000, H-U6 1.0000, H-U7 1.0000, H-U8 1.0000; risk 0.1848; risk line 0.05)."
       },
       "discharge_ts": {
         "pet": "drop",
-        "reason": "Detected quasi_identifier (TIMESTAMP). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+        "reason": "Detected quasi_identifier (TIMESTAMP). Candidates tried: drop: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0227); month: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.4519); ISO week: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.8933); hour of day: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.4246); date: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.9989); date and hour: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 1.0000). Chosen: drop (risk 0.0227), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "los_minutes": {
         "pet": "keep",
-        "reason": "Detected non_sensitive (MEASUREMENT). Candidates tried, most private first: drop: outside 0.05 (H-U2 0.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000); kept: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: kept."
+        "reason": "Detected non_sensitive (MEASUREMENT). Candidates tried: drop: outside 0.05 (utility H-U2 0.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.1848); kept: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.1848). Chosen: kept (risk 0.1848), lowest risk among the candidates within 0.05 of the reference; the risk line 0.05 was not met (ties: lower risk, then fewer distinct values, then name)."
       },
       "disposition": {
         "pet": "drop",
-        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: drop."
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried: drop: within 0.05 (utility H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985; risk 0.1848); kept: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.3230). Chosen: drop (risk 0.1848), lowest risk among the candidates within 0.05 of the reference; the risk line 0.05 was not met (ties: lower risk, then fewer distinct values, then name)."
       },
       "readmit_30d": {
         "pet": "keep",
-        "reason": "Detected non_sensitive (MEASUREMENT). Candidates tried, most private first: drop: outside 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.0000, H-U7 1.0000, H-U8 0.9985); kept: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: kept."
+        "reason": "Detected non_sensitive (MEASUREMENT). Candidates tried: drop: outside 0.05 (utility H-U2 0.9979, H-U4 1.0000, H-U6 0.0000, H-U7 1.0000, H-U8 0.9985; risk 0.1848); kept: within 0.05 (utility H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985; risk 0.1848). Chosen: kept (risk 0.1848), lowest risk among the candidates within 0.05 of the reference; the risk line 0.05 was not met (ties: lower risk, then fewer distinct values, then name)."
       }
     },
     "lab_results": {
       "lab_id": {
         "pet": "drop",
-        "reason": "Detected record_key (RECORD_ID). Candidates tried, most private first: drop: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: drop."
+        "reason": "Detected record_key (RECORD_ID). Candidates tried: drop: within 0.05 (utility H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985; risk 0.0000); keyed token: within 0.05 (utility H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985; risk 0.0000). Chosen: drop (risk 0.0000), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "visit_id": {
         "pet": "token",
         "params": {
           "prefix": "T"
         },
-        "reason": "Detected technical_identifier (RECORD_ID). Candidates tried, most private first: drop: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 1.0000); keyed token: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: keyed token. A keyed HMAC-SHA256 token keeps joins and carries no order, which a sequential id would give back."
+        "reason": "Detected technical_identifier (RECORD_ID). Candidates tried: drop: outside 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 1.0000; risk 0.0000); keyed token: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0000). Chosen: keyed token (risk 0.0000), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name). A keyed HMAC-SHA256 token keeps joins and carries no order, which a sequential id would give back."
       },
       "test_code": {
         "pet": "keep",
-        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: outside 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 0.9985); kept: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: kept."
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried: drop: outside 0.05 (utility H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 0.9985; risk 0.0000); kept: within 0.05 (utility H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985; risk 0.0000). Chosen: kept (risk 0.0000), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name). After the k repair, risk on the knowable columns of lab_results (test_code) is 0.0000: line met."
       },
       "test_name": {
         "pet": "drop",
-        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: drop."
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried: drop: within 0.05 (utility H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985; risk 0.0000); kept: within 0.05 (utility H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985; risk 0.0000). Chosen: drop (risk 0.0000), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "value": {
         "pet": "keep",
-        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: outside 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 0.9985); kept: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: kept."
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried: drop: outside 0.05 (utility H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 0.9985; risk 0.0000); kept: within 0.05 (utility H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985; risk 0.0000). Chosen: kept (risk 0.0000), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "unit": {
         "pet": "drop",
-        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: drop."
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried: drop: within 0.05 (utility H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985; risk 0.0000); kept: within 0.05 (utility H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985; risk 0.0000). Chosen: drop (risk 0.0000), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "ref_range": {
         "pet": "drop",
-        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: drop."
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried: drop: within 0.05 (utility H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985; risk 0.0000); kept: within 0.05 (utility H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985; risk 0.0000). Chosen: drop (risk 0.0000), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "abnormal_flag": {
         "pet": "drop",
-        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: drop."
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried: drop: within 0.05 (utility H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985; risk 0.0000); kept: within 0.05 (utility H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985; risk 0.0000). Chosen: drop (risk 0.0000), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       },
       "sampled_ts": {
         "pet": "drop",
-        "reason": "Detected quasi_identifier (TIMESTAMP). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+        "reason": "Detected quasi_identifier (TIMESTAMP). Candidates tried: drop: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0000); month: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0000); ISO week: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0000); hour of day: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0000); date: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0000); date and hour: within 0.05 (utility H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000; risk 0.0237). Chosen: drop (risk 0.0000), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (ties: lower risk, then fewer distinct values, then name)."
       }
     }
   },
@@ -324,5 +325,35 @@
     "date_of_birth",
     "municipality",
     "arrival_ts"
-  ]
+  ],
+  "fitness": {
+    "trust_level": "controlled_research",
+    "k": 5,
+    "tables": {
+      "ed_visits": {
+        "n_rows": 46398,
+        "columns": [
+          "date_of_birth",
+          "municipality",
+          "arrival_ts",
+          "triage",
+          "icd10_primary",
+          "temp_c",
+          "los_minutes",
+          "readmit_30d",
+          "age"
+        ],
+        "share_k_below_5": 1.0
+      },
+      "lab_results": {
+        "n_rows": 130341,
+        "columns": [
+          "test_code",
+          "value"
+        ],
+        "share_k_below_5": 0.0154
+      }
+    },
+    "rule": "Share of the released rows whose combination of every kept value (every kept column except keyed tokens and free text) is shared by fewer than 5 rows, on the final release after the k repair. Reported for the fit-for-sharing statement; it decides nothing in selection."
+  }
 }
