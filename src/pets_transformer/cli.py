@@ -1,10 +1,11 @@
 import argparse
 import os
+import sys
 from pathlib import Path
 
 import pandas as pd
 
-from . import build, contract, protect, score
+from . import build, checks, contract, protect, score
 
 
 def main(argv=None):
@@ -32,6 +33,11 @@ def main(argv=None):
     q.add_argument("--contract", help="contract JSON; optional k_columns key sets our own k columns")
     q.add_argument("--pets-eval", default=score.PETS_EVAL)
     q.add_argument("--proving-ground", default=score.PROVING_GROUND)
+    k = sub.add_parser("checks", help="l-diversity, informed attacker and joined-table k: checks the scorecard does not run")
+    k.add_argument("--protected", required=True)
+    k.add_argument("--original", required=True)
+    k.add_argument("--out", required=True)
+    k.add_argument("--truth", help="truth/ folder; attacker rows are the visits in health__ed_visits.csv (default: every original visit)")
     a = ap.parse_args(argv)
     if a.cmd == "protect":
         c = contract.load(a.contract)
@@ -44,6 +50,9 @@ def main(argv=None):
     elif a.cmd == "build":
         plan = build.run(a.scenario, a.original, a.out, a.results, a.submission, a.pets_eval)
         print(f"built {a.scenario}: {len(plan)} plan rows, results in {a.results or 'results/' + a.scenario.lower() + '-build'}")
+    elif a.cmd == "checks":
+        checks.run(a.protected, a.original, a.out, a.truth, sys.argv[1:] if argv is None else argv)
+        print(f"wrote checks to {a.out}")
     else:
         score.run(a.original, a.protected, a.scenario, a.out, a.baseline, a.contract, a.pets_eval, a.proving_ground)
         print(f"wrote score results to {a.out}")

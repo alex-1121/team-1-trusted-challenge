@@ -10,7 +10,7 @@
 | ed_visits | postcode | quasi_identifier | drop |  | Quasi-identifier finer than needed; municipality serves H-U4 (attacker: linkage to public directory). |  |
 | ed_visits | municipality | quasi_identifier | top_n_exact_else_other | {'n': 8} | Eight largest municipalities exact for H-U4 diagnosis mix, rest become other to lift k (attacker: linkage). |  |
 | ed_visits | arrival_ts | quasi_identifier | hour_of_day |  | Exact timestamp is a quasi-identifier; hour of day as HH:00 serves H-U8 arrival curve, date dropped (no seasonality study possible). |  |
-| ed_visits | arrival_mode | non_sensitive | keep |  | Low-risk descriptive or clinical value the study uses. |  |
+| ed_visits | arrival_mode | non_sensitive | drop |  | Catalogued quasi-identifier (helicopter and police arrivals are rare); no required task reads it, and dropping it cuts the share of groups with a single diagnosis from 0.2787 (results/checks/l_diversity.json at commit a7c9b76) to 0.1128 (results/checks/l_diversity.json). |  |
 | ed_visits | ambulance_unit | technical_identifier | drop |  | Device, staff or foreign-key code; no required task needs it (attacker: linkage). |  |
 | ed_visits | triage | non_sensitive | keep |  | Low-risk descriptive or clinical value the study uses. |  |
 | ed_visits | chief_complaint | free_text | drop |  | Free text can carry identifying detail; coded fields serve the tasks instead. |  |

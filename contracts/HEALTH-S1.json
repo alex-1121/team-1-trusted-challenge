@@ -69,6 +69,10 @@
         "pet": "keep",
         "reason": "Kept: clinical measurement, not an identifier at this granularity."
       },
+      "arrival_mode": {
+        "pet": "drop",
+        "reason": "Catalogued quasi-identifier (helicopter and police arrivals are rare); no required task reads it, and dropping it cuts the share of groups with a single diagnosis from 0.2787 (results/checks/l_diversity.json at commit a7c9b76) to 0.1128 (results/checks/l_diversity.json)."
+      },
       "discharge_ts": {
         "pet": "drop",
         "reason": "Exact timestamp quasi-identifier; length of stay is already in los_minutes for H-U2."
