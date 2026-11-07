@@ -97,3 +97,38 @@ def test_build_refuses_empty_unseen_folder(tmp_path, monkeypatch):
     monkeypatch.setattr(build, "PG", tmp_path)
     with pytest.raises(FileNotFoundError, match="unseen"):
         build.run("HEALTH-S1", out=tmp_path / "o", results=tmp_path / "r", submission=tmp_path / "s")
+
+
+def _report(dataset, flags):
+    from pets_transformer.detect import PROBS_COLUMNS, DetectReport
+    rows = [dict(dataset=dataset, table="t", column=f"c{i}", rule="fallthrough", privacy_role="non_sensitive",
+                 subtype="CATEGORY", top1="CATEGORY", p1=0.7, top2="SEX", p2=0.1, top3="LANGUAGE", p3=0.1,
+                 decision="needs_review" if f else "confident", flag=f) for i, f in enumerate(flags)]
+    probs = pd.DataFrame(rows, columns=PROBS_COLUMNS)
+    review = probs[probs.flag != ""].assign(reason="CATEGORY 0.70, SEX 0.10, LANGUAGE 0.10")
+    return DetectReport(pd.DataFrame(), probs, review, "hybrid")
+
+
+def test_report_review_writes_files_and_warns(tmp_path):
+    from pets_transformer.build import report_review
+    line = report_review([_report("health", ["unclear", ""]), _report("unseen", ["disagree"])], tmp_path)
+    assert line.startswith("WARNING: 2 column(s) need review")
+    assert "health/t.c0 (unclear)" in line and "unseen/t.c0 (disagree)" in line
+    assert len(pd.read_csv(tmp_path / "type_probs.csv", dtype=str)) == 3
+    review = pd.read_csv(tmp_path / "needs_review.csv", dtype=str)
+    assert list(review.dataset) == ["health", "unseen"] and "reason" in review.columns
+
+
+def test_report_review_silent_when_clean(tmp_path):
+    from pets_transformer.build import report_review
+    assert report_review([_report("health", ["", ""])], tmp_path) == ""
+    review = pd.read_csv(tmp_path / "needs_review.csv", dtype=str)
+    assert review.empty and "flag" in review.columns
+
+
+def test_cli_build_accepts_semantic_flag(monkeypatch):
+    from pets_transformer import build, cli
+    seen = {}
+    monkeypatch.setattr(build, "run", lambda *a, **kw: seen.update(kw) or [])
+    cli.main(["build", "--scenario", "HEALTH-S1", "--semantic", "lexicon"])
+    assert seen["semantic"] == "lexicon"

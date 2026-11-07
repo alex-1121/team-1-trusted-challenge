@@ -418,11 +418,12 @@ def _report(lab: pd.DataFrame, prob_rows: list[dict], mode: str) -> DetectReport
     return DetectReport(lab, probs[PROBS_COLUMNS], review, mode)
 
 
-def review_warning(review: pd.DataFrame) -> str:
-    """One line naming every flagged column, or "" when nothing is flagged."""
+def review_warning(review: pd.DataFrame, with_dataset: bool = False) -> str:
+    """One line naming every flagged column (table.column, or dataset/table.column), or "" when nothing is flagged."""
     if review.empty:
         return ""
-    cols = ", ".join(f"{t}.{c} ({f})" for t, c, f in zip(review.table, review.column, review.flag))
+    where = [f"{d}/{t}" if with_dataset else t for d, t in zip(review.dataset, review.table)]
+    cols = ", ".join(f"{w}.{c} ({f})" for w, c, f in zip(where, review.column, review.flag))
     return f"WARNING: {len(review)} column(s) need review: {cols}"
 
 
