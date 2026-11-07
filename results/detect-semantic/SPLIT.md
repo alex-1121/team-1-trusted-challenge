@@ -30,6 +30,18 @@ The timing run (E5, `evaluate.py --cost`) runs detect on all nine proving-ground
 - 2026-11-07 20:06, retrain 2 (corpus fix): about 35% of CATEGORY columns in the corpus are now written as codes (`code_value` in `gen_corpus.py`: letters and digits, dotted codes, snake_case, number lists, abbreviations, file names). Generic patterns, no value copied from the proving ground. Corpus hashes in `corpus.json`; head in `train_report.json` (calib accuracy 0.9561 -> 0.945, ECE 0.0154 -> 0.0245).
   Dev run (top-level `*_dev.json`): hybrid at or above lexicon on all six tuning datasets; warnings 32 -> 18 of 346 columns. EU macro-F1 lower than head 1 because head 1 labelled phone, plate and postcode columns STREET_ADDRESS by accident (right role, wrong reason); head 2's errors on those number-format columns are the same as lexicon's. Head 2 kept.
 
+## Test run
+
+Run once, 2026-11-07 20:35, on commit 68aa116 (head 2). Results in the `*_test.json` files. Against the spec's gates:
+
+- E1 MISS. Role macro-F1, lexicon -> hybrid: health 0.8202 -> 0.7879, public_admin 0.7241 -> 0.7084, customer_service 0.7821 -> 0.7786. The gate was "no held-out dataset lower than lexicon"; all three are lower. Cause: six fall-through columns changed label, three for the worse and three wrong both ways. Code and category values (lab test codes and names, a permit project type) are read as place, organisation or town names, and the model was confident, so no warning was raised.
+- E2 pass: no column of the model's types labelled harmless in cs_CZ, pt_PT or hu_HU. Macro-F1 lexicon -> hybrid: cs_CZ 0.5963 -> 0.7709, hu_HU 0.5053 -> 0.6806, pt_PT 0.5553 -> 0.6976.
+- E3 pass: calibration error 0.0218 on `locked.jsonl` (1800 columns), 0.0412 on the locked tables (33 columns); target 0.05.
+- E4 pass: 5 of 129 held-out columns flagged (3.9%).
+- E5 pass (`e5_cost.json`): hybrid 2.71 times lexicon.
+
+The test split is not rerun.
+
 ## Changed after the test run
 
 None yet.
