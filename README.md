@@ -16,16 +16,29 @@ Status (2026-11-07): HEALTH-S1 is the scored scenario; the build detects, select
 
 ## Layout
 
+One row per top-level file and folder. Files inside `context/` and `team/` are listed one by one in `context/README.md`.
+
 | Path | What it holds |
 |---|---|
-| `context/` | The official brief, one-pager, video transcript, source file list, challenge digest, and the organiser docs in `context/proving-ground/` |
+| `context/` | The official brief, one-pager, video transcript, source file list, challenge digest, and the organiser docs in `context/proving-ground/`. `context/README.md` indexes every file here and in `team/` |
 | `team/` | Team plan and the submission checklist |
 | `plans/` | Specs, tickets and plans (see `plans/README.md`) |
 | `data/` | The proving-ground data, gitignored; `data/README.md` says how to restore it |
+| `contracts/` | One JSON contract per scenario: recipient, purpose, role rules (by detected role), named column rules with their reasons, and the k target with its repair ladder. `HEALTH-S1.json` is the selector's output; `HEALTH-S1.handwritten.json` the hand-written start; `-noflag` and `-pseudonym` are variants; `generated/` holds contracts the build wrote for other scenarios |
+| `src/pets_transformer/` | The code: `detect`, `selector`, `protect`, `repair`, `score`, `checks`, `redteam`, `build` and the command line |
+| `tests/` | pytest suite for detect, protect, score, checks, the repair sweep, the release gate and the command-line wiring |
+| `scripts/` | One-off scripts; `scripts/prototypes/` holds early experiments, such as the first HEALTH-S1 arrival-time gate |
+| `results/` | Committed evidence: detector results, gate runs, and the output of each build |
 | `baseline-scores/` | "Before" scorecards: every original table scored unprotected, one HTML + JSON pair per scenario, named `<dataset>_<SCENARIO>_<recipient>_raw` |
+| `pets_submission/` | What goes to the organisers on request; only the two label files are committed |
+| `docs/` | Pitch deck outline, demo video script, what HEALTH-S1 guarantees and its residual risk, and the `pets_submission/` handover |
 | `attack_analysis.md` | What `pets-eval` actually measures: risk checks, utility tasks, how the score is aggregated, blind spots |
 | `decisions.md` | Team decision log |
 | `AGENTS.md` | Rules for every teammate's coding agent |
+| `CLAUDE.md` | One line that imports `AGENTS.md` for Claude Code; holds no rules |
+| `README.md` | This file |
+| `pyproject.toml` | Package definition for `pets_transformer` |
+| `.gitignore` | Keeps the proving-ground data, the attack answer keys (row maps, truth, holdout), protected tables, bulky outputs and secrets out of git |
 
 ## The demo in five items
 
@@ -124,15 +137,6 @@ What comes out:
 - `out/health-s1-build/hmac.key`: the random key behind the tokens. Never committed.
 
 Where the numbers come from: every number is read from `scorecard.json`, written by the organisers' `pets-eval` (a self-assessment, not the official judging score). The "before" figures come from the committed raw baselines in `baseline-scores/`.
-
-## What is where
-
-| Path | What it holds |
-|---|---|
-| `contracts/` | One JSON contract per scenario: recipient, purpose, role rules (by detected role), named column rules with their reasons, and the k target with its repair ladder. `HEALTH-S1.json` is the selector's output; `HEALTH-S1.handwritten.json` the hand-written start; `-noflag` and `-pseudonym` are variants; `generated/` holds contracts the build wrote for other scenarios |
-| `src/pets_transformer/` | The code: `detect`, `selector`, `protect`, `repair`, `score`, `checks`, `redteam`, `build` and the command line |
-| `results/` | Committed evidence: detector results, gate runs, and the output of each build |
-| `pets_submission/` | What goes to the organisers on request; only the two label files are committed |
 
 TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0).
 

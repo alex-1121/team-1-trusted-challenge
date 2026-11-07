@@ -37,3 +37,4 @@ The team build for the TrustED PETs Transformer challenge at Since AI Hackathon 
 - Plans and notes: `plans/`, one markdown per plan, see `plans/README.md`.
 - Decisions: a row in `decisions.md`.
 - Context you discover about the challenge or the data: `context/`, with a "Source:" line.
+- Project index: the "Layout" table in `README.md` has one row per top-level file and folder. When you add, rename, move or delete one, update its row in the same commit. Files inside `context/` and `team/` are indexed in `context/README.md` instead; update that file when you change one of them.
