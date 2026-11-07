@@ -1,0 +1,15 @@
+# source: data/finance/customers.csv:preferred_language, data/education/students.csv:home_language, data/education/matriculation_results.csv:exam_language, data/education/counsellor_notes.csv:language
+ar
+en
+es
+et
+fa
+fi
+hi
+ku
+ru
+so
+sv
+uk
+vi
+zh

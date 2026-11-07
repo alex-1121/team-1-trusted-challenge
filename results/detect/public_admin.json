@@ -1,0 +1,159 @@
+{
+  "n_fields": 37,
+  "n_predicted": 37,
+  "accuracy": 0.8108,
+  "macro_f1": 0.7241,
+  "sensitive_recall": 0.8519,
+  "per_role": {
+    "direct_identifier": {
+      "precision": 0.8889,
+      "recall": 0.8889,
+      "f1": 0.8889,
+      "support": 9
+    },
+    "quasi_identifier": {
+      "precision": 0.8462,
+      "recall": 0.8462,
+      "f1": 0.8462,
+      "support": 13
+    },
+    "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+    },
+    "technical_identifier": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6667,
+      "support": 2
+    },
+    "free_text": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 2
+    },
+    "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 2
+    },
+    "non_sensitive": {
+      "precision": 0.6,
+      "recall": 0.75,
+      "f1": 0.6667,
+      "support": 8
+    }
+  },
+  "confusion": {
+    "direct_identifier": {
+      "direct_identifier": 8,
+      "free_text": 0,
+      "non_sensitive": 0,
+      "quasi_identifier": 1,
+      "record_key": 0,
+      "sensitive_attribute": 0,
+      "technical_identifier": 0
+    },
+    "free_text": {
+      "direct_identifier": 0,
+      "free_text": 2,
+      "non_sensitive": 0,
+      "quasi_identifier": 0,
+      "record_key": 0,
+      "sensitive_attribute": 0,
+      "technical_identifier": 0
+    },
+    "non_sensitive": {
+      "direct_identifier": 1,
+      "free_text": 0,
+      "non_sensitive": 6,
+      "quasi_identifier": 1,
+      "record_key": 0,
+      "sensitive_attribute": 1,
+      "technical_identifier": 1
+    },
+    "quasi_identifier": {
+      "direct_identifier": 0,
+      "free_text": 0,
+      "non_sensitive": 2,
+      "quasi_identifier": 11,
+      "record_key": 0,
+      "sensitive_attribute": 0,
+      "technical_identifier": 0
+    },
+    "record_key": {
+      "direct_identifier": 0,
+      "free_text": 0,
+      "non_sensitive": 0,
+      "quasi_identifier": 0,
+      "record_key": 2,
+      "sensitive_attribute": 0,
+      "technical_identifier": 0
+    },
+    "technical_identifier": {
+      "direct_identifier": 0,
+      "free_text": 0,
+      "non_sensitive": 0,
+      "quasi_identifier": 0,
+      "record_key": 0,
+      "sensitive_attribute": 0,
+      "technical_identifier": 1
+    }
+  },
+  "subtype_accuracy": 0.8919,
+  "errors": [
+    {
+      "dataset": "public_admin",
+      "table": "service_requests",
+      "column": "street_address",
+      "privacy_role": "quasi_identifier",
+      "predicted": "direct_identifier"
+    },
+    {
+      "dataset": "public_admin",
+      "table": "service_requests",
+      "column": "municipality",
+      "privacy_role": "non_sensitive",
+      "predicted": "quasi_identifier"
+    },
+    {
+      "dataset": "public_admin",
+      "table": "building_permits",
+      "column": "applicant_business_id",
+      "privacy_role": "technical_identifier",
+      "predicted": "non_sensitive"
+    },
+    {
+      "dataset": "public_admin",
+      "table": "building_permits",
+      "column": "property_id",
+      "privacy_role": "direct_identifier",
+      "predicted": "non_sensitive"
+    },
+    {
+      "dataset": "public_admin",
+      "table": "building_permits",
+      "column": "municipality",
+      "privacy_role": "non_sensitive",
+      "predicted": "quasi_identifier"
+    },
+    {
+      "dataset": "public_admin",
+      "table": "building_permits",
+      "column": "floor_area_m2",
+      "privacy_role": "quasi_identifier",
+      "predicted": "non_sensitive"
+    },
+    {
+      "dataset": "public_admin",
+      "table": "building_permits",
+      "column": "cost_estimate_eur",
+      "privacy_role": "sensitive_attribute",
+      "predicted": "non_sensitive"
+    }
+  ]
+}

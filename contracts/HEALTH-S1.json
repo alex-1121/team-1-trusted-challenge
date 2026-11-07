@@ -1,0 +1,154 @@
+{
+  "recipient": "University research group (research environment)",
+  "purpose": "Study ED crowding and revisits: length of stay, revisits, diagnosis mix, arrival patterns",
+  "trust_level": "research-env (known recipient, no public release)",
+  "threat_model": "Record linkage against a public directory; dictionary attack on identifier hashes; leaked direct identifiers",
+  "required_tasks": [
+    "H-U2",
+    "H-U4",
+    "H-U6",
+    "H-U7",
+    "H-U8"
+  ],
+  "tables": {
+    "ed_visits": {
+      "action": "release",
+      "record_id": "visit_id",
+      "reason": "Core table for every required task."
+    },
+    "lab_results": {
+      "action": "release",
+      "record_id": "lab_id",
+      "reason": "Needed for the visit-to-lab join; sampled_ts dropped."
+    },
+    "clinical_notes": {
+      "action": "withhold",
+      "reason": "Free-text notes carry identifying detail; no required task uses them and no redactor is in scope."
+    },
+    "published_weekly_stats": {
+      "action": "withhold",
+      "reason": "Aggregate table that would add a second linkage path (week, municipality, age band); no required task uses it."
+    }
+  },
+  "columns": {
+    "ed_visits": {
+      "patient_hetu": {
+        "pet": "pseudonym",
+        "reason": "Direct identifier; keyed HMAC-SHA256 pseudonym keeps patients linkable for H-U6 revisit analysis while blocking dictionary attack on the national id."
+      },
+      "date_of_birth": {
+        "pet": "age_band",
+        "params": {
+          "width": 10,
+          "also_as": [
+            "age"
+          ]
+        },
+        "reason": "Quasi-identifier; 10-year band written here so the scorer counts it in k, and copied to age for H-U6 (30-day revisit rate by age band)."
+      },
+      "sex": {
+        "pet": "keep",
+        "reason": "Kept: stratified analysis context; low-cardinality quasi-identifier counted in k."
+      },
+      "postcode": {
+        "pet": "drop",
+        "reason": "Quasi-identifier finer than needed; municipality serves H-U4 (attacker: linkage to public directory)."
+      },
+      "municipality": {
+        "pet": "top_n_exact_else_other",
+        "params": {
+          "n": 8
+        },
+        "reason": "Eight largest municipalities exact for H-U4 diagnosis mix, rest become other to lift k (attacker: linkage)."
+      },
+      "arrival_ts": {
+        "pet": "hour_of_day",
+        "reason": "Exact timestamp is a quasi-identifier; hour of day as HH:00 serves H-U8 arrival curve, date dropped (no seasonality study possible)."
+      },
+      "resp_rate": {
+        "pet": "keep",
+        "reason": "Kept: clinical measurement, not an identifier at this granularity."
+      },
+      "arrival_mode": {
+        "pet": "drop",
+        "reason": "Catalogued quasi-identifier (helicopter and police arrivals are rare); no required task reads it, and dropping it cuts the share of groups with a single diagnosis from 0.2787 (results/checks/l_diversity.json at commit a7c9b76) to 0.1128 (results/checks/l_diversity.json)."
+      },
+      "discharge_ts": {
+        "pet": "drop",
+        "reason": "Exact timestamp quasi-identifier; length of stay is already in los_minutes for H-U2."
+      }
+    },
+    "lab_results": {
+      "visit_id": {
+        "pet": "keep",
+        "reason": "Join key to ed_visits; H-U7 needs the visit-to-lab join."
+      },
+      "sampled_ts": {
+        "pet": "drop",
+        "reason": "Exact timestamp quasi-identifier; no required task needs lab sampling time."
+      }
+    }
+  },
+  "roles": {
+    "ed_visits": {
+      "direct_identifier": {
+        "pet": "drop",
+        "reason": "Direct identifier; no required task needs it (attacker: record linkage by name, phone or address)."
+      },
+      "quasi_identifier": {
+        "pet": "drop",
+        "reason": "Quasi-identifier the contract does not name; dropped so it cannot widen the linkage key (attacker: linkage to public directory)."
+      },
+      "technical_identifier": {
+        "pet": "drop",
+        "reason": "Device, staff or foreign-key code; no required task needs it (attacker: linkage)."
+      },
+      "free_text": {
+        "pet": "drop",
+        "reason": "Free text can carry identifying detail; coded fields serve the tasks instead."
+      },
+      "record_key": {
+        "pet": "keep",
+        "reason": "Record id for the row map and joins; not a person identifier."
+      },
+      "non_sensitive": {
+        "pet": "keep",
+        "reason": "Low-risk descriptive or clinical value the study uses."
+      },
+      "sensitive_attribute": {
+        "pet": "keep",
+        "reason": "Clinical measurement or diagnosis code the study needs; not an identifier at this granularity."
+      }
+    },
+    "lab_results": {
+      "direct_identifier": {
+        "pet": "drop",
+        "reason": "Direct identifier; no required task needs it (attacker: record linkage by name, phone or address)."
+      },
+      "quasi_identifier": {
+        "pet": "drop",
+        "reason": "Quasi-identifier the contract does not name; dropped so it cannot widen the linkage key (attacker: linkage to public directory)."
+      },
+      "technical_identifier": {
+        "pet": "drop",
+        "reason": "Device, staff or foreign-key code; no required task needs it (attacker: linkage)."
+      },
+      "free_text": {
+        "pet": "drop",
+        "reason": "Free text can carry identifying detail; coded fields serve the tasks instead."
+      },
+      "record_key": {
+        "pet": "keep",
+        "reason": "Record id for the row map and joins; not a person identifier."
+      },
+      "non_sensitive": {
+        "pet": "keep",
+        "reason": "Low-risk descriptive or clinical value the study uses."
+      },
+      "sensitive_attribute": {
+        "pet": "keep",
+        "reason": "Clinical measurement or diagnosis code the study needs; not an identifier at this granularity."
+      }
+    }
+  }
+}

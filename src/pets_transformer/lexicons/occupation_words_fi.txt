@@ -1,0 +1,7 @@
+# source (hand-picked base forms, hoitaja = head of terveydenhoitaja): data/education/counsellor_notes.csv:note_text, data/cyber/proxy_logs.csv:url, data/finance/transfers.csv:message
+hoitaja
+kuraattori
+lääkäri
+opettaja
+psykologi
+terveydenhoitaja
