@@ -41,6 +41,9 @@ class TypeModel:
         """Type probabilities for a column's values, or None when there are too few to judge."""
         if len(values) < MIN_VALUES or len(set(values)) < 2:
             return None
+        return self._proba(values)
+
+    def _proba(self, values: list[str]) -> dict[str, float]:
         x = (column_vector(values, self.encode) - self.mu) / self.sigma
         z = (x @ self.W + self.b) / self.temperature
         p = np.exp(z - z.max())

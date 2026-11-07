@@ -10,9 +10,15 @@ from __future__ import annotations
 
 import argparse
 import re
+from dataclasses import dataclass
 from pathlib import Path
 
 import pandas as pd
+
+from .semantic import requested_mode
+from .semantic.decide import combine, decide
+from .semantic.features import sample_values
+from .semantic.model import load_model
 
 MAX_ROWS = 5000
 T = 0.6  # share of values a pattern must match
@@ -115,11 +121,17 @@ def _record_id(v: pd.Series, blanks: int) -> bool:
 
 def classify(s: pd.Series) -> tuple[str, str, str]:
     """Return (role, subtype, kind) for one column; kind 'key' or 'fk' marks id columns resolved per table."""
+    return classify_traced(s)[:3]
+
+
+def classify_traced(s: pd.Series) -> tuple[str, str, str, str]:
+    """classify plus the rule that fired: "pre" (pattern rules before the word lists), "lex_*" (a word list, see
+    semantic.types.LEXICON_RULES), "numeric", "fallthrough" (nothing matched: CATEGORY) or "rule" (any other)."""
     v = s.dropna().astype(str).str.strip()
     v = v[v != ""]
     n = len(v)
     if n == 0:
-        return "non_sensitive", "CATEGORY", ""
+        return "non_sensitive", "CATEGORY", "", "pre"
     nuniq = v.nunique()
     ratio = nuniq / n
     blanks = len(s) - n
@@ -131,97 +143,97 @@ def classify(s: pd.Series) -> tuple[str, str, str]:
     nosign = hv.str.fullmatch(RX["hetu_nosign"])
     nosign[nosign] = hv[nosign].map(lambda x: HETU_CHECK[int(x[:9]) % 31] == x[9])
     if (hv.str.fullmatch(RX["hetu"]) | nosign).mean() >= T:
-        return "direct_identifier", "NATIONAL_ID", ""
+        return "direct_identifier", "NATIONAL_ID", "", "pre"
     if _rate(v, "iban") >= T and compact.str.len().between(15, 34).mean() >= T:
-        return "direct_identifier", "IBAN", ""
+        return "direct_identifier", "IBAN", "", "pre"
     if _rate(v, "email") >= T:
         top_domain = v.str.split("@").str[-1].str.lower().value_counts(normalize=True).iloc[0]
-        return "direct_identifier", "USERNAME" if top_domain >= 0.9 and ratio < 0.9 else "EMAIL", ""
+        return "direct_identifier", "USERNAME" if top_domain >= 0.9 and ratio < 0.9 else "EMAIL", "", "pre"
     if _rate(v, "url") >= T:
-        return "free_text", "URL", ""
+        return "free_text", "URL", "", "pre"
     digits = compact.str.fullmatch(r"\d{13,19}")
     if digits.mean() >= T:
         luhn = compact[digits].map(_luhn).mean()
         if luhn >= 0.9 and compact[digits].str[0].isin(list("23456")).mean() >= 0.9:
             if compact[digits].str.len().eq(15).mean() >= T:
-                return "technical_identifier", "IMEI", ""
-            return "direct_identifier", "PAYMENT_CARD", ""
+                return "technical_identifier", "IMEI", "", "pre"
+            return "direct_identifier", "PAYMENT_CARD", "", "pre"
     if _rate(v, "masked_card") >= T:
-        return "direct_identifier", "PAYMENT_CARD", ""
+        return "direct_identifier", "PAYMENT_CARD", "", "pre"
     if float((compact.str.fullmatch(RX["phone"]) & ~v.str.fullmatch(r"0\d{7}")).mean()) >= T:
-        return "direct_identifier", "PHONE", ""
+        return "direct_identifier", "PHONE", "", "pre"
     if _rate(v, "plate") >= T:
-        return "direct_identifier", "LICENSE_PLATE", ""
+        return "direct_identifier", "LICENSE_PLATE", "", "pre"
     if _rate(v, "mac") >= T:
-        return "technical_identifier", "MAC_ADDRESS", ""
+        return "technical_identifier", "MAC_ADDRESS", "", "pre"
     if _rate(v, "ip") >= T:
-        return "technical_identifier", "IP_ADDRESS", ""
+        return "technical_identifier", "IP_ADDRESS", "", "pre"
     if _rate(v, "cidr") >= T:
-        return "non_sensitive", "IP_ADDRESS", ""
+        return "non_sensitive", "IP_ADDRESS", "", "pre"
     if _rate(v, "uuid") >= T:
-        return "technical_identifier", "RECORD_ID", ""
+        return "technical_identifier", "RECORD_ID", "", "pre"
     if _rate(v, "hexhash") >= T:
-        return "non_sensitive", "OTHER", "hash"
+        return "non_sensitive", "OTHER", "hash", "pre"
     if _rate(v, "user_agent") >= T:
-        return "technical_identifier", "USER_AGENT", ""
+        return "technical_identifier", "USER_AGENT", "", "pre"
     if _rate(v, "oid") >= T:
-        return "direct_identifier", "STUDENT_ID", ""
+        return "direct_identifier", "STUDENT_ID", "", "pre"
     if _rate(v, "meter") >= T:
-        return "technical_identifier", "METER_ID", ""
+        return "technical_identifier", "METER_ID", "", "pre"
     if _rate(v, "timestamp") >= T:
-        return "quasi_identifier", "TIMESTAMP", ""
+        return "quasi_identifier", "TIMESTAMP", "", "pre"
     if _rate(v, "date") >= T:
         y = _years(v)
         birth = len(y) and (y.median() <= 2010 or y.max() - y.min() >= 30)
-        return "quasi_identifier", "BIRTH_DATE" if birth else "DATE", ""
+        return "quasi_identifier", "BIRTH_DATE" if birth else "DATE", "", "pre"
     if _record_id(v, blanks):
-        return "record_key", "RECORD_ID", "seqkey"
+        return "record_key", "RECORD_ID", "seqkey", "pre"
     if _rate(v, "hostname") >= T:
-        return "technical_identifier", "HOSTNAME", ""
+        return "technical_identifier", "HOSTNAME", "", "pre"
     if _rate(v, "employee_id") >= T and ratio >= 0.9:
-        return "direct_identifier", "EMPLOYEE_ID", ""
+        return "direct_identifier", "EMPLOYEE_ID", "", "pre"
     if _rate(v, "full_address") >= T:
-        return "direct_identifier", "STREET_ADDRESS", ""
+        return "direct_identifier", "STREET_ADDRESS", "", "pre"
     if _rate(v, "address") >= T and ratio >= 0.5:
-        return "direct_identifier", "STREET_ADDRESS", ""
+        return "direct_identifier", "STREET_ADDRESS", "", "pre"
     if low.isin(MUNICIPALITIES).mean() >= 0.7:
-        return "quasi_identifier", "MUNICIPALITY", ""
+        return "quasi_identifier", "MUNICIPALITY", "", "lex_municipality"
     if v.map(_is_name).mean() >= 0.5:
-        return "direct_identifier", "PERSON_NAME", ""
+        return "direct_identifier", "PERSON_NAME", "", "lex_name"
     if low.isin(MUNICIPALITIES).mean() >= 0.3:
-        return "quasi_identifier", "LOCATION_NAME", ""
+        return "quasi_identifier", "LOCATION_NAME", "", "lex_place"
     if nuniq >= 2 and low.isin(LANGUAGES).mean() >= 0.9 and v.str.islower().mean() >= 0.9:
-        return "quasi_identifier", "LANGUAGE", ""
+        return "quasi_identifier", "LANGUAGE", "", "lex_language"
     if 2 <= nuniq <= 4 and set(low.unique()) <= SEX:
-        return "quasi_identifier", "SEX", ""
+        return "quasi_identifier", "SEX", "", "lex_sex"
     if nuniq >= 2 and _rate(v, "country") >= T:
-        return "quasi_identifier", "LOCATION_NAME", ""
+        return "quasi_identifier", "LOCATION_NAME", "", "rule"
     if nuniq == 2 and set(low.unique()) == {"true", "false"}:
-        return "sensitive_attribute", "OTHER", ""
+        return "sensitive_attribute", "OTHER", "", "rule"
     if _rate(v, "income_band") >= T:
-        return "sensitive_attribute", "FINANCIAL_DATA", ""
+        return "sensitive_attribute", "FINANCIAL_DATA", "", "rule"
     if nuniq >= 15 and _rate(v, "icd10") >= T and v.str[0].nunique() >= 3:
-        return "sensitive_attribute", "DIAGNOSIS_CODE", ""
+        return "sensitive_attribute", "DIAGNOSIS_CODE", "", "rule"
 
     num = _numbers(v)
     if num.notna().mean() >= 0.95:
-        return _classify_numeric(v, num.dropna(), ratio, nuniq, blanks)
+        return (*_classify_numeric(v, num.dropna(), ratio, nuniq, blanks), "numeric")
 
     if v.str.contains("\\", regex=False).mean() >= T:
-        return "free_text", "FREE_TEXT", ""
+        return "free_text", "FREE_TEXT", "", "rule"
     if _rate(v, "id") >= T:
         return ("record_key" if ratio >= 0.99 and not blanks else "technical_identifier"), "RECORD_ID", (
-            "key" if ratio >= 0.99 and not blanks else "fk")
+            "key" if ratio >= 0.99 and not blanks else "fk"), "rule"
     if v.str.contains(ORG).mean() >= 0.3:
-        return "quasi_identifier", "ORG_NAME", ""
+        return "quasi_identifier", "ORG_NAME", "", "lex_org"
     tokens = v.str.split().str.len()
     if nuniq >= 20 and (tokens.mean() >= 4 or (tokens.mean() >= 2.5 and v.str.len().mean() >= 15 and nuniq >= 50)):
-        return "free_text", "FREE_TEXT", ""
+        return "free_text", "FREE_TEXT", "", "rule"
     if nuniq >= 20 and _rate(v, "filename") >= T and ratio >= 0.5:
-        return "free_text", "FREE_TEXT", ""
+        return "free_text", "FREE_TEXT", "", "rule"
     if nuniq >= 3 and low.map(_is_occupation).mean() >= T:
-        return "quasi_identifier", "OCCUPATION", ""
-    return "non_sensitive", "CATEGORY", ""
+        return "quasi_identifier", "OCCUPATION", "", "lex_occupation"
+    return "non_sensitive", "CATEGORY", "", "fallthrough"
 
 
 def _classify_numeric(v: pd.Series, num: pd.Series, ratio: float, nuniq: int, blanks: int) -> tuple[str, str, str]:
@@ -286,21 +298,65 @@ def _wide_sample(f: Path, n: int = MAX_ROWS) -> pd.DataFrame | None:
     return df.sample(n, random_state=0).sort_index() if len(df) > n else None
 
 
-def detect_dataset(data_dir: Path, dataset: str) -> pd.DataFrame:
+PROBS_COLUMNS = ["dataset", "table", "column", "rule", "privacy_role", "subtype", "top1", "p1", "top2", "p2", "top3",
+                 "p3", "decision", "flag"]
+REVIEW_COLUMNS = PROBS_COLUMNS + ["reason"]
+
+
+@dataclass
+class DetectReport:
+    """Labels plus what the model said. type_probs and needs_review hold names, types and probabilities only."""
+    labels: pd.DataFrame
+    type_probs: pd.DataFrame
+    needs_review: pd.DataFrame
+    mode: str
+
+
+def _label_column(s: pd.Series, model) -> tuple[tuple[str, str, str], dict | None]:
+    """Word lists first; with a model, a column the pattern and number rules did not settle is also read by the
+    model, and combine decides the label. Returns the (role, subtype, kind) label and its type_probs row or None."""
+    role, sub, kind, rule = classify_traced(s)
+    if model is None or rule in ("pre", "numeric"):
+        return (role, sub, kind), None
+    probs = model.predict_proba(sample_values(s))
+    if probs is None:
+        return (role, sub, kind), None
+    dec = decide(probs)
+    r2, s2, flag = combine(role, sub, rule, dec)
+    if (r2, s2) != (role, sub):
+        kind = ""
+    top = sorted(probs, key=probs.get, reverse=True)[:3]
+    row = dict(rule=rule, decision=dec.decision, flag=flag or "", reason=dec.reason)
+    for i, t in enumerate(top, 1):
+        row[f"top{i}"], row[f"p{i}"] = t, round(probs[t], 3)
+    return (r2, s2, kind), row
+
+
+def detect_dataset(data_dir: Path, dataset: str, semantic: str | None = None) -> pd.DataFrame:
+    return detect_dataset_report(data_dir, dataset, semantic).labels
+
+
+def detect_dataset_report(data_dir: Path, dataset: str, semantic: str | None = None) -> DetectReport:
+    """semantic: "lexicon" (word lists only), "hybrid" (word lists, then the model) or None (env PETS_SEMANTIC,
+    else hybrid when the model loads). A hybrid request without a model runs lexicon; load_model warns once."""
+    model = None if requested_mode(semantic) == "lexicon" else load_model()
+    mode = "lexicon" if model is None else "hybrid"
     tables = {f.stem: pd.read_csv(f, dtype=str, nrows=MAX_ROWS) for f in sorted(Path(data_dir).glob("*.csv"))}
     # The rules read the first MAX_ROWS rows (keys and order rules are tuned on file order). The first rows of a
     # time-sorted table are its first weeks, so a column judged non-sensitive there gets a second look on rows from
     # the whole file, and can only move to a more protective label, never to a less protective one.
     wide = {f.stem: _wide_sample(f) for f in sorted(Path(data_dir).glob("*.csv"))}
-    rows = []
+    rows, prob_rows = [], []
     for t, df in tables.items():
         for c in df.columns:
-            role, sub, kind = classify(df[c])
+            (role, sub, kind), prow = _label_column(df[c], model)
             if role == "non_sensitive" and wide[t] is not None:
-                r2, s2, k2 = classify(wide[t][c])
+                (r2, s2, k2), p2 = _label_column(wide[t][c], model)
                 if r2 in ESCALATE:
-                    role, sub, kind = r2, s2, k2
+                    (role, sub, kind), prow = (r2, s2, k2), p2
             rows.append(dict(dataset=dataset, table=t, column=c, privacy_role=role, subtype=sub, kind=kind))
+            if prow is not None:
+                prob_rows.append(dict(dataset=dataset, table=t, column=c, **prow))
     lab = pd.DataFrame(rows, columns=["dataset", "table", "column", "privacy_role", "subtype", "kind"])
     if lab.empty:
         return lab.drop(columns="kind")
@@ -349,7 +405,25 @@ def detect_dataset(data_dir: Path, dataset: str) -> pd.DataFrame:
     ref = lab.table.map(lambda t: not is_person[t]) & lab.privacy_role.isin(["quasi_identifier",
                                                                               "sensitive_attribute"])
     lab.loc[ref, "privacy_role"] = "non_sensitive"
-    return lab.drop(columns="kind")
+    return _report(lab.drop(columns="kind"), prob_rows, mode)
+
+
+def _report(lab: pd.DataFrame, prob_rows: list[dict], mode: str) -> DetectReport:
+    """type_probs carries each model-read column's final label (after the table rules)."""
+    probs = pd.DataFrame(prob_rows, columns=REVIEW_COLUMNS)
+    if len(probs):
+        final = lab.set_index(["table", "column"])[["privacy_role", "subtype"]]
+        probs[["privacy_role", "subtype"]] = final.loc[list(zip(probs.table, probs.column))].to_numpy()
+    review = probs[probs.flag != ""].reset_index(drop=True)
+    return DetectReport(lab, probs[PROBS_COLUMNS], review, mode)
+
+
+def review_warning(review: pd.DataFrame) -> str:
+    """One line naming every flagged column, or "" when nothing is flagged."""
+    if review.empty:
+        return ""
+    cols = ", ".join(f"{t}.{c} ({f})" for t, c, f in zip(review.table, review.column, review.flag))
+    return f"WARNING: {len(review)} column(s) need review: {cols}"
 
 
 def main(argv=None) -> None:
@@ -358,13 +432,22 @@ def main(argv=None) -> None:
     ap.add_argument("--dataset", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--columns-only", action="store_true", help="write column,privacy_role,subtype")
+    ap.add_argument("--semantic", choices=["lexicon", "hybrid"], default=None,
+                    help="word lists only, or word lists then the model (default: env PETS_SEMANTIC, else hybrid "
+                         "when the model is installed)")
     a = ap.parse_args(argv)
-    lab = detect_dataset(Path(a.data), a.dataset)
+    report = detect_dataset_report(Path(a.data), a.dataset, a.semantic)
+    lab = report.labels
     if a.columns_only:
         lab = lab[["column", "privacy_role", "subtype"]]
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     lab.to_csv(a.out, index=False)
-    print(f"wrote {len(lab)} labels -> {a.out}")
+    print(f"wrote {len(lab)} labels -> {a.out} (mode {report.mode})")
+    out = Path(a.out)
+    report.type_probs.to_csv(out.with_name(out.stem + "_type_probs.csv"), index=False)
+    report.needs_review.to_csv(out.with_name(out.stem + "_needs_review.csv"), index=False)
+    if line := review_warning(report.needs_review):
+        print(line)
 
 
 if __name__ == "__main__":
