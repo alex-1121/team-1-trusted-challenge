@@ -217,3 +217,17 @@ def test_default_with_model_is_advisor(tables, stub, monkeypatch):
     report = detect_dataset_report(tables, "x")
     assert report.mode == "advisor"
     assert report.labels.equals(detect_dataset_report(tables, "x", "lexicon").labels)
+
+
+def test_non_escalating_wide_reading_does_not_change_the_label(tmp_path, monkeypatch):
+    """A wide second look that reads another, non-escalating role (here a record id) never sets the label."""
+    n = MAX_ROWS * 10  # the wide sample is then 90% ids
+    head = cyc(["open", "closed", "pending"], MAX_ROWS)
+    tail = [f"REQ-{i:08d}" for i in range(n - MAX_ROWS)]
+    pd.DataFrame({"state": head + tail}).to_csv(tmp_path / "t.csv", index=False)
+    s = Stub()
+    s.answer = lambda values: probs(CATEGORY=0.9, OCCUPATION=0.1)
+    monkeypatch.setattr(detect, "load_model", lambda: s)
+    lex = detect_dataset_report(tmp_path, "x", "lexicon")
+    hyb = detect_dataset_report(tmp_path, "x", "hybrid")
+    assert lab(hyb, "state") == lab(lex, "state")

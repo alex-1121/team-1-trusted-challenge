@@ -329,7 +329,10 @@ def _label_column(s: pd.Series, wide: pd.Series | None, model,
         second = classify_traced(wide)
         if second[0] in ESCALATE:
             role, sub, kind, rule = second
-        read, s = (second[0], second[1], second[3]), wide
+            read = (role, sub, rule)
+        elif second[0] == role:  # same role on the wide rows: the label stands, the wide rows say which rule fired
+            read = (role, sub, second[3])
+        s = wide  # the model reads the rows spread over the whole file; a non-escalating reading never sets the label
     if model is None or read[2] in ("pre", "numeric"):
         return (role, sub, kind), None
     probs = model.predict_proba(sample_values(s))
