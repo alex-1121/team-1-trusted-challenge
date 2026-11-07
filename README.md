@@ -86,6 +86,12 @@ HEALTH-S1: a hospital gives its emergency-department visits and lab results to a
 
 Residual risk, from `results/health-s1-build/summary.md`: in ed_visits, the share of records with k<5 is 0.1817. That means 18.2% of the records share their quasi-identifier combination with fewer than 5 rows, so an attacker who knows those attributes about a person can narrow the match to a handful of rows or one. Attacker model: the toolkit's shipped attackers only. Attacks run: linkage re-identification with the shipped attacker files, a dictionary attack on hashed columns, a direct-identifier pattern scan, and k over the quasi-identifiers in the field catalogue. We did not test stronger attackers (more background knowledge, other outside data).
 
+Checks the scorecard does not run (`python -m pets_transformer.cli checks`):
+
+- l-diversity (how mixed the diagnoses are inside each group of rows that share age band, sex, municipality, arrival hour and arrival_mode): 0.2787 of the groups have only one distinct diagnosis (`results/checks/l_diversity.json`). Dropping arrival_mode, which no task reads, cuts this to 0.1128 (`results/checks-l/l_diversity.json`). With that fix the scorecard reads privacy 0.9533, utility 0.9928, composite 0.9709, every task score unchanged (`results/health-s1-build-l/scorecard.json`); the table above is the release before the fix.
+- An attacker who knows a visit's diagnosis group, age band, municipality and arrival hour singles out exactly one row for 0.1282 of the 46398 visits, always the right one, against 0.2501 with the same facts on the original tables (`results/checks/informed_attacker.json`).
+- Joining ed_visits to lab_results and counting the diagnosis codes as part of the key, 0.9799 of the joined rows sit in groups of fewer than 5 visits, 0.9525 after the fix (`results/checks/joined_k.json`, `results/checks-l/joined_k.json`).
+
 What we guarantee and what we do not: `docs/guarantee-and-residual-risk.md`.
 
 ## How to run
