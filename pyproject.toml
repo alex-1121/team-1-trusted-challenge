@@ -13,3 +13,8 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 "pets_transformer.semantic" = ["models/head.npz", "models/meta.json"]
+
+[tool.pytest.ini_options]
+# Our tests only. The organisers' own tests in data/proving-ground/tests (gitignored) are not collected, so the
+# count is the same on every clone, with or without the data.
+testpaths = ["tests"]
