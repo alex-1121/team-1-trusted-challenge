@@ -1,6 +1,6 @@
 # Demo video script
 
-Spoken English, about two minutes, read by us in first person plural. Lines in square brackets are screen cues and are not spoken.
+Spoken English, about two and a half minutes, read by us in first person plural. Lines in square brackets are screen cues and are not spoken.
 
 [title card]
 
