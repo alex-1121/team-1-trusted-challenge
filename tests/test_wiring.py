@@ -20,8 +20,24 @@ def test_role_rule_resolves_a_column():
 
 
 def test_named_rule_wins_and_sets_note():
-    rule, note = pr.resolve("t", "hetu", "direct_identifier", C)
-    assert rule["pet"] == "pseudonym" and note == "named rule wins over detected role direct_identifier"
+    rule, note = pr.resolve("t", "hetu", "non_sensitive", C)
+    assert rule["pet"] == "pseudonym" and note == "named rule wins over detected role non_sensitive"
+
+
+def test_no_note_when_role_is_one_the_rule_expects():
+    assert pr.resolve("t", "hetu", "direct_identifier", C)[1] == ""
+    k = {"columns": {"t": {"a": {"pet": "keep", "reason": "r"}, "b": {"pet": "age_band", "reason": "r"}}}}
+    assert pr.resolve("t", "a", "record_key", k)[1] == "" and pr.resolve("t", "a", "technical_identifier", k)[1] == ""
+    assert pr.resolve("t", "a", "quasi_identifier", k)[1] != ""
+    assert pr.resolve("t", "b", "quasi_identifier", k)[1] == "" and pr.resolve("t", "b", "direct_identifier", k)[1] != ""
+
+
+def test_hour_block_param_is_read():
+    c = {"columns": {"t": {"id": {"pet": "keep", "reason": "r"}, "ts": {"pet": "hour_of_day", "params": {"block": 3}, "reason": "r"}}},
+         "tables": {"t": {"action": "release", "record_id": "id", "reason": "r"}}}
+    df = pd.DataFrame({"id": ["1"], "ts": ["2025-03-01 07:30:00"]})
+    out, _, _ = pr.protect_table("t", df, c, b"k" * 32, {"ts": "quasi_identifier", "id": "record_key"})
+    assert out.ts[0] == "06:00"
 
 
 def test_unlabelled_unnamed_column_raises():
@@ -38,7 +54,7 @@ def test_table_missing_from_contract_is_listed(tmp_path):
     row = plan[plan.table == "extra"].iloc[0]
     assert row.pet == "not released" and row.reason == "not in contract, not released"
     assert not (tmp_path / "out" / "extra.csv").exists()
-    assert plan[plan.column == "hetu"].iloc[0].note.startswith("named rule wins")
+    assert plan[plan.column == "hetu"].iloc[0].note == ""
 
 
 def test_every_taxonomy_role_resolves_in_health_contract():
@@ -67,7 +83,17 @@ def test_build_refuses_missing_baseline(tmp_path, monkeypatch):
     from pets_transformer import build
     for d in ("health", "unseen"):
         (tmp_path / "data" / d).mkdir(parents=True)
+    (tmp_path / "data" / "unseen" / "u.csv").write_text("a\n1\n")
     monkeypatch.setattr(build, "PG", tmp_path)
     monkeypatch.setattr(build, "BASELINE_DIR", tmp_path / "nobase")
     with pytest.raises(FileNotFoundError, match="raw.json"):
+        build.run("HEALTH-S1", out=tmp_path / "o", results=tmp_path / "r", submission=tmp_path / "s")
+
+
+def test_build_refuses_empty_unseen_folder(tmp_path, monkeypatch):
+    from pets_transformer import build
+    for d in ("health", "unseen"):
+        (tmp_path / "data" / d).mkdir(parents=True)
+    monkeypatch.setattr(build, "PG", tmp_path)
+    with pytest.raises(FileNotFoundError, match="unseen"):
         build.run("HEALTH-S1", out=tmp_path / "o", results=tmp_path / "r", submission=tmp_path / "s")

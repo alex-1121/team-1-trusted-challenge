@@ -37,13 +37,13 @@ One command does everything for the health scenario:
 python -m pets_transformer.cli build --scenario HEALTH-S1
 ```
 
-It runs four steps: the detector labels every column of the health tables and of the unseen HR export; `protect` applies `contracts/HEALTH-S1.json` using those labels; `score` runs the organisers' scorecard and identifier check against the raw baseline; the result is assembled into `pets_submission/`. Options `--original`, `--out`, `--results` and `--submission` override the default folders.
+It runs four steps: the detector labels every column of the health tables and of the unseen HR export; `protect` applies `contracts/HEALTH-S1.json` using those labels; `score` runs the organisers' scorecard and identifier check against the raw baseline; the result is assembled into `pets_submission/`. Options `--original`, `--out`, `--results`, `--submission` and `--pets-eval` override the defaults (the `pets-eval` default is `.venv/bin/pets-eval` at the repo root; the data default is `data/proving-ground`; the baseline is read from `baseline-scores/`).
 
 What comes out:
 
-- `results/health-s1-build/`: `scorecard.json` and `scorecard.html` (the organisers' scorecard), `check.txt` (identifier scan), `summary.md` (before and after per task and risk, k-anonymity, residual risk in plain words), `plan.md` (one row per column: detected role, PET, parameters, reason, and a note where a named rule overrides the detected role; tables not in the contract are listed as not released).
+- `results/health-s1-build/` (scorecards only, no labels): `scorecard.json` and `scorecard.html` (the organisers' scorecard), `check.txt` (identifier scan), `summary.md` (before and after per task and risk, k-anonymity, residual risk in plain words), `plan.md` (one row per column: detected role, PET, parameters, reason, and a note where a named rule overrides the detected role; tables not in the contract are listed as not released).
 - `pets_submission/health/`: the protected tables and their row maps. Never committed, never published.
-- `pets_submission/unseen_field_labels.csv`: the detector's labels for the unseen export. This is the only committed file in that folder.
+- `pets_submission/unseen_field_labels.csv` and `pets_submission/health_field_labels.csv`: the detector's labels for the unseen export and for the health tables. These are the only committed files in that folder.
 - `out/health-s1-build/hmac.key`: the random key behind the pseudonyms. Never committed.
 
 Where the numbers come from: every number is read from `scorecard.json`, written by the organisers' `pets-eval` (a self-assessment, not the official judging score). The "before" figures come from the committed raw baselines in `baseline-scores/`.
@@ -55,7 +55,7 @@ Where the numbers come from: every number is read from `scorecard.json`, written
 | `contracts/` | One JSON contract per scenario: recipient, purpose, role rules (by detected role) and named column rules, each with a reason |
 | `src/pets_transformer/` | The code: `detect`, `protect`, `score`, `build` and the command line |
 | `results/` | Committed evidence: detector results, gate runs, and the output of each build |
-| `pets_submission/` | What goes to the organisers on request; only the labels file is committed |
+| `pets_submission/` | What goes to the organisers on request; only the two label files are committed |
 
 TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0).
 
