@@ -1,12 +1,12 @@
 # The governance issue: who owns the release decision
 
-Status: proposed, not adopted. Sections 4 to 10 updated after the review and a reading of the code (see "Changes after the review" at the end). Author: Claude Fable 5.1, run by Arda, 7 November 2026, after a Since AI official told the team that the extra mile on TrustED is the governance issue, considered next to the business and technical ones. Three research workers (legal, TrustED data-space, PET practice) each researched and argued a position; this file is the synthesis. Comment as PR review comments or `> note (name):` lines. Nothing here is a team decision until a row lands in `../decisions.md`.
+Status: adopted 2026-11-07 in the changed form of option D in section 5 (Arda, following a Fable review, row in `../decisions.md`). Sections 4 to 10 were updated after the review and a reading of the code (see "Changes after the review" at the end). Author: Claude Fable 5.1, run by Arda, 7 November 2026, after a Since AI official told the team that the extra mile on TrustED is the governance issue, considered next to the business and technical ones. Three research workers (legal, TrustED data-space, PET practice) each researched and argued a position; this file is the synthesis. Comment as PR review comments or `> note (name):` lines. Nothing here is a team decision until a row lands in `../decisions.md`.
 
 ## TL;DR, in plain words
 
 Today the tool decides by itself how much privacy risk is acceptable, and for whom. In a real hospital a named person decides that and answers for it. Our code takes those decisions on its own, and our key-decisions file marks one of them "our choice" and the others "open for the team". That is the governance issue.
 
-The extra mile: the tool writes its choices down, shows them to that person, and refuses to release until they sign. Three parts. A policy file that someone owns. A release record the build writes. A release step that will not write the submission folder until the record is signed, and refuses again if anything changes after signing.
+The extra mile: a named person signs the policy that sets the risk limits, and the build refuses to run without that signature or if anything in the policy changed. `build` stays one command. Every release carries a record of the signed policy it was built under.
 
 The record also covers what happens after the files leave: what the recipient may and may not do, and the plain fact that the tool cannot enforce any of it from that point on.
 
@@ -83,7 +83,14 @@ The commands have to be separate because every build draws a new key and a new r
 - Exposes: hashes of protected files. Fine.
 - Dies with: a separate script that can rot after Sunday.
 
-**Recommendation (author's reading, for the team to overrule):** build A, with B as its text. A already takes the hashes and the tamper refusal from C, so drop C's ODRL policy and its separate verify script. A is the one that changes what the software does, which is the difference between a governance claim and a governance control.
+**D. Signed policy, one build command (chosen).** The hospital's data steward signs `policy/<scenario>.policy.json` with `ssh-keygen -Y sign` before any build. `build` verifies the signature against the public key in `policy/allowed_signers`, and refuses on a missing signature, a changed byte, a wrong signer, or a contract the policy does not allow. It then writes `release_record.json` next to the output, with the policy hash, the hash of every released file, the recipient, the purpose, the recipient's duties and the line "enforced after release: none".
+- Cost if skipped: the same as A.
+- Exposes: a public key and a role name in the repo. The private key stays on the signer's machine, never in the repo, the zip or `out/`.
+- Dies with: the policy file. A changed policy simply needs a new signature.
+
+**Decision (Arda, 2026-11-07):** the official could not be asked again, so Arda chose to follow a Fable review, which picked decision ownership and option D. A's commands are dropped: they would make the video, deck and README wrong, and signing before the build is what the models in section 3 do. A's point that the commands "have to be separate" holds only for binding an approval to output files. C's ODRL policy and verify script stay dropped.
+
+The sentence for evaluators: "Today's PET tools decide on their own how much residual risk is acceptable and for whom. Ours makes the hospital's data steward sign that decision as a policy before any build, and every release records the signed policy it was built under."
 
 ## 6. The business angle, in the same frame
 
@@ -93,9 +100,9 @@ The commands have to be separate because every build draws a new key and a new r
 
 ## 7. Demo moment
 
-1. Run `build`: the gate passes and writes a candidate with an unsigned record. Run `release`: it refuses and prints the residual risks a human must accept.
-2. Run `approve` as the controller's data steward, then `release`: the files arrive with the record and the approval, which show the approver, each parameter with its source, and the recipient's duties.
-3. Change one threshold in the policy and run `release` again: it refuses, and it keeps refusing until someone rebuilds and approves the new candidate. This is the moment that makes the sign-off a control.
+1. Run `build` on an unsigned policy: it refuses and says why.
+2. Sign the policy as the data steward and run `build`: the gate passes, the files arrive, and `release_record.json` shows the policy, the recipient and the recipient's duties.
+3. Change one threshold in the policy and run `build` again: it refuses until the steward signs the new policy. This is the moment that makes the signature a control.
 4. Show the choice the owner makes between the two attacker assumptions, inside the same controlled research setting. These are the numbers of the shipped contracts. They change if the selector v2 contract replaces the shipped one (section 9):
 
 | | Shipped default contract | Shipped informed contract |
@@ -110,8 +117,8 @@ Both attacker rows are shown because they are different assumptions. A stricter 
 
 ## 8. What to say honestly
 
-- Approval is a human step we model; in the hackathon a teammate signs. Say so.
-- The approval is a stand-in for a real e-signature. It catches a change to a file, the policy or the contract after signing. It does not catch someone rewriting the record and the approval together, and it does not prove who signed, because the hashes use no secret and anyone with the folder can write both files.
+- Signing is a human step we model. In the hackathon the signer is a demo key with the role "data steward (demo)". Say so.
+- The signature shows that the holder of that key approved those exact policy bytes before the build. It does not show who holds the key, because it is not a qualified e-signature. It does not show that the PETs were applied correctly, and nothing we ship controls the data afterwards.
 - The record is self-attestation. Nobody independent checked that the PETs were applied as written.
 - The tool enforces none of the recipient's duties after release. A leak can at best be traced to a release, and only with one build per recipient and the tokens intact.
 - A passing gate covers the attacks on the approved list and no others. An attack that does not apply is printed as "not applicable", never as 0.0.
@@ -137,26 +144,22 @@ Selector v2 runs in parallel on branch `selector-v2-measured-risk` (plan `2026-1
 - The contract the policy selects depends on selector v2's ship rule (Arda, 2026-11-07, chat): the gate passes, the organisers' privacy score is at least 1.0 (the shipped score, pending Arda's confirmation of that bar), utility stays within 0.02 of 0.971, and a blind reviewer says GO or RESHAPE with fixes applied. If it fails, the shipped contract stays. The policy names one contract either way, so the release design does not depend on the outcome.
 - A re-run of `select --scenario HEALTH-S1` reproduced `contracts/HEALTH-S1.json` byte for byte (selector v2 plan, 2026-11-07), so the shipped contract is selector output with no hand edits. In the record its source is "selector default".
 
-Build order:
+Build order, as built on branch `gate-enforce-checks`:
 
-1. **Policy loading.** Add `policy/` with one file for each scenario we build: HEALTH-S1, HEALTH-S3, EDU-S2, ENERGY-S3, PUB-S3, with today's values, so the policy changes no result. All five attack thresholds stay in every file. Required lists differ by scenario: `news_linkage` is required only on HEALTH-S1; the checks required are all three on HEALTH-S1, the informed-attacker check on ENERGY-S3 and PUB-S3, and none on HEALTH-S3 and EDU-S2, which have no k target. No policy means refusal, with no fallback defaults. Remove `GATE` and `UTILITY_FLOOR`; `redteam.run` takes its thresholds as an argument. `cli redteam` finds its policy through the contract's `scenario` key, which `contract.py` must then require. `repair.search` uses the higher of its 0.85 and the policy floor, so a raised floor cannot pick an order the gate refuses, and today's value changes nothing.
-2. **Setting check.** `setting` must equal the scenario's `trust_level` in the organisers' `metadata/scenarios.json`, so nobody can type a friendlier setting. A row-level release in a `public` setting is refused.
-3. **One gate function.** A pure function in a new `src/pets_transformer/release.py` takes the policy and the stored results, so tests run without the proving-ground data. It fails on an attack over its threshold; a required attack that did not run, read from the `applicable` and `evaluated` fields the attacks already write; a required task missing or under the floor; the scorer's `min_k` under the minimum; `for_comparison_k_columns_only.min_k` under the minimum where a table joins; `worst_group.distinct` under the minimum l, where that minimum is above 1; a required check missing. An attack on the policy's not-applicable list needs a stated reason.
-4. **Fresh candidate.** `build` writes each candidate to a new folder under `out/<run>/`, with its own results inside, and never deletes an old one. That closes Astra P1-1 at the source and stops a second build overwriting evidence. The repair search copies stay outside the candidate. The label CSVs are written beside `<dataset>/`, because `redteam.py` reads every CSV inside it as a join table. The key is drawn into memory, as `cli.py` already does, so `hmac.key` goes away. The file list comes from the contract, never from a folder listing, and each entry has a role: `recipient` for released tables, `organiser_evaluation` for row maps and label CSVs, `candidate_only` for `plan.csv`, `plan.md` and `repair_report.json`, which are hashed and never copied. The record is written before any refusal, so a failed candidate has one too, and it hashes the scorecard, the red-team file and `checks/`. `build.run` loses its `submission` argument; update `cli.py` and the three calls in `tests/test_wiring.py`, and load the policy after the input checks so those tests still reach their errors.
-5. **Approve.** `approve` re-runs the gate on the stored results and refuses on a failure, on a contract the policy does not select, and on a policy or contract that differs from what the record hashed or from the hash the policy stores for its contract. Other contracts can still be built and measured. It writes `approval.json` and leaves the record untouched.
-6. **Release.** `release --submission <folder>` re-runs the gate, checks approval against record, record against every file, the policy and the contract, and walks the candidate recursively: an extra or missing file is a refusal. It refuses if the submission folder holds any file other than those on the list and the three below, naming the file, and deletes nothing. It then copies the listed files plus the record, the approval and a separate `release_log.json`, and compares the whole folder with that set. It copies the candidate's results to `results/<run>/`, which is where the record and approval get committed. Releasing the same candidate twice gives the same folder.
-7. **Tests.** One per refusal: unsigned; threshold changed after approval; row changed after approval; stray CSV, also in a subfolder; required attack that did not run; required task missing; k under the minimum; join k under the minimum; required check missing; contract not selected; contract edited before `build`; setting that differs from the organisers' file; failed gate cannot be approved; verdict edited to pass; unlisted file already in the submission folder. Two that must succeed: a signed candidate releases exactly the listed files, and the full path of policy change, rebuild, approve, release. One over evidence: the gate on all five committed result sets, where HEALTH-S1 default and informed, HEALTH-S3, EDU-S2 and ENERGY-S3 pass, PUB-S3 fails on utility, and the no-flag build fails on join k.
-8. **Text.** `README.md` (the lines on `cli build` and `hmac.key`, lines 28, 33, 114 and 161, and a Layout row for `policy/` in the same commit, which `AGENTS.md` requires), `docs/pets-submission-handover.md`, `docs/video-script.md`, `docs/deck-outline.md`, `docs/guarantee-and-residual-risk.md`, and a new row in `context/key-decisions.md` that supersedes the thresholds row, since old rows are never edited.
-9. **After selector v2 lands.** Pass `TOL` and `RISK_LINE` from the policy as selector arguments. The record prints `fitness`, or "not measured" when the contract has none.
+1. **Gate fixes inside `build`.** One pure check covers group size (k and l, also on the join), checks that did not run, attacks that did not run, required tasks, the identifier scan and scorecard risks, and stray files. The copy step takes only the files the contract names.
+2. **Signed policy.** One policy file per scenario we build, holding today's values, so no result moves. `GATE` and `UTILITY_FLOOR` go away. `build` verifies the signature after the input checks and fails closed.
+3. **Release record** next to the output, as in option D.
+4. **Tests**, one per refusal, plus a run of the gate over the committed results: HEALTH-S1 default and informed, HEALTH-S3, EDU-S2 and ENERGY-S3 pass, PUB-S3 fails on utility, and the no-flag build fails on join k.
+5. **After selector v2 lands.** Pass `TOL` and `RISK_LINE` from the policy as selector arguments, and re-sign if the contract changes. The record prints `fitness`, or "not measured" when the contract has none.
 
-No new PET. The selector changes only in step 9.
+No new PET, and no new dependency: OpenSSH is already on the machines we checked.
 
 ## 10. Questions for the team
 
-1. Do we adopt the governance framing as the "extra mile" story, and how does it rank against the other Astra findings and the second scenario?
-2. Who signs the release record in the demo, and with which role name (data steward, DPO)?
-3. Which attacker assumption does the HEALTH-S1 policy select, default or informed? Section 7 has the numbers. One thing to weigh: Arda decided tonight (2026-11-07, chat) that sensitive attributes are the target and never the attacker's key. The author reads that as a rule for the selector's risk measure. The informed contract assumes the attacker knows the diagnosis group, so it stands as a stricter option on top of that rule, not as part of it.
-4. Do the thresholds move into the policy as they are, or does the team change the 0.5 utility floor? A floor of 0.85, the repair search's own floor, passes the default contract (lowest required task 0.9446) and refuses the informed contract (H-U4 0.8334, H-U8 0.8485). A floor of 0.8 passes both.
+1. Answered: governance is the extra-mile story (Arda, 2026-11-07).
+2. Answered for the demo: a demo key with the role "data steward (demo)".
+3. Open: which attacker assumption does the HEALTH-S1 policy select? It selects default, today's value, until the team changes it and re-signs. Section 7 has the numbers. One thing to weigh: Arda decided tonight (2026-11-07, chat) that sensitive attributes are the target and never the attacker's key. The author reads that as a rule for the selector's risk measure, which the selector session confirmed. The informed contract assumes the attacker knows the diagnosis group, so it stands as a stricter option on top of that rule.
+4. Open: the 0.5 utility floor moves into the policy unchanged. A floor of 0.85, the repair search's own floor, passes the default contract (lowest required task 0.9446) and refuses the informed contract (H-U4 0.8334, H-U8 0.8485). A floor of 0.8 passes both.
 
 ## Sources
 
@@ -197,3 +200,4 @@ Made by Claude Opus 5.5, run by Arda, after he asked for the review's fixes to g
 - Facts: a separate reviewer (Claude Sonnet, verifier) checked 17 claims in the first version of this update; 1 wrong and fixed, and the byte comparison of the review section it could not run was done by the author and matched.
 - Removed: time estimates. The size section is now a build order.
 - Aligned with selector v2 (read from its plan and its session on 2026-11-07, neither on main yet): policy numbers, shipped-contract labels, the `fitness` count in the record, and question 3.
+- Adopted form: Arda asked for a Fable reviewer's call and chose to go with it. Option D replaces option A; sections 5, 7, 8, 9 and 10 changed to match. The review above and option A's text stay as history.
