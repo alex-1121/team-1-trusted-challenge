@@ -11,6 +11,7 @@ import pytest
 
 from pets_transformer import detect
 from pets_transformer.detect import MAX_ROWS, classify, classify_traced, detect_dataset, detect_dataset_report
+from pets_transformer.semantic import ModelUnavailable
 from pets_transformer.semantic.model import TypeModel
 from pets_transformer.semantic.types import TYPES
 
@@ -32,9 +33,12 @@ class Stub(TypeModel):
     def __init__(self):
         super().__init__(None, np.zeros((1, 1)), np.zeros(1), np.zeros(1), np.ones(1), 1.0, TYPES)
         self.calls = 0
+        self.answer = None
 
     def _proba(self, values):
         self.calls += 1
+        if self.answer is not None:
+            return self.answer(values)
         if set(values) <= set(DE):
             return probs(PERSON_NAME=0.9, CATEGORY=0.1)
         if set(values) <= set(FI):
@@ -120,21 +124,68 @@ def test_wide_sample_path_uses_same_combine(tmp_path, stub):
 
 
 def test_outputs_hold_no_values(tables, stub, capsys):
-    out = tables / "o" / "labels.csv"
-    detect.main(["--data", str(tables), "--dataset", "x", "--out", str(out), "--semantic", "hybrid"])
-    tp = (tables / "o" / "labels_type_probs.csv").read_text()
-    nr = (tables / "o" / "labels_needs_review.csv").read_text()
+    out, rev = tables / "o" / "labels.csv", tables / "rev"
+    detect.main(["--data", str(tables), "--dataset", "x", "--out", str(out), "--semantic", "hybrid",
+                 "--review-dir", str(rev)])
+    assert sorted(p.name for p in (tables / "o").iterdir()) == ["labels.csv"]  # nothing beside the labels
+    tp = (rev / "labels_type_probs.csv").read_text()
+    nr = (rev / "labels_needs_review.csv").read_text()
     assert len(tp.splitlines()) >= 3 and len(nr.splitlines()) == 2
     values = {v for v in pd.read_csv(tables / "people.csv", dtype=str).fillna("").stack() if v.strip()}
     assert values and not [v for v in values if v in tp or v in nr]
     assert "WARNING: 1 column(s) need review: people.fi_name (disagree)" in capsys.readouterr().out
 
 
-def test_hybrid_request_without_model_runs_lexicon(tables, monkeypatch):
+def test_requested_mode_without_model_fails_default_falls_back(tables, monkeypatch):
     monkeypatch.setattr(detect, "load_model", lambda: None)
-    report = detect_dataset_report(tables, "x", "hybrid")
+    for mode in ("hybrid", "advisor"):
+        with pytest.raises(ModelUnavailable):
+            detect_dataset_report(tables, "x", mode)
+    monkeypatch.delenv("PETS_SEMANTIC")
+    report = detect_dataset_report(tables, "x")
     assert report.mode == "lexicon"
     assert report.labels.equals(detect_dataset_report(tables, "x", "lexicon").labels)
+
+
+def test_lexicon_writes_no_review_files(tables, stub):
+    out, rev = tables / "o" / "labels.csv", tables / "rev"
+    detect.main(["--data", str(tables), "--dataset", "x", "--out", str(out), "--semantic", "lexicon",
+                 "--review-dir", str(rev)])
+    assert not rev.exists() and sorted(p.name for p in (tables / "o").iterdir()) == ["labels.csv"]
+
+
+def test_labels_only_skips_model_unless_hybrid(tables, stub, monkeypatch):
+    monkeypatch.delenv("PETS_SEMANTIC")  # default: advisor, which never changes a label
+    assert detect_dataset(tables, "x").equals(detect_dataset_report(tables, "x", "lexicon").labels)
+    assert stub.calls == 0  # select and protect without --labels do not load or run the model
+    detect_dataset(tables, "x", "hybrid")
+    assert stub.calls > 0
+
+
+def test_hybrid_wide_look_never_less_protective_than_lexicon(tmp_path, stub):
+    # first MAX_ROWS rows: a harmless word the model would call an occupation; later rows: Finnish names, which the
+    # word lists catch only on the wide sample. Hybrid must not stop at the model's quasi-identifier.
+    n = MAX_ROWS * 10  # the wide sample is then 90% names
+    col = cyc(["foo", "bar", "baz"], MAX_ROWS) + cyc(FI, n - MAX_ROWS)
+    pd.DataFrame({"k": cyc(["a", "b", "c"], n), "who": col}).to_csv(tmp_path / "t.csv", index=False)
+    stub.answer = lambda values: probs(OCCUPATION=0.9, CATEGORY=0.1) if not set(values) & set(FI) else None
+    lex = lab(detect_dataset_report(tmp_path, "x", "lexicon"), "who")
+    hyb = lab(detect_dataset_report(tmp_path, "x", "hybrid"), "who")
+    assert lex == ("direct_identifier", "PERSON_NAME") and hyb == lex
+    assert stub.calls == 2  # one model read per column (k and who), not one per look
+
+
+def test_moot_flag_on_table_without_person_is_dropped(tmp_path, stub):
+    # a stops-like reference table: no person column; the model would call a harmless column a town (quasi), which
+    # the reference-table rule demotes to non-sensitive anyway, so no flag. A model-said name keeps its flag.
+    pd.DataFrame({"zone": cyc(["foo", "bar", "baz", "qux", "quux"]), "state": cyc(["open", "closed", "pending"])}
+                 ).to_csv(tmp_path / "stops.csv", index=False)
+    stub.answer = lambda values: probs(MUNICIPALITY=0.9, CATEGORY=0.1) if "foo" in values else None
+    rep = detect_dataset_report(tmp_path, "x", "advisor")
+    assert rows(rep, "zone").iloc[0]["flag"] == "" and rep.needs_review.empty
+    stub.answer = lambda values: probs(PERSON_NAME=0.9, CATEGORY=0.1) if "foo" in values else None
+    rep = detect_dataset_report(tmp_path, "x", "advisor")
+    assert list(rep.needs_review.column) == ["zone"]
 
 
 def test_person_table_flip_is_protective(tmp_path, stub):

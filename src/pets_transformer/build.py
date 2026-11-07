@@ -16,10 +16,14 @@ UTILITY_FLOOR = 0.5
 
 
 def report_review(reports: list[detect.DetectReport], results: Path) -> str:
-    """Write type_probs.csv and needs_review.csv (names, types and probabilities, no values) to results and return
-    the warning line, or "" when no column is flagged. A flag never stops the build."""
+    """Write detect_mode.json (the detector mode that actually ran, per dataset), type_probs.csv and needs_review.csv
+    (names, types and probabilities, no values) to results and return the warning line, or "" when no column is
+    flagged. A flag never stops the build."""
     results = Path(results)
     results.mkdir(parents=True, exist_ok=True)
+    modes = {r.labels.dataset.iloc[0] if len(r.labels) else str(i): r.mode for i, r in enumerate(reports)}
+    (results / "detect_mode.json").write_text(json.dumps({"modes": modes}, indent=1) + "\n")
+    print("detector mode: " + ", ".join(f"{d} {m}" for d, m in modes.items()))
     probs = pd.concat([r.type_probs for r in reports], ignore_index=True)
     review = pd.concat([r.needs_review for r in reports], ignore_index=True)
     probs.to_csv(results / "type_probs.csv", index=False)

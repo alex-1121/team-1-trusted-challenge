@@ -15,8 +15,9 @@ from pathlib import Path
 
 import pandas as pd
 
-from .semantic import requested_mode
+from .semantic import requested_mode, resolve
 from .semantic.decide import combine, decide, treatment
+from .semantic.types import PROTECT_RANK as _PROTECT, TYPE_LABEL
 from .semantic.features import sample_values
 from .semantic.model import load_model
 
@@ -312,20 +313,30 @@ class DetectReport:
     mode: str
 
 
-def _label_column(s: pd.Series, model, apply: bool = True) -> tuple[tuple[str, str, str], dict | None]:
-    """Word lists first; with a model, a column the pattern and number rules did not settle is also read by the
-    model, and combine decides the label. Returns the (role, subtype, kind) label and its type_probs row or None.
+def _label_column(s: pd.Series, wide: pd.Series | None, model,
+                  apply: bool = True) -> tuple[tuple[str, str, str], dict | None]:
+    """Word lists first, on the first MAX_ROWS rows (s). A column they judge non-sensitive there gets a second word-list
+    look on rows from the whole file (wide), and can only move to a more protective label. Then, with a model, a
+    column the pattern and number rules did not settle is read once by the model (on the wide rows when the second
+    look ran, so a flag only the whole file shows is not lost), and combine decides. Returns the (role, subtype, kind)
+    label and its type_probs row or None.
 
     apply=False (advisor mode): the word-list label stands whatever the model says. A model label that would change
     the column's treatment is flagged "suggest" (unless combine already flagged it) and named in the reason."""
     role, sub, kind, rule = classify_traced(s)
-    if model is None or rule in ("pre", "numeric"):
+    read = (role, sub, rule)  # the word-list reading of the rows the model reads
+    if role == "non_sensitive" and wide is not None:
+        second = classify_traced(wide)
+        if second[0] in ESCALATE:
+            role, sub, kind, rule = second
+        read, s = (second[0], second[1], second[3]), wide
+    if model is None or read[2] in ("pre", "numeric"):
         return (role, sub, kind), None
     probs = model.predict_proba(sample_values(s))
     if probs is None:
         return (role, sub, kind), None
     dec = decide(probs)
-    r2, s2, flag = combine(role, sub, rule, dec)
+    r2, s2, flag = combine(*read, dec)
     reason = dec.reason
     if not apply:
         if treatment(r2, s2) != treatment(role, sub):
@@ -335,37 +346,38 @@ def _label_column(s: pd.Series, model, apply: bool = True) -> tuple[tuple[str, s
     if (r2, s2) != (role, sub):
         kind = ""
     top = sorted(probs, key=probs.get, reverse=True)[:3]
-    row = dict(rule=rule, decision=dec.decision, flag=flag or "", reason=reason)
+    # the role the model would give: used to drop flags that a table rule makes moot (see _drop_moot_flags)
+    model_role = max((TYPE_LABEL[dec.type][0], TYPE_LABEL[top[0]][0]), key=lambda r: _PROTECT[r])
+    row = dict(rule=read[2], decision=dec.decision, flag=flag or "", reason=reason, model_role=model_role, word_role=role)
     for i, t in enumerate(top, 1):
         row[f"top{i}"], row[f"p{i}"] = t, round(probs[t], 3)
     return (r2, s2, kind), row
 
 
 def detect_dataset(data_dir: Path, dataset: str, semantic: str | None = None) -> pd.DataFrame:
+    """Labels only. Advisor mode never changes a label, so only an explicit hybrid request (argument or
+    PETS_SEMANTIC) loads the model here; select and protect without --labels stay as fast as the word lists."""
+    if requested_mode(semantic) != "hybrid":
+        semantic = "lexicon"
     return detect_dataset_report(data_dir, dataset, semantic).labels
 
 
 def detect_dataset_report(data_dir: Path, dataset: str, semantic: str | None = None) -> DetectReport:
     """semantic: "lexicon" (word lists only), "advisor" (word-list labels, the model only flags columns for review),
     "hybrid" (word lists, then the model labels the rest) or None (env PETS_SEMANTIC, else advisor when the model
-    loads). A request without a model runs lexicon; load_model warns once."""
-    want = requested_mode(semantic) or "advisor"
-    model = None if want == "lexicon" else load_model()
-    mode = "lexicon" if model is None else want
+    loads). Without a model the default runs lexicon (load_model warns once); a mode asked for by name raises
+    semantic.ModelUnavailable."""
+    mode, model = resolve(semantic, load_model)
     apply = mode == "hybrid"
     tables = {f.stem: pd.read_csv(f, dtype=str, nrows=MAX_ROWS) for f in sorted(Path(data_dir).glob("*.csv"))}
     # The rules read the first MAX_ROWS rows (keys and order rules are tuned on file order). The first rows of a
     # time-sorted table are its first weeks, so a column judged non-sensitive there gets a second look on rows from
-    # the whole file, and can only move to a more protective label, never to a less protective one.
+    # the whole file (_label_column), and can only move to a more protective label, never to a less protective one.
     wide = {f.stem: _wide_sample(f) for f in sorted(Path(data_dir).glob("*.csv"))}
     rows, prob_rows = [], []
     for t, df in tables.items():
         for c in df.columns:
-            (role, sub, kind), prow = _label_column(df[c], model, apply)
-            if role == "non_sensitive" and wide[t] is not None:
-                (r2, s2, k2), p2 = _label_column(wide[t][c], model, apply)
-                if r2 in ESCALATE:
-                    (role, sub, kind), prow = (r2, s2, k2), p2
+            (role, sub, kind), prow = _label_column(df[c], None if wide[t] is None else wide[t][c], model, apply)
             rows.append(dict(dataset=dataset, table=t, column=c, privacy_role=role, subtype=sub, kind=kind))
             if prow is not None:
                 prob_rows.append(dict(dataset=dataset, table=t, column=c, **prow))
@@ -417,7 +429,22 @@ def detect_dataset_report(data_dir: Path, dataset: str, semantic: str | None = N
     ref = lab.table.map(lambda t: not is_person[t]) & lab.privacy_role.isin(["quasi_identifier",
                                                                               "sensitive_attribute"])
     lab.loc[ref, "privacy_role"] = "non_sensitive"
+    _drop_moot_flags(prob_rows, is_person)
     return _report(lab.drop(columns="kind"), prob_rows, mode)
+
+
+DEMOTED = ("quasi_identifier", "sensitive_attribute", "non_sensitive")
+
+
+def _drop_moot_flags(prob_rows: list[dict], is_person: dict) -> None:
+    """A table that holds no person is shared as is: its quasi-identifier and sensitive columns become non-sensitive.
+    A flag there is moot when both the word lists' role and the model's role end as non-sensitive, so it is dropped
+    (the row stays in type_probs, its reason says why). A flag where either side says direct identifier, free text
+    or key is kept: that reading would make the table a person table."""
+    for r in prob_rows:
+        if r["flag"] and not is_person[r["table"]] and r["word_role"] in DEMOTED and r["model_role"] in DEMOTED:
+            r["reason"] += f"; flag {r['flag']} dropped: table holds no person, both readings end non-sensitive"
+            r["flag"] = ""
 
 
 def _report(lab: pd.DataFrame, prob_rows: list[dict], mode: str) -> DetectReport:
@@ -449,6 +476,9 @@ def main(argv=None) -> None:
                     help="word lists only (lexicon); word-list labels with the model flagging columns for review "
                          "(advisor); or the model also labels what the word lists cannot place (hybrid). Default: env "
                          "PETS_SEMANTIC, else advisor when the model is installed")
+    ap.add_argument("--review-dir", default="results",
+                    help="folder for <out stem>_type_probs.csv and _needs_review.csv, written only when the model "
+                         "ran (default: results/, kept apart from the labels so they never land in pets_submission/)")
     a = ap.parse_args(argv)
     report = detect_dataset_report(Path(a.data), a.dataset, a.semantic)
     lab = report.labels
@@ -457,9 +487,11 @@ def main(argv=None) -> None:
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     lab.to_csv(a.out, index=False)
     print(f"wrote {len(lab)} labels -> {a.out} (mode {report.mode})")
-    out = Path(a.out)
-    report.type_probs.to_csv(out.with_name(out.stem + "_type_probs.csv"), index=False)
-    report.needs_review.to_csv(out.with_name(out.stem + "_needs_review.csv"), index=False)
+    if report.mode != "lexicon":
+        stem, review_dir = Path(a.out).stem, Path(a.review_dir)
+        review_dir.mkdir(parents=True, exist_ok=True)
+        report.type_probs.to_csv(review_dir / f"{stem}_type_probs.csv", index=False)
+        report.needs_review.to_csv(review_dir / f"{stem}_needs_review.csv", index=False)
     if line := review_warning(report.needs_review):
         print(line)
 

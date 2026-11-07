@@ -7,6 +7,7 @@ combine: a word-list or rule label stands; the model only labels columns that fe
 says when a person should look: "disagree" when the model doubts a label in a way that changes its treatment,
 "unclear" when the model could not settle a fall-through column. Probabilities and type names only, never values.
 """
+import functools
 import json
 from dataclasses import dataclass
 
@@ -34,6 +35,7 @@ def decide(probs: dict[str, float], conf: float = 0.80, risk: float = 0.20) -> D
     return Decision(top, "needs_review", reason, probs)
 
 
+@functools.lru_cache(maxsize=None)
 def treatment(role: str, subtype: str) -> tuple:
     """What the selector would do with a column of this label: two labels with the same treatment are equivalent."""
     from .. import selector  # selector imports detect, which imports this module
