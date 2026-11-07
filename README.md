@@ -10,7 +10,7 @@ Status (2026-11-07): HEALTH-S1 is the scored scenario; the build detects, select
 
 ## Start here
 
-1. `context/README.md` - index of everything in this repo.
+1. `context/README.md` - index of every file in `context/` and `team/`; the Layout table below indexes the top level.
 2. `context/challenge-digest.md` - the whole challenge in one page.
 3. `team/plan.md` - schedule, roles, open questions.
 
