@@ -73,6 +73,7 @@
       "detail": {
         "specs": [
           {
+            "table": "ed_visits",
             "adversary": "news_clips_health",
             "qis_used": [
               {
@@ -99,7 +100,7 @@
             "n_unique_claims": 0,
             "n_targets_in_data": 200,
             "share_targets_in_candidate_set_le5": 0.0,
-            "median_candidate_set": 242.0,
+            "median_candidate_set": 261.0,
             "attribute_inference": {
               "sensitive": "icd10_primary",
               "inferred": 0,
@@ -109,6 +110,7 @@
             }
           },
           {
+            "table": "ed_visits",
             "adversary": "social_posts_health",
             "qis_used": [
               {
@@ -123,7 +125,7 @@
             "n_unique_claims": 0,
             "n_targets_in_data": 850,
             "share_targets_in_candidate_set_le5": 0.0,
-            "median_candidate_set": 18247.0,
+            "median_candidate_set": 18278.0,
             "attribute_inference": {
               "sensitive": "icd10_primary",
               "inferred": 0,
@@ -133,6 +135,7 @@
             }
           },
           {
+            "table": "ed_visits",
             "adversary": "public_directory",
             "qis_used": [
               {
@@ -147,7 +150,7 @@
             "n_unique_claims": 0,
             "n_targets_in_data": 739,
             "share_targets_in_candidate_set_le5": 0.0,
-            "median_candidate_set": 4753.0,
+            "median_candidate_set": 4838.0,
             "attribute_inference": {
               "sensitive": "icd10_primary",
               "inferred": 0,
@@ -177,10 +180,10 @@
     "rule": "every required task scores at least 0.5",
     "scores": {
       "H-U2": 1.0,
-      "H-U4": 0.8744085633885061,
-      "H-U6": 0.9641009930884665,
+      "H-U4": 0.960200522764551,
+      "H-U6": 0.9637647789559142,
       "H-U7": 1.0,
-      "H-U8": 0.9945320392350445
+      "H-U8": 0.9430691403546433
     },
     "pass": true,
     "below_floor": {}

@@ -98,7 +98,7 @@
       },
       "icd10_secondary": {
         "pet": "drop",
-        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U3 1.0000, H-U5 1.0000). Chosen: drop."
+        "reason": "Detected sensitive_attribute (DIAGNOSIS_CODE). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U3 1.0000, H-U5 1.0000). Chosen: drop."
       },
       "systolic_bp": {
         "pet": "keep",

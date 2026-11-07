@@ -34,7 +34,6 @@
       "columns_dropped": [
         "request_id",
         "channel",
-        "language",
         "description",
         "reporter_name",
         "reporter_phone",
@@ -44,36 +43,39 @@
         "municipality",
         "handler_name",
         "status",
+        "ts_closed",
         "response_text"
       ],
-      "columns_added": [],
+      "columns_added": [
+        "resolution_hours"
+      ],
       "direct_identifiers_retained": {},
       "k_anonymity": {
         "qis": [
           "ts_created",
+          "language",
           "postcode",
           "lat",
-          "lon",
-          "ts_closed"
+          "lon"
         ],
         "n": 31653,
-        "n_classes": 1678,
+        "n_classes": 1768,
         "min_k": 5,
-        "median_k": 16515.0,
+        "median_k": 37.0,
         "share_below": {
           "k<2": 0.0,
           "k<5": 0.0,
-          "k<10": 0.2273
+          "k<10": 0.1867
         },
         "sample_uniqueness": 0.0
       },
       "k_anonymity_original": {
         "qis": [
           "ts_created",
+          "language",
           "postcode",
           "lat",
-          "lon",
-          "ts_closed"
+          "lon"
         ],
         "n": 31653,
         "n_classes": 31517,
@@ -107,7 +109,7 @@
           "claim_precision": null,
           "n_unique_claims": 0,
           "share_targets_in_candidate_set_le5": 0.0,
-          "median_candidate_set": 29634.0,
+          "median_candidate_set": 10000.0,
           "attack": "Directory lookup of reporters.",
           "baseline_reidentification_rate_original": 0.0
         }
@@ -144,11 +146,11 @@
       "kind": "aggregate",
       "description": "Request counts by area (3-digit postcode) x category x month",
       "required": true,
-      "score": 0.0,
+      "score": 0.38881767333900696,
       "metric": "1 - MAPE over (3-digit postcode, category, month) cells with n>=5 / 0.5",
       "detail": {
         "cells": 1900,
-        "mape": 0.9997
+        "mape": 0.3056
       }
     },
     {
@@ -157,19 +159,19 @@
       "kind": "aggregate",
       "description": "Median resolution time by category",
       "required": true,
-      "score": 0.0,
+      "score": 0.9766661870976283,
       "metric": "1 - mean relative error of median resolution hours per category / 0.5",
       "detail": {
         "per_category": {
-          "building_supervision": 1.0,
-          "environmental_health": 1.0,
-          "noise_complaint": 1.0,
-          "parking": 1.0,
-          "parks": 1.0,
-          "snow_removal": 1.0,
-          "social_services_contact": 1.0,
-          "street_maintenance": 1.0,
-          "waste": 1.0
+          "building_supervision": 0.016,
+          "environmental_health": 0.004,
+          "noise_complaint": 0.004,
+          "parking": 0.002,
+          "parks": 0.01,
+          "snow_removal": 0.036,
+          "social_services_contact": 0.013,
+          "street_maintenance": 0.003,
+          "waste": 0.017
         }
       }
     },
@@ -179,17 +181,17 @@
       "kind": "distribution",
       "description": "Hotspot map: top-50 1 km grid cells",
       "required": true,
-      "score": 0.6666666666666666,
+      "score": 0.2987012987012987,
       "metric": "Jaccard overlap of top-50 1 km grid cells by request count",
       "detail": {
-        "overlap": 40
+        "overlap": 23
       }
     }
   ],
   "summary": {
     "privacy": 1.0,
-    "utility": 0.2222,
-    "composite": 0.386,
+    "utility": 0.5547,
+    "composite": 0.7327,
     "label": "self-assessment, not the official judging score",
     "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
   },

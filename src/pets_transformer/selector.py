@@ -1,7 +1,7 @@
 """Select: write the scenario contract from the detected labels and the scenario's required tasks.
 
 Every column gets a ladder of candidate PETs for its detected role and subtype, from most private to least
-(for a timestamp: drop, month, ISO week, hour of day, date; for a birth date: drop, 20-year band, 10-year band; for a
+(for a timestamp: drop, month, ISO week, hour of day, date, date and hour; for a birth date: drop, 20-year band, 10-year band; for a
 place: drop, eight most common else "other", exact; for coordinates: drop, 2 decimals (about 1 km), 3 decimals
 (about 100 m); for an identifier code: drop, keyed token; for a direct identifier or free text: drop only).
 
@@ -14,6 +14,10 @@ place: drop, eight most common else "other", exact; for coordinates: drop, 2 dec
    already made in place. If no candidate does, the one with the best scores is taken and the reason says so.
 4. k target for the main table (the one keeping most quasi-identifiers): the kept quasi-identifiers, l-diversity on
    a kept diagnosis code, join flags for tables joined on its key, and a repair ladder built from the chosen PETs.
+5. After the repair: steps 3 and 4 judge a column before the k repair, and a quasi-identifier kept too fine makes
+   the repair coarsen or suppress most rows. So every kept quasi-identifier is tried again one rung more private at a
+   time, scored on the repaired release (k target rebuilt each time), and moved when the required tasks keep at
+   least the same mean score. Rounds repeat until nothing moves (at most 3).
 
 Every column rule states its reason with the measured scores. Neither the detector nor the ladders read column
 names; names appear only as keys of the written contract.
@@ -25,6 +29,7 @@ from pets_eval import io as pio
 from pets_eval.scorecard import run_utility
 
 from . import detect, protect
+from . import repair as rp
 
 TOL = 0.05
 RISK_ORDER = {"quasi_identifier": 0, "technical_identifier": 1, "sensitive_attribute": 2, "free_text": 3,
@@ -48,7 +53,8 @@ def candidates(role, subtype):
                     ({"pet": "age_band", "params": {"width": 10, "also_as": ["age"]}}, "10-year age band")]
         if subtype in TIME:
             return [(DROP, "drop"), ({"pet": "month"}, "month"), ({"pet": "week"}, "ISO week"),
-                    ({"pet": "hour_of_day"}, "hour of day"), ({"pet": "day"}, "date")]
+                    ({"pet": "hour_of_day"}, "hour of day"), ({"pet": "day"}, "date"),
+                    ({"pet": "date_hour"}, "date and hour")]
         if subtype in PLACE:
             return [(DROP, "drop"), ({"pet": "top_n_exact_else_other", "params": {"n": 8}}, "8 most common, rest other"),
                     ({"pet": "keep"}, "exact")]
@@ -170,6 +176,50 @@ def select(original, scenario_id, root, labels=None, key=b"s" * 32, log=print, s
         c["columns"].pop(t, None)
         c["roles"].pop(t, None)
 
+    def repaired_now():
+        kt = _k_target(c, info)
+        prot = _release(c, orig, key, labels)
+        if kt:
+            main = kt["table"]
+            keys = lambda t, col: set(orig[t][col].dropna())  # noqa: E731
+            prot[main], _, _ = protect.repair_released(prot[main], orig[main], kt, list(kt["ladder"]), keys)
+        return _scores(utility_fn(domain, orig, prot, scen), required)
+
+    def mean(sc):
+        return sum(sc.values()) / max(len(sc), 1)
+
+    after = repaired_now()
+    log(f"after the k repair: {_fmt(after)}")
+    moves = []
+    for _ in range(3):
+        moved = False
+        for t, col in [tc for tc in cols if info[tc]["role"] == "quasi_identifier"]:
+            w = info[(t, col)]
+            names = [n for _, n in w["ladder"]]
+            i = names.index(w["chosen"])
+            for j in range(i - 1, -1, -1):
+                rule, name = w["ladder"][j]
+                prev = c["columns"][t][col]
+                c["columns"][t][col] = {**rule, "reason": "pending"}
+                new = repaired_now()
+                if mean(new) >= mean(after) - 1e-9:
+                    moves.append({"table": t, "column": col, "from": w["chosen"], "to": name, "scores_before": after, "scores_after": new})
+                    log(f"after the k repair, {t}.{col}: {w['chosen']} -> {name} ({_fmt(new)})")
+                    w["k_aware"] = {"from": w["chosen"], "before": after, "after": new}
+                    w["chosen"], after, moved = name, new, True
+                    break
+                c["columns"][t][col] = prev
+        if not moved:
+            break
+    for (t, col), w in info.items():
+        if w.get("k_aware") and c["tables"][t]["action"] == "release":
+            k = w["k_aware"]
+            tried = "; ".join(f"{x['candidate']}: {'within' if x['ok'] else 'outside'} {TOL} ({_fmt(x['scores'])})" for x in w["tried"])
+            c["columns"][t][col]["reason"] = (
+                f"Detected {w['role']} ({w['subtype'] or 'no subtype'}). Candidates tried before the k repair, most private first: {tried}."
+                f" Scored on the repaired release, {w['chosen']} keeps at least as much of the required tasks as {k['from']}"
+                f" ({_fmt(k['after'])} against {_fmt(k['before'])}) and is more private, so it was chosen.")
+
     final = score_now()
     log(f"final: {_fmt(final)}")
     kt = _k_target(c, info)
@@ -177,7 +227,7 @@ def select(original, scenario_id, root, labels=None, key=b"s" * 32, log=print, s
         c["k_target"] = kt
         c["k_columns"] = kt["columns"]
     evidence = {"scenario": scenario_id, "required_tasks": required, "tolerance": TOL, "reference_scores": ref,
-                "final_scores": final, "trail": trail}
+                "final_scores_before_repair": final, "final_scores_after_repair": after, "moved_after_repair": moves, "trail": trail}
     return c, evidence
 
 
@@ -193,6 +243,8 @@ def _ladder_step(col, rule, subtype=""):
         return {"column": col, "op": "round", "decimals": prm["decimals"] - 1, "reason": "At-risk rows only: coordinate grid made 10 times coarser."}
     if pet == "day":
         return {"column": col, "op": "to_month", "reason": "At-risk rows only: date coarsened to its month."}
+    if pet == "date_hour":
+        return {"column": col, "op": "to_day", "reason": "At-risk rows only: hour dropped, date kept."}
     if pet == "prefix" and prm.get("n", 2) > 1:
         return {"column": col, "op": "prefix", "n": prm["n"] - 1, "reason": "At-risk rows only: one postcode digit fewer."}
     return None

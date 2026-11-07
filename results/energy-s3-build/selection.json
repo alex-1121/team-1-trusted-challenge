@@ -1,0 +1,651 @@
+{
+  "scenario": "ENERGY-S3",
+  "required_tasks": [
+    "ENERGY-U3",
+    "ENERGY-U4",
+    "ENERGY-U7"
+  ],
+  "tolerance": 0.05,
+  "reference_scores": {
+    "ENERGY-U3": 1.0,
+    "ENERGY-U4": 0.9973045822102427,
+    "ENERGY-U7": 1.0
+  },
+  "final_scores_before_repair": {
+    "ENERGY-U3": 1.0,
+    "ENERGY-U4": 0.9973045822102427,
+    "ENERGY-U7": 1.0
+  },
+  "final_scores_after_repair": {
+    "ENERGY-U3": 1.0,
+    "ENERGY-U4": 0.9973045822102427,
+    "ENERGY-U7": 1.0
+  },
+  "moved_after_repair": [],
+  "trail": [
+    {
+      "table": "customers",
+      "column": "(table)",
+      "decision": "release",
+      "scores": {
+        "ENERGY-U3": 0.0,
+        "ENERGY-U4": 0.0,
+        "ENERGY-U7": 0.0
+      }
+    },
+    {
+      "table": "meter_readings_hourly",
+      "column": "(table)",
+      "decision": "release",
+      "scores": {
+        "ENERGY-U3": 0.0,
+        "ENERGY-U4": 0.0,
+        "ENERGY-U7": 0.0
+      }
+    },
+    {
+      "table": "weather_hourly",
+      "column": "(table)",
+      "decision": "withhold",
+      "scores": {
+        "ENERGY-U3": 1.0,
+        "ENERGY-U4": 0.9973045822102427,
+        "ENERGY-U7": 1.0
+      }
+    },
+    {
+      "table": "customers",
+      "column": "birth_date",
+      "role": "quasi_identifier",
+      "subtype": "BIRTH_DATE",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "postcode",
+      "role": "quasi_identifier",
+      "subtype": "POSTCODE",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "municipality",
+      "role": "quasi_identifier",
+      "subtype": "MUNICIPALITY",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "contract_start",
+      "role": "quasi_identifier",
+      "subtype": "DATE",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "meter_readings_hourly",
+      "column": "ts",
+      "role": "quasi_identifier",
+      "subtype": "TIMESTAMP",
+      "chosen": "date and hour",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 0.0,
+            "ENERGY-U4": 0.0,
+            "ENERGY-U7": 0.0
+          },
+          "ok": false
+        },
+        {
+          "candidate": "month",
+          "scores": {
+            "ENERGY-U3": 0.0,
+            "ENERGY-U4": 0.0,
+            "ENERGY-U7": 1.0
+          },
+          "ok": false
+        },
+        {
+          "candidate": "ISO week",
+          "scores": {
+            "ENERGY-U3": 0.30684758009376734,
+            "ENERGY-U4": 0.0,
+            "ENERGY-U7": 1.0
+          },
+          "ok": false
+        },
+        {
+          "candidate": "hour of day",
+          "scores": {
+            "ENERGY-U3": 0.0,
+            "ENERGY-U4": 0.9743935309973046,
+            "ENERGY-U7": 1.0
+          },
+          "ok": false
+        },
+        {
+          "candidate": "date",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.0,
+            "ENERGY-U7": 1.0
+          },
+          "ok": false
+        },
+        {
+          "candidate": "date and hour",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "metering_point_id",
+      "role": "technical_identifier",
+      "subtype": "METER_ID",
+      "chosen": "keyed token",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 0.0,
+            "ENERGY-U4": 0.0,
+            "ENERGY-U7": 0.0
+          },
+          "ok": false
+        },
+        {
+          "candidate": "keyed token",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "meter_readings_hourly",
+      "column": "metering_point_id",
+      "role": "technical_identifier",
+      "subtype": "METER_ID",
+      "chosen": "keyed token",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 0.0,
+            "ENERGY-U4": 0.0,
+            "ENERGY-U7": 0.0
+          },
+          "ok": false
+        },
+        {
+          "candidate": "keyed token",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "floor_area_m2",
+      "role": "sensitive_attribute",
+      "subtype": "OTHER",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "late_payment_count",
+      "role": "sensitive_attribute",
+      "subtype": "OTHER",
+      "chosen": "kept",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 0.0
+          },
+          "ok": false
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "payment_plan",
+      "role": "sensitive_attribute",
+      "subtype": "OTHER",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "medical_device_priority",
+      "role": "sensitive_attribute",
+      "subtype": "OTHER",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "dso_notes",
+      "role": "free_text",
+      "subtype": "FREE_TEXT",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "contract_type",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "heating_type",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "kept",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 0.0,
+            "ENERGY-U4": 0.0,
+            "ENERGY-U7": 0.0
+          },
+          "ok": false
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "main_fuse_a",
+      "role": "non_sensitive",
+      "subtype": "MEASUREMENT",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "ev_charger",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "solar_pv_kw",
+      "role": "non_sensitive",
+      "subtype": "MEASUREMENT",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "payment_method",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "meter_readings_hourly",
+      "column": "kwh",
+      "role": "non_sensitive",
+      "subtype": "MEASUREMENT",
+      "chosen": "kept",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 0.0,
+            "ENERGY-U4": 0.0,
+            "ENERGY-U7": 0.0
+          },
+          "ok": false
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "meter_readings_hourly",
+      "column": "quality",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "customer_id",
+      "role": "record_key",
+      "subtype": "RECORD_ID",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "meter_readings_hourly",
+      "column": "reading_id",
+      "role": "record_key",
+      "subtype": "RECORD_ID",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "customer_name",
+      "role": "direct_identifier",
+      "subtype": "PERSON_NAME",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "hetu",
+      "role": "direct_identifier",
+      "subtype": "NATIONAL_ID",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "street_address",
+      "role": "direct_identifier",
+      "subtype": "STREET_ADDRESS",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "email",
+      "role": "direct_identifier",
+      "subtype": "EMAIL",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "phone",
+      "role": "direct_identifier",
+      "subtype": "PHONE",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "customers",
+      "column": "iban",
+      "role": "direct_identifier",
+      "subtype": "IBAN",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "ENERGY-U3": 1.0,
+            "ENERGY-U4": 0.9973045822102427,
+            "ENERGY-U7": 1.0
+          },
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

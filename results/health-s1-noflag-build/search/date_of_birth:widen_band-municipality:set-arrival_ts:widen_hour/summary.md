@@ -8,9 +8,9 @@ Every number is copied from scorecard.json or computed by `score`. self-assessme
 | --- | --- | --- | --- |
 | H-U2 | Median length of stay by triage level | not run | 0.9979 |
 | H-U4 | Diagnosis-group mix in the eight largest municipalities | not run | 0.9471 |
-| H-U6 | 30-day revisit rate by age band (needs readmit_30d or a consistent patient pseudonym) | not run | 0.9691 |
+| H-U6 | 30-day revisit rate by age band (needs readmit_30d or a consistent patient pseudonym) | not run | 0.9687 |
 | H-U7 | CRP vs temperature relationship and CRP by diagnosis group (needs visit join) | not run | 1.0000 |
-| H-U8 | Hour-of-day arrival curve | not run | 0.9962 |
+| H-U8 | Hour-of-day arrival curve | not run | 0.9970 |
 
 ## Privacy risk components (lower is better)
 
@@ -35,4 +35,4 @@ Attacker model: the toolkit's shipped attackers only. Attacks run: linkage re-id
 
 ## Scores
 
-- Privacy 1.0, utility 0.982, composite 0.9918 (self-assessment, not the official judging score).
+- Privacy 1.0, utility 0.9821, composite 0.9918 (self-assessment, not the official judging score).

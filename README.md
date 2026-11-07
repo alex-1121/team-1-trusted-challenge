@@ -6,7 +6,7 @@ Since AI Hackathon 2026, Turku, 6-8 November. TrustED challenge: protect the dat
 
 We build a working tool that detects what each column and text field of a synthetic dataset contains. It picks a privacy-enhancing transformation (PET) per data type and sharing scenario, and transforms the data. Then it shows, with measured numbers, what risk was removed and what utility remains.
 
-Status (2026-11-07): HEALTH-S1 is the scored scenario; the build detects, protects, repairs, scores and red-teams in one command (`plans/2026-11-07-release-gate.md`).
+Status (2026-11-07): HEALTH-S1 is the scored scenario; the build detects, selects, protects, repairs, scores and red-teams in one command, and refuses a release that fails an attack or its purpose (`plans/2026-11-07-release-gate.md`).
 
 ## Start here
 
@@ -60,7 +60,7 @@ The same detector labelled the organisers' unlabelled HR export: 26 columns in `
 | patient_hetu, patient_name, phone, home_address, chief_complaint | direct identifiers, free text | drop only | drop |
 | clinical_notes, published_weekly_stats | whole tables | withhold | withheld (no task loses without them) |
 
-A quasi-identifier identifies someone only in combination, such as age band plus municipality. A token is a stand-in code: the same value always gets the same token, and without the secret key the token cannot be turned back into the value or put in order. The hand-written contract the team started from is kept as `contracts/HEALTH-S1.handwritten.json`; the selector drops more (sex, all vital signs but temperature, disposition) and scores within 0.004 of it.
+A quasi-identifier identifies someone only in combination, such as age band plus municipality. A token is a stand-in code: the same value always gets the same token, and without the secret key the token cannot be turned back into the value or put in order. The hand-written contract the team started from is kept as `contracts/HEALTH-S1.handwritten.json`; the selector drops more (sex, all vital signs but temperature, disposition); `results/health-s1-handwritten-build/` scores the hand-written one.
 
 ### 3. Protected output
 
@@ -71,13 +71,13 @@ A quasi-identifier identifies someone only in combination, such as age band plus
 | Task | What it measures | Raw | Main at 7cf541b | This release |
 |---|---|---|---|---|
 | H-U2 | Median length of stay by triage level | 1.0 | 1.0 | 0.9979 |
-| H-U4 | Diagnosis-group mix in the eight largest municipalities | 1.0 | 1.0 | 0.9611 |
-| H-U6 | 30-day revisit rate by age band | 1.0 | 0.9642 | 0.9579 |
+| H-U4 | Diagnosis-group mix in the eight largest municipalities | 1.0 | 1.0 | 0.9549 |
+| H-U6 | 30-day revisit rate by age band | 1.0 | 0.9642 | 0.9578 |
 | H-U7 | CRP vs temperature and CRP by diagnosis group | 1.0 | 1.0 | 1.0 |
-| H-U8 | Hour-of-day arrival curve | 1.0 | 1.0 | 0.8769 |
+| H-U8 | Hour-of-day arrival curve | 1.0 | 1.0 | 0.9446 |
 | Privacy | 1 minus (half the worst risk plus half the mean risk) | 0.1716 | 0.9533 | 1.0 |
-| Utility | Mean of the five task scores | 1.0 | 0.9928 | 0.9588 |
-| Composite | Weighted harmonic mean, privacy weight 30, utility weight 25 | 0.2752 | 0.9709 | 0.9808 |
+| Utility | Mean of the five task scores | 1.0 | 0.9928 | 0.971 |
+| Composite | Weighted harmonic mean, privacy weight 30, utility weight 25 | 0.2752 | 0.9709 | 0.9866 |
 
 Raw: `baseline-scores/health_HEALTH-S1_research-env_raw.json`. Main at 7cf541b: `results/health-s1-build/scorecard.json` at that commit. This release: `results/health-s1-build/scorecard.json`. For comparison, the organisers' B2-k baseline reaches utility 0.40 on HEALTH-S1 (`data/proving-ground/docs/BENCHMARK.md`, in the restored proving ground).
 
@@ -95,13 +95,13 @@ HEALTH-S1: a hospital gives its emergency-department visits and lab results to a
 | The organisers' linkage attacker, rerun with the age read from the band | 0.0 | 0.0 | at most 0.01 |
 | Plain hashes reversible by dictionary | 0.0 | 0.0 | 0 |
 
-Source for this release: `results/health-s1-build/redteam.json`. The gate runs in every build; when an attack passes its threshold or a required task scores under 0.5, the build stops and `pets_submission/` is not written. Keeping the patient pseudonym the organisers suggest fails it: 0.2906 of patients are unique by fingerprint (`results/health-s1-pseudonym-build/redteam.json`).
+Source for this release: `results/health-s1-build/redteam.json`. The gate runs in every build; when an attack passes its threshold or a required task scores under 0.5, the build stops and `pets_submission/` is not written. Keeping the patient pseudonym the organisers suggest fails it: 0.2935 of patients are unique by fingerprint (`results/health-s1-pseudonym-build/redteam.json`).
 
-**The repair.** After protection, 3746 rows (0.0807) were in a group with k<5 or fewer than 2 distinct diagnoses, counting whether a visit has lab results as part of the group because the release shows it. Only those rows were coarsened, one step at a time: 3746 to a 20-year age band, 2584 still at risk to a 3-hour arrival block, 589 to municipality "other", 60 suppressed, none dropped (`results/health-s1-build/repair_report.json`). The order of the steps was picked by scoring all 6 orders (`results/health-s1-build/repair_search.md`). Now every row has k of at least 5 (min k 5, median 55, `results/health-s1-build/scorecard.json`), every group at least 2 distinct diagnoses (`results/health-s1-build/checks/l_diversity.json`), and every visit with lab results shares its group with at least 4 others that have lab results (`results/health-s1-build/checks/joined_k.json`).
+**The repair.** After protection, 3746 rows (0.0807) were in a group with k<5 or fewer than 2 distinct diagnoses, counting whether a visit has lab results as part of the group because the release shows it. Only those rows were coarsened, one step at a time: 3746 to a 20-year age band, 2584 still at risk to a 3-hour arrival block written as a range ("06:00 to 08:59", so nobody reads it as an exact hour), 737 to municipality "other", 59 suppressed, none dropped (`results/health-s1-build/repair_report.json`). The order of the steps was picked by scoring all 6 orders (`results/health-s1-build/repair_search.md`). Now every row has k of at least 5 (min k 5, median 55, `results/health-s1-build/scorecard.json`), every group at least 2 distinct diagnoses (`results/health-s1-build/checks/l_diversity.json`), and every visit with lab results shares its group with at least 4 others that have lab results (`results/health-s1-build/checks/joined_k.json`).
 
-**Other scenarios, no hand-written rules.** The same build writes its own contract when none is reviewed yet: HEALTH-S3 (an AI vendor; composite 1.0 against 0.2769 raw, `results/health-s3-build/`), EDU-S2 (an edtech vendor; 0.9983 against 0.3395, `results/edu-s2-build/`). PUB-S3 is refused by the utility check (0.2222): its tasks need dates, postcode and coordinates at row level, which k of at least 5 cannot leave intact (`results/pub-s3-build/redteam.json`).
+**Other scenarios, no hand-written rules.** The same build writes its own contract when none is reviewed yet: HEALTH-S3 (an AI vendor; composite 1.0 against 0.2769 raw, `results/health-s3-build/`), EDU-S2 (an edtech vendor; 0.9983 against 0.3395, `results/edu-s2-build/`), and ENERGY-S3 (energy-poverty research on 1.6 million hourly meter readings; 1.0 against 0.3506, `results/energy-s3-build/`). PUB-S3 is refused by the utility check: with a reviewer's edit that releases the time to resolution instead of two timestamps (`contracts/PUB-S3.json`), its research question scores 0.9767, but the area counts (0.3888) and the 1 km hotspot map (0.2987) cannot both survive k of at least 5 in one row-level table (`results/pub-s3-build/`).
 
-**Residual risk** (`docs/guarantee-and-residual-risk.md`): an attacker who already knows a visit's diagnosis group, age band, municipality and arrival hour singles out one row for 0.0964 of the visits, 0.932 of them correctly (`results/health-s1-build/checks/informed_attacker.json`), and sees that visit's length of stay, temperature and lab values. The release relies on the research environment and the agreement with a known recipient; it is not fit for public release.
+**Residual risk** (`docs/guarantee-and-residual-risk.md`): an attacker who already knows a visit's diagnosis group, age band, municipality and arrival hour singles out one row for 0.0971 of the visits, 0.9294 of them correctly (`results/health-s1-build/checks/informed_attacker.json`), and sees that visit's length of stay, temperature and lab values. `contracts/HEALTH-S1-informed.json` closes this (0.0) at composite 0.9647 (`results/health-s1-informed-build/`); the default relies on the research environment and the agreement with a known recipient instead. Neither is fit for public release.
 
 ## How to run
 

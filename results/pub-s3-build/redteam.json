@@ -1,5 +1,5 @@
 {
-  "release": "pub-s3-build (contracts/generated/PUB-S3.auto.json)",
+  "release": "pub-s3-build (contracts/PUB-S3.json)",
   "table": "service_requests",
   "time_column": null,
   "gate": "fail",
@@ -41,6 +41,7 @@
       "detail": {
         "specs": [
           {
+            "table": "service_requests",
             "adversary": "neighbourhood_forum_posts",
             "qis_used": [
               {
@@ -61,9 +62,10 @@
             "n_unique_claims": 0,
             "n_targets_in_data": 1262,
             "share_targets_in_candidate_set_le5": 0.0,
-            "median_candidate_set": 17048.0
+            "median_candidate_set": 5547.0
           },
           {
+            "table": "service_requests",
             "adversary": "public_directory",
             "qis_used": [
               {
@@ -78,7 +80,7 @@
             "n_unique_claims": 0,
             "n_targets_in_data": 400,
             "share_targets_in_candidate_set_le5": 0.0,
-            "median_candidate_set": 29634.0
+            "median_candidate_set": 10000.0
           }
         ],
         "worst_reidentification_rate": 0.0
@@ -100,14 +102,14 @@
   "utility_check": {
     "rule": "every required task scores at least 0.5",
     "scores": {
-      "PUB-U1": 0.0,
-      "PUB-U2": 0.0,
-      "PUB-U3": 0.6666666666666666
+      "PUB-U1": 0.38881767333900696,
+      "PUB-U2": 0.9766661870976283,
+      "PUB-U3": 0.2987012987012987
     },
     "pass": false,
     "below_floor": {
-      "PUB-U1": 0.0,
-      "PUB-U2": 0.0
+      "PUB-U1": 0.38881767333900696,
+      "PUB-U3": 0.2987012987012987
     }
   }
 }

@@ -1,9 +1,9 @@
 {
   "n_fields": 53,
   "n_predicted": 53,
-  "accuracy": 0.717,
-  "macro_f1": 0.8086,
-  "sensitive_recall": 0.7209,
+  "accuracy": 0.7358,
+  "macro_f1": 0.8202,
+  "sensitive_recall": 0.7442,
   "per_role": {
     "direct_identifier": {
       "precision": 1.0,
@@ -18,9 +18,9 @@
       "support": 15
     },
     "sensitive_attribute": {
-      "precision": 0.8571,
-      "recall": 0.375,
-      "f1": 0.5217,
+      "precision": 0.875,
+      "recall": 0.4375,
+      "f1": 0.5833,
       "support": 16
     },
     "technical_identifier": {
@@ -42,9 +42,9 @@
       "support": 4
     },
     "non_sensitive": {
-      "precision": 0.2941,
+      "precision": 0.3125,
       "recall": 0.8333,
-      "f1": 0.4348,
+      "f1": 0.4545,
       "support": 6
     }
   },
@@ -73,7 +73,7 @@
       "non_sensitive": 5,
       "quasi_identifier": 3,
       "record_key": 0,
-      "sensitive_attribute": 9,
+      "sensitive_attribute": 8,
       "technical_identifier": 0
     },
     "quasi_identifier": {
@@ -100,7 +100,7 @@
       "non_sensitive": 1,
       "quasi_identifier": 0,
       "record_key": 0,
-      "sensitive_attribute": 6,
+      "sensitive_attribute": 7,
       "technical_identifier": 0
     },
     "technical_identifier": {
@@ -113,7 +113,7 @@
       "technical_identifier": 4
     }
   },
-  "subtype_accuracy": 0.6226,
+  "subtype_accuracy": 0.6415,
   "errors": [
     {
       "dataset": "health",
@@ -133,13 +133,6 @@
       "dataset": "health",
       "table": "ed_visits",
       "column": "triage",
-      "privacy_role": "sensitive_attribute",
-      "predicted": "non_sensitive"
-    },
-    {
-      "dataset": "health",
-      "table": "ed_visits",
-      "column": "icd10_secondary",
       "privacy_role": "sensitive_attribute",
       "predicted": "non_sensitive"
     },

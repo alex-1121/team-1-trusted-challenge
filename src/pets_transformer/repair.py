@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pandas as pd
 
-SUPPRESSED = "suppressed"
+from .generalise import BLOCK, SUPPRESSED, hour_block
 
 
 def at_risk(df, target):
@@ -20,6 +20,10 @@ def at_risk(df, target):
     d = df[cols].fillna("")
     g = d.groupby(cols, dropna=False)
     small = g[cols[0]].transform("size") < target["k"]
+    inf = target.get("informed")
+    if inf:  # an attacker who also knows the sensitive fact (diagnosis group) must still find at least inf["k"] rows
+        e = df[cols + inf["columns"]].fillna("")
+        small = small | (e.groupby(cols + inf["columns"], dropna=False)[cols[0]].transform("size") < inf["k"])
     sens = target.get("sensitive")
     if sens and target.get("l", 1) > 1:
         low_l = df[sens].fillna("").groupby([d[c] for c in cols], dropna=False).transform("nunique") < target["l"]
@@ -38,10 +42,13 @@ def _widen_band(v, width):
 
 
 def _widen_hour(v, block):
+    """"07:00" -> "06:00 to 08:59" for block 3: an explicit range, so the release never shows a block as an exact hour."""
     if not isinstance(v, str) or not v[:2].isdigit():
         return v
-    h = int(v[:2])
-    return f"{h - h % block:02d}:00"
+    m = BLOCK.match(v)
+    if m and int(m.group(2)) - int(m.group(1)) + 1 >= block:
+        return v
+    return hour_block(int(v[:2]), block)
 
 
 def _op(series, step):
@@ -57,6 +64,8 @@ def _op(series, step):
         return v.round(step["decimals"]).map(lambda x: f"{x:.{step['decimals']}f}" if x == x else SUPPRESSED)
     if op == "prefix":
         return series.astype(str).str[:step["n"]]
+    if op == "to_day":
+        return series.map(lambda v: v[:10] if isinstance(v, str) and len(v) > 10 and v[:4].isdigit() and v[4] == "-" and v[7] == "-" else v)
     if op == "to_month":
         return series.map(lambda v: v[:7] if isinstance(v, str) and len(v) >= 7 and v[:4].isdigit() and v[4] == "-" and v[5:7].isdigit() else v)
     raise ValueError(f"unknown repair op {op!r}")
@@ -81,7 +90,7 @@ def apply(df, target, order):
             df.loc[m, dst] = df.loc[m, col]
         report["steps"].append({"step": name, "column": col, "rows_changed": int(m.sum())})
     m = at_risk(df, target)
-    fixed = set(target.get("fixed", []))  # facts the attacker knows from elsewhere (join flags): never suppressed
+    fixed = set(target.get("fixed", [])) | set((target.get("informed") or {}).get("columns", []))  # facts the attacker knows from elsewhere (join flags): never suppressed
     for col in [c for c in target["columns"] if c not in fixed]:
         df.loc[m, col] = SUPPRESSED
         for dst in linked.get(col, []):
@@ -110,11 +119,16 @@ def plan_rows(table, target, report):
 
 def orders(target, max_full=4):
     """Every order of the ladder steps when there are at most max_full of them (24 orders); beyond that the
-    rotations of the contract's order, so the search stays at one scorecard per step."""
+    rotations of the contract's order, so the search stays at one scorecard per step. Steps on the same column keep
+    the contract's order (a 3-hour block comes before an 8-hour block)."""
     steps = list(target["ladder"])
+    col = {s: target["ladder"][s]["column"] for s in steps}
+
+    def keeps_column_order(p):
+        return all(p.index(a) < p.index(b) for i, a in enumerate(steps) for b in steps[i + 1:] if col[a] == col[b])
     if len(steps) <= max_full:
-        return [list(p) for p in itertools.permutations(steps)]
-    return [steps[i:] + steps[:i] for i in range(len(steps))]
+        return [list(p) for p in itertools.permutations(steps) if keeps_column_order(p)]
+    return [r for r in (steps[i:] + steps[:i] for i in range(len(steps))) if keeps_column_order(r)] or [steps]
 
 
 def choose(rows, required, floor):

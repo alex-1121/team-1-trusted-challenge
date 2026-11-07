@@ -1,0 +1,46 @@
+{
+  "order": [
+    "date_of_birth:widen_band",
+    "arrival_ts:widen_hour",
+    "arrival_ts:widen_hour_8",
+    "municipality:set"
+  ],
+  "rows": 46398,
+  "at_risk_before": 10543,
+  "share_at_risk_before": 0.2272,
+  "steps": [
+    {
+      "step": "date_of_birth:widen_band",
+      "column": "date_of_birth",
+      "rows_changed": 10543
+    },
+    {
+      "step": "arrival_ts:widen_hour",
+      "column": "arrival_ts",
+      "rows_changed": 9814
+    },
+    {
+      "step": "arrival_ts:widen_hour_8",
+      "column": "arrival_ts",
+      "rows_changed": 6596
+    },
+    {
+      "step": "municipality:set",
+      "column": "municipality",
+      "rows_changed": 2706
+    },
+    {
+      "step": "suppress",
+      "column": "date_of_birth, municipality, arrival_ts",
+      "rows_changed": 190
+    },
+    {
+      "step": "drop_rows",
+      "column": "(row)",
+      "rows_changed": 3
+    }
+  ],
+  "rows_released": 46395,
+  "at_risk_after": 0,
+  "share_at_risk_after": 0.0
+}

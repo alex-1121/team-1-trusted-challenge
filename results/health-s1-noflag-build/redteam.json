@@ -33,7 +33,7 @@
       "detail": {
         "clips": 220,
         "clips_with_date_and_hour": 25,
-        "singled_out": 1,
+        "singled_out": 0,
         "correct": 0,
         "share_clips_reidentified": 0.0
       },
@@ -68,6 +68,7 @@
       "detail": {
         "specs": [
           {
+            "table": "ed_visits",
             "adversary": "news_clips_health",
             "qis_used": [
               {
@@ -88,7 +89,7 @@
             "n_unique_claims": 0,
             "n_targets_in_data": 200,
             "share_targets_in_candidate_set_le5": 0.0,
-            "median_candidate_set": 527.0,
+            "median_candidate_set": 535.0,
             "attribute_inference": {
               "sensitive": "icd10_primary",
               "inferred": 0,
@@ -98,6 +99,7 @@
             }
           },
           {
+            "table": "ed_visits",
             "adversary": "social_posts_health",
             "qis_used": [
               {
@@ -112,7 +114,7 @@
             "n_unique_claims": 0,
             "n_targets_in_data": 850,
             "share_targets_in_candidate_set_le5": 0.0,
-            "median_candidate_set": 18278.0,
+            "median_candidate_set": 18298.0,
             "attribute_inference": {
               "sensitive": "icd10_primary",
               "inferred": 0,
@@ -122,6 +124,7 @@
             }
           },
           {
+            "table": "ed_visits",
             "adversary": "public_directory",
             "qis_used": [
               {
@@ -136,7 +139,7 @@
             "n_unique_claims": 0,
             "n_targets_in_data": 739,
             "share_targets_in_candidate_set_le5": 0.0,
-            "median_candidate_set": 4867.0,
+            "median_candidate_set": 4883.0,
             "attribute_inference": {
               "sensitive": "icd10_primary",
               "inferred": 0,
@@ -166,10 +169,10 @@
     "rule": "every required task scores at least 0.5",
     "scores": {
       "H-U2": 0.9978835978835979,
-      "H-U4": 0.9470631653393843,
-      "H-U6": 0.9690506265323084,
+      "H-U4": 0.9701299538033967,
+      "H-U6": 0.969670159838963,
       "H-U7": 1.0,
-      "H-U8": 0.9962198008776707
+      "H-U8": 0.9751613204321352
     },
     "pass": true,
     "below_floor": {}

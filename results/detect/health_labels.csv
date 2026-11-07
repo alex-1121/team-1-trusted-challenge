@@ -22,7 +22,7 @@ health,ed_visits,ambulance_unit,technical_identifier,HOSTNAME
 health,ed_visits,triage,non_sensitive,CATEGORY
 health,ed_visits,chief_complaint,free_text,FREE_TEXT
 health,ed_visits,icd10_primary,sensitive_attribute,DIAGNOSIS_CODE
-health,ed_visits,icd10_secondary,non_sensitive,CATEGORY
+health,ed_visits,icd10_secondary,sensitive_attribute,DIAGNOSIS_CODE
 health,ed_visits,systolic_bp,sensitive_attribute,OTHER
 health,ed_visits,diastolic_bp,sensitive_attribute,OTHER
 health,ed_visits,heart_rate,sensitive_attribute,OTHER

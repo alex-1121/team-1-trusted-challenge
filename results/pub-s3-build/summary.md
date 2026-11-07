@@ -6,9 +6,9 @@ Every number is copied from scorecard.json or computed by `score`. self-assessme
 
 | Task | What it measures | Before | After |
 | --- | --- | --- | --- |
-| PUB-U1 | Request counts by area (3-digit postcode) x category x month | 1.0000 | 0.0000 |
-| PUB-U2 | Median resolution time by category | 1.0000 | 0.0000 |
-| PUB-U3 | Hotspot map: top-50 1 km grid cells | 1.0000 | 0.6667 |
+| PUB-U1 | Request counts by area (3-digit postcode) x category x month | 1.0000 | 0.3888 |
+| PUB-U2 | Median resolution time by category | 1.0000 | 0.9767 |
+| PUB-U3 | Hotspot map: top-50 1 km grid cells | 1.0000 | 0.2987 |
 
 ## Privacy risk components (lower is better)
 
@@ -23,8 +23,8 @@ Every number is copied from scorecard.json or computed by `score`. self-assessme
 
 ## k-anonymity (smallest group of rows sharing the same attributes)
 
-- Scorer, service_requests: columns ts_created, postcode, lat, lon, ts_closed; k<5 share 0.0; median k 16515.0; min k 5.
-- Our own: columns ts_created, postcode, lat, lon, ts_closed; k<5 share 0.0000; min k 5.
+- Scorer, service_requests: columns ts_created, language, postcode, lat, lon; k<5 share 0.0; median k 37.0; min k 5.
+- Our own: columns ts_created, postcode, category, language, lat, lon; k<5 share 0.0000; min k 5.
 
 ## Residual risk
 
@@ -34,5 +34,5 @@ Attacker model: the toolkit's shipped attackers only. Attacks run: linkage re-id
 
 ## Scores
 
-- Privacy 1.0, utility 0.2222, composite 0.386 (self-assessment, not the official judging score).
+- Privacy 1.0, utility 0.5547, composite 0.7327 (self-assessment, not the official judging score).
 - Before: privacy 0.0833, utility 1.0, composite 0.1429.

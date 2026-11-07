@@ -28,23 +28,23 @@
     "service_requests": {
       "request_id": {
         "pet": "drop",
-        "reason": "Detected record_key (RECORD_ID). Candidates tried, most private first: drop: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.8600, PUB-U3 0.9608); keyed token: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.8600, PUB-U3 0.9608). Chosen: drop (no candidate stayed within the tolerance; best scores taken)."
+        "reason": "Detected record_key (RECORD_ID). Candidates tried, most private first: drop: within 0.05 (PUB-U1 1.0000, PUB-U2 0.9944, PUB-U3 0.9608). Chosen: drop."
       },
       "ts_created": {
-        "pet": "day",
-        "reason": "Detected quasi_identifier (TIMESTAMP). Candidates tried, most private first: drop: outside 0.05 (PUB-U1 0.0000, PUB-U2 0.0000, PUB-U3 1.0000); month: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.0000, PUB-U3 1.0000); ISO week: outside 0.05 (PUB-U1 0.7825, PUB-U2 0.0000, PUB-U3 1.0000); hour of day: outside 0.05 (PUB-U1 0.0000, PUB-U2 0.0000, PUB-U3 1.0000); date: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.5511, PUB-U3 1.0000). Chosen: date (no candidate stayed within the tolerance; best scores taken)."
+        "pet": "hour_of_day",
+        "reason": "Detected quasi_identifier (TIMESTAMP). Candidates tried before the k repair, most private first: drop: outside 0.05 (PUB-U1 0.0000, PUB-U2 0.0000, PUB-U3 1.0000); month: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.0000, PUB-U3 1.0000); ISO week: outside 0.05 (PUB-U1 0.7825, PUB-U2 0.0000, PUB-U3 1.0000); hour of day: outside 0.05 (PUB-U1 0.0000, PUB-U2 0.0000, PUB-U3 1.0000); date: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.5511, PUB-U3 1.0000); date and hour: within 0.05 (PUB-U1 1.0000, PUB-U2 0.9849, PUB-U3 1.0000). Scored on the repaired release, hour of day keeps at least as much of the required tasks as date (PUB-U1 0.0000, PUB-U2 0.0000, PUB-U3 0.6667 against PUB-U1 0.0000, PUB-U2 0.0000, PUB-U3 0.6667) and is more private, so it was chosen."
       },
       "channel": {
         "pet": "drop",
-        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.8600, PUB-U3 0.9608); kept: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.8600, PUB-U3 0.9608). Chosen: drop (no candidate stayed within the tolerance; best scores taken)."
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (PUB-U1 1.0000, PUB-U2 0.9944, PUB-U3 0.9608). Chosen: drop."
       },
       "category": {
         "pet": "keep",
-        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: outside 0.05 (PUB-U1 0.0000, PUB-U2 0.0000, PUB-U3 0.9608); kept: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.8600, PUB-U3 0.9608). Chosen: kept (no candidate stayed within the tolerance; best scores taken)."
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: outside 0.05 (PUB-U1 0.0000, PUB-U2 0.0000, PUB-U3 0.9608); kept: within 0.05 (PUB-U1 1.0000, PUB-U2 0.9944, PUB-U3 0.9608). Chosen: kept."
       },
       "language": {
         "pet": "drop",
-        "reason": "Detected quasi_identifier (LANGUAGE). Candidates tried, most private first: drop: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.5511, PUB-U3 1.0000); exact: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.5511, PUB-U3 1.0000). Chosen: drop (no candidate stayed within the tolerance; best scores taken)."
+        "reason": "Detected quasi_identifier (LANGUAGE). Candidates tried, most private first: drop: within 0.05 (PUB-U1 1.0000, PUB-U2 0.9849, PUB-U3 1.0000). Chosen: drop."
       },
       "description": {
         "pet": "drop",
@@ -64,36 +64,33 @@
       },
       "reporter_account_id": {
         "pet": "drop",
-        "reason": "Detected technical_identifier (RECORD_ID). Candidates tried, most private first: drop: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.8600, PUB-U3 0.9608); keyed token: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.8600, PUB-U3 0.9608). Chosen: drop (no candidate stayed within the tolerance; best scores taken)."
+        "reason": "Detected technical_identifier (RECORD_ID). Candidates tried, most private first: drop: within 0.05 (PUB-U1 1.0000, PUB-U2 0.9944, PUB-U3 0.9608). Chosen: drop."
       },
       "street_address": {
         "pet": "drop",
         "reason": "Detected direct_identifier (STREET_ADDRESS). The only candidate for this type is drop."
       },
       "postcode": {
-        "pet": "prefix",
-        "params": {
-          "n": 3
-        },
-        "reason": "Detected quasi_identifier (POSTCODE). Candidates tried, most private first: drop: outside 0.05 (PUB-U1 0.0000, PUB-U2 0.5511, PUB-U3 1.0000); 2-digit postcode area: outside 0.05 (PUB-U1 0.0000, PUB-U2 0.5511, PUB-U3 1.0000); 3-digit postcode area: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.5511, PUB-U3 1.0000). Chosen: 3-digit postcode area (no candidate stayed within the tolerance; best scores taken)."
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (POSTCODE). Candidates tried before the k repair, most private first: drop: outside 0.05 (PUB-U1 0.0000, PUB-U2 0.9849, PUB-U3 1.0000); 2-digit postcode area: outside 0.05 (PUB-U1 0.0000, PUB-U2 0.9849, PUB-U3 1.0000); 3-digit postcode area: within 0.05 (PUB-U1 1.0000, PUB-U2 0.9849, PUB-U3 1.0000). Scored on the repaired release, drop keeps at least as much of the required tasks as 2-digit postcode area (PUB-U1 0.0000, PUB-U2 0.0000, PUB-U3 0.6667 against PUB-U1 0.0000, PUB-U2 0.0000, PUB-U3 0.6667) and is more private, so it was chosen."
       },
       "municipality": {
         "pet": "drop",
-        "reason": "Detected quasi_identifier (MUNICIPALITY). Candidates tried, most private first: drop: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.5511, PUB-U3 1.0000); 8 most common, rest other: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.5511, PUB-U3 1.0000); exact: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.5511, PUB-U3 1.0000). Chosen: drop (no candidate stayed within the tolerance; best scores taken)."
+        "reason": "Detected quasi_identifier (MUNICIPALITY). Candidates tried, most private first: drop: within 0.05 (PUB-U1 1.0000, PUB-U2 0.9849, PUB-U3 1.0000). Chosen: drop."
       },
       "lat": {
         "pet": "round_decimals",
         "params": {
           "decimals": 3
         },
-        "reason": "Detected quasi_identifier (GPS_COORDINATE). Candidates tried, most private first: drop: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.5511, PUB-U3 0.0000); 2-decimal grid (about 1 km): outside 0.05 (PUB-U1 1.0000, PUB-U2 0.5511, PUB-U3 0.6667); 3-decimal grid (about 100 m): outside 0.05 (PUB-U1 1.0000, PUB-U2 0.5511, PUB-U3 1.0000). Chosen: 3-decimal grid (about 100 m) (no candidate stayed within the tolerance; best scores taken)."
+        "reason": "Detected quasi_identifier (GPS_COORDINATE). Candidates tried, most private first: drop: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.9849, PUB-U3 0.0000); 2-decimal grid (about 1 km): outside 0.05 (PUB-U1 1.0000, PUB-U2 0.9849, PUB-U3 0.6667); 3-decimal grid (about 100 m): within 0.05 (PUB-U1 1.0000, PUB-U2 0.9849, PUB-U3 1.0000). Chosen: 3-decimal grid (about 100 m)."
       },
       "lon": {
         "pet": "round_decimals",
         "params": {
           "decimals": 3
         },
-        "reason": "Detected quasi_identifier (GPS_COORDINATE). Candidates tried, most private first: drop: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.5511, PUB-U3 0.0000); 2-decimal grid (about 1 km): outside 0.05 (PUB-U1 1.0000, PUB-U2 0.5511, PUB-U3 0.8868); 3-decimal grid (about 100 m): outside 0.05 (PUB-U1 1.0000, PUB-U2 0.5511, PUB-U3 0.9608). Chosen: 3-decimal grid (about 100 m) (no candidate stayed within the tolerance; best scores taken)."
+        "reason": "Detected quasi_identifier (GPS_COORDINATE). Candidates tried, most private first: drop: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.9849, PUB-U3 0.0000); 2-decimal grid (about 1 km): outside 0.05 (PUB-U1 1.0000, PUB-U2 0.9849, PUB-U3 0.8868); 3-decimal grid (about 100 m): within 0.05 (PUB-U1 1.0000, PUB-U2 0.9849, PUB-U3 0.9608). Chosen: 3-decimal grid (about 100 m)."
       },
       "handler_name": {
         "pet": "drop",
@@ -101,11 +98,11 @@
       },
       "status": {
         "pet": "drop",
-        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.8600, PUB-U3 0.9608); kept: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.8600, PUB-U3 0.9608). Chosen: drop (no candidate stayed within the tolerance; best scores taken)."
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (PUB-U1 1.0000, PUB-U2 0.9944, PUB-U3 0.9608). Chosen: drop."
       },
       "ts_closed": {
-        "pet": "day",
-        "reason": "Detected quasi_identifier (TIMESTAMP). Candidates tried, most private first: drop: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.0000, PUB-U3 0.9608); month: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.0000, PUB-U3 0.9608); ISO week: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.0000, PUB-U3 0.9608); hour of day: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.0000, PUB-U3 0.9608); date: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.8600, PUB-U3 0.9608). Chosen: date (no candidate stayed within the tolerance; best scores taken)."
+        "pet": "month",
+        "reason": "Detected quasi_identifier (TIMESTAMP). Candidates tried before the k repair, most private first: drop: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.0000, PUB-U3 0.9608); month: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.0000, PUB-U3 0.9608); ISO week: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.0000, PUB-U3 0.9608); hour of day: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.0000, PUB-U3 0.9608); date: outside 0.05 (PUB-U1 1.0000, PUB-U2 0.6442, PUB-U3 0.9608); date and hour: within 0.05 (PUB-U1 1.0000, PUB-U2 0.9944, PUB-U3 0.9608). Scored on the repaired release, month keeps at least as much of the required tasks as hour of day (PUB-U1 0.0000, PUB-U2 0.0000, PUB-U3 0.6667 against PUB-U1 0.0000, PUB-U2 0.0000, PUB-U3 0.6667) and is more private, so it was chosen."
       },
       "response_text": {
         "pet": "drop",
@@ -154,23 +151,17 @@
     "l": 1,
     "columns": [
       "ts_created",
-      "postcode",
       "lat",
       "lon",
       "ts_closed"
     ],
     "linked": {},
     "ladder": {
-      "ts_created:to_month": {
+      "ts_created:widen_hour": {
         "column": "ts_created",
-        "op": "to_month",
-        "reason": "At-risk rows only: date coarsened to its month."
-      },
-      "postcode:prefix": {
-        "column": "postcode",
-        "op": "prefix",
-        "n": 2,
-        "reason": "At-risk rows only: one postcode digit fewer."
+        "op": "widen_hour",
+        "block": 3,
+        "reason": "At-risk rows only: hour widened to a 3-hour block."
       },
       "lat:round": {
         "column": "lat",
@@ -183,18 +174,12 @@
         "op": "round",
         "decimals": 2,
         "reason": "At-risk rows only: coordinate grid made 10 times coarser."
-      },
-      "ts_closed:to_month": {
-        "column": "ts_closed",
-        "op": "to_month",
-        "reason": "At-risk rows only: date coarsened to its month."
       }
     },
-    "reason": "Every released service_requests row shares its kept quasi-identifiers (ts_created, postcode, lat, lon, ts_closed) with at least 4 other rows; only the rows that miss the target are coarsened, and rows still at risk get those columns suppressed."
+    "reason": "Every released service_requests row shares its kept quasi-identifiers (ts_created, lat, lon, ts_closed) with at least 4 other rows; only the rows that miss the target are coarsened, and rows still at risk get those columns suppressed."
   },
   "k_columns": [
     "ts_created",
-    "postcode",
     "lat",
     "lon",
     "ts_closed"

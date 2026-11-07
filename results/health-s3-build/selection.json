@@ -11,11 +11,17 @@
     "H-U3": 1.0,
     "H-U5": 1.0
   },
-  "final_scores": {
+  "final_scores_before_repair": {
     "H-U2": 1.0,
     "H-U3": 1.0,
     "H-U5": 1.0
   },
+  "final_scores_after_repair": {
+    "H-U2": 1.0,
+    "H-U3": 1.0,
+    "H-U5": 1.0
+  },
+  "moved_after_repair": [],
   "trail": [
     {
       "table": "clinical_notes",
@@ -248,6 +254,24 @@
     },
     {
       "table": "ed_visits",
+      "column": "icd10_secondary",
+      "role": "sensitive_attribute",
+      "subtype": "DIAGNOSIS_CODE",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U3": 1.0,
+            "H-U5": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
       "column": "systolic_bp",
       "role": "sensitive_attribute",
       "subtype": "OTHER",
@@ -417,24 +441,6 @@
         },
         {
           "candidate": "kept",
-          "scores": {
-            "H-U2": 1.0,
-            "H-U3": 1.0,
-            "H-U5": 1.0
-          },
-          "ok": true
-        }
-      ]
-    },
-    {
-      "table": "ed_visits",
-      "column": "icd10_secondary",
-      "role": "non_sensitive",
-      "subtype": "CATEGORY",
-      "chosen": "drop",
-      "tried": [
-        {
-          "candidate": "drop",
           "scores": {
             "H-U2": 1.0,
             "H-U3": 1.0,

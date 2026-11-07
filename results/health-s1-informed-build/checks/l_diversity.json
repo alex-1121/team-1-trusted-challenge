@@ -1,0 +1,28 @@
+{
+  "command": "python -m pets_transformer.cli checks --protected out/health-s1-informed-build/health --original data/proving-ground/data/health --contract contracts/HEALTH-S1-informed.json --truth data/proving-ground/truth --out results/health-s1-informed-build/checks",
+  "protected": "out/health-s1-informed-build/health",
+  "original": "proving-ground/data/health",
+  "table": "ed_visits",
+  "check": "l-diversity of icd10_primary within groups sharing the k columns of the release",
+  "threshold": "l of at least 2 in every group (the repair's target)",
+  "finding": false,
+  "result": {
+    "columns": [
+      "date_of_birth",
+      "municipality",
+      "arrival_ts"
+    ],
+    "sensitive": "icd10_primary",
+    "n_rows": 46395,
+    "n_groups": 1704,
+    "share_groups_l_below_2": 0.0,
+    "share_groups_l_below_3": 0.0252,
+    "share_records_l_below_2": 0.0,
+    "share_records_l_below_3": 0.0052,
+    "worst_group": {
+      "rule": "fewest distinct diagnoses, then largest size",
+      "size": 9,
+      "distinct": 2
+    }
+  }
+}

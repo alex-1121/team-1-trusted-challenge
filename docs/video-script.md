@@ -42,7 +42,7 @@ Attack. Five attacks run again. Dates rebuilt: zero. Patients named: zero. Only 
 
 [scorecard.html]
 
-Privacy goes from 0.17 raw to 1.0. The composite rises from 0.28 to 0.98, above our earlier 0.97, and now the number holds up. The same command protects the data for an AI vendor and an education vendor without a single hand-written rule.
+Privacy goes from 0.17 raw to 1.0. The composite rises from 0.28 to 0.99, above our earlier 0.97, and now the number holds up. The same command protects the data for an AI vendor and an education vendor without a single hand-written rule.
 
 **Honest limits (10 s)**
 
@@ -64,10 +64,10 @@ TrustED PETs Proving Ground 2026, synthetic data by Since AI ry, CC BY 4.0.
 - Month and week break the arrival curve (H-U8 0.0), hour of day keeps it (1.0): `contracts/HEALTH-S1.json` (arrival_ts reason), `results/selection/HEALTH-S1.json`.
 - At least five visits and two diagnoses per group: `results/health-s1-build/scorecard.json` (min k 5), `results/health-s1-build/checks/l_diversity.json`.
 - Dates rebuilt zero (0.0002), patients named zero: `results/health-s1-build/redteam.json`.
-- A third of patients unique with a patient key (0.2906): `results/health-s1-pseudonym-build/redteam.json`.
+- A third of patients unique with a patient key (0.2935): `results/health-s1-pseudonym-build/redteam.json`.
 - Privacy 0.17 raw (0.1716), composite 0.28 raw (0.2752): `baseline-scores/health_HEALTH-S1_research-env_raw.json`.
-- Privacy 1.0, composite 0.98 (0.9808): `results/health-s1-build/scorecard.json`.
+- Privacy 1.0, composite 0.99 (0.9866): `results/health-s1-build/scorecard.json`.
 - AI vendor and education vendor: `results/health-s3-build/`, `results/edu-s2-build/`.
-- One visit in ten (0.0964): `results/health-s1-build/checks/informed_attacker.json`.
+- One visit in ten (0.0971): `results/health-s1-build/checks/informed_attacker.json`; closed at composite 0.9647 by `contracts/HEALTH-S1-informed.json` (`results/health-s1-informed-build/`).
 
 Numbers are rounded for speech; the screen shows the full values. The scorecard is our own self-assessment and is separate from the official judging score.

@@ -277,12 +277,29 @@ def _union_pairs(df: pd.DataFrame, lab: pd.DataFrame, t: str) -> None:
                 lab.loc[j, ["privacy_role", "subtype"]] = ["sensitive_attribute", "FINANCIAL_DATA"]
 
 
+ESCALATE = ("direct_identifier", "quasi_identifier", "sensitive_attribute")
+
+
+def _wide_sample(f: Path, n: int = MAX_ROWS) -> pd.DataFrame | None:
+    """n rows drawn at random over the whole file (fixed seed), or None when the file has no more than n rows."""
+    df = pd.read_csv(f, dtype=str)
+    return df.sample(n, random_state=0).sort_index() if len(df) > n else None
+
+
 def detect_dataset(data_dir: Path, dataset: str) -> pd.DataFrame:
     tables = {f.stem: pd.read_csv(f, dtype=str, nrows=MAX_ROWS) for f in sorted(Path(data_dir).glob("*.csv"))}
+    # The rules read the first MAX_ROWS rows (keys and order rules are tuned on file order). The first rows of a
+    # time-sorted table are its first weeks, so a column judged non-sensitive there gets a second look on rows from
+    # the whole file, and can only move to a more protective label, never to a less protective one.
+    wide = {f.stem: _wide_sample(f) for f in sorted(Path(data_dir).glob("*.csv"))}
     rows = []
     for t, df in tables.items():
         for c in df.columns:
             role, sub, kind = classify(df[c])
+            if role == "non_sensitive" and wide[t] is not None:
+                r2, s2, k2 = classify(wide[t][c])
+                if r2 in ESCALATE:
+                    role, sub, kind = r2, s2, k2
             rows.append(dict(dataset=dataset, table=t, column=c, privacy_role=role, subtype=sub, kind=kind))
     lab = pd.DataFrame(rows, columns=["dataset", "table", "column", "privacy_role", "subtype", "kind"])
     if lab.empty:

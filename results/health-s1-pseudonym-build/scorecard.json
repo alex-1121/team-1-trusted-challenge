@@ -65,13 +65,13 @@
           "arrival_ts"
         ],
         "n": 46398,
-        "n_classes": 1691,
+        "n_classes": 1763,
         "min_k": 5,
         "median_k": 55.0,
         "share_below": {
           "k<2": 0.0,
           "k<5": 0.0,
-          "k<10": 0.0757
+          "k<10": 0.0886
         },
         "sample_uniqueness": 0.0
       },
@@ -102,9 +102,9 @@
         ],
         "min_distinct_l": 1,
         "min_entropy_l": 1.0,
-        "share_records_l1": 0.0017,
-        "share_classes_l1": 0.0083,
-        "n_classes": 1691
+        "share_records_l1": 0.002,
+        "share_classes_l1": 0.0096,
+        "n_classes": 1763
       },
       "row_alignment": "row map",
       "linkage": {
@@ -147,7 +147,7 @@
           "claim_precision": null,
           "n_unique_claims": 0,
           "share_targets_in_candidate_set_le5": 0.0,
-          "median_candidate_set": 0.0,
+          "median_candidate_set": 49.0,
           "attribute_inference": {
             "sensitive": "icd10_primary",
             "inferred": 0,
@@ -187,7 +187,7 @@
           "claim_precision": null,
           "n_unique_claims": 0,
           "share_targets_in_candidate_set_le5": 0.0,
-          "median_candidate_set": 0.0,
+          "median_candidate_set": 271.0,
           "attribute_inference": {
             "sensitive": "icd10_primary",
             "inferred": 0,
@@ -218,7 +218,7 @@
           "claim_precision": null,
           "n_unique_claims": 0,
           "share_targets_in_candidate_set_le5": 0.0,
-          "median_candidate_set": 4839.0,
+          "median_candidate_set": 4821.0,
           "attribute_inference": {
             "sensitive": "icd10_primary",
             "inferred": 0,
@@ -245,7 +245,7 @@
         "linkage re-identification": 0.0,
         "free-text identifier leakage": 0.0
       },
-      "seconds": 8.2
+      "seconds": 9.0
     },
     "lab_results": {
       "table": "lab_results",
@@ -273,7 +273,7 @@
       "risks": {
         "direct identifiers retained": 0.0
       },
-      "seconds": 0.2
+      "seconds": 0.3
     },
     "published_weekly_stats": {
       "table": "published_weekly_stats",
@@ -317,10 +317,10 @@
       "kind": "distribution",
       "description": "Diagnosis-group mix in the eight largest municipalities",
       "required": true,
-      "score": 0.9611008273587289,
+      "score": 0.9548787140825844,
       "metric": "1 - mean TVD/0.15 of diagnosis-group mix in top-8 municipalities",
       "detail": {
-        "mean_tvd": 0.0058
+        "mean_tvd": 0.0068
       }
     },
     {
@@ -329,10 +329,10 @@
       "kind": "relationship",
       "description": "30-day revisit rate by age band (needs readmit_30d or a consistent patient pseudonym)",
       "required": true,
-      "score": 0.957945651760686,
+      "score": 0.9577987630780451,
       "metric": "mean |revisit rate diff| by age band / overall rate",
       "detail": {
-        "rel_error": 0.021,
+        "rel_error": 0.0211,
         "orig": {
           "0-9": 0.2408,
           "10-19": 0.0877,
@@ -349,7 +349,7 @@
           "10-19": 0.0865,
           "20-29": 0.0991,
           "30-39": 0.0773,
-          "40-49": 0.0895,
+          "40-49": 0.0897,
           "50-59": 0.084,
           "60-69": 0.1578,
           "70-79": 0.1855,
@@ -377,17 +377,17 @@
       "kind": "distribution",
       "description": "Hour-of-day arrival curve",
       "required": true,
-      "score": 0.8769059466441341,
+      "score": 0.9445713805003781,
       "metric": "TVD of hour-of-day arrival distribution",
       "detail": {
-        "tvd": 0.0369
+        "tvd": 0.0166
       }
     }
   ],
   "summary": {
     "privacy": 1.0,
-    "utility": 0.9588,
-    "composite": 0.9808,
+    "utility": 0.971,
+    "composite": 0.9866,
     "label": "self-assessment, not the official judging score",
     "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
   },

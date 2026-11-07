@@ -1,0 +1,3 @@
+scanned 5 files
+  no residual direct identifiers found by the regex scan
+Synthetic identifiers in this package use reserved formats; any hit means a value survived your transformation. PHONE and LICENSE_PLATE are pattern-only (possible false positives).

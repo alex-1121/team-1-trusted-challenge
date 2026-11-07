@@ -56,13 +56,13 @@
       "tasks": {
         "H-U2": 0.9978835978835979,
         "H-U4": 0.8429054492952309,
-        "H-U6": 0.9577084368601625,
+        "H-U6": 0.9581072056891449,
         "H-U7": 1.0,
-        "H-U8": 0.9936777864287692
+        "H-U8": 0.996629530006826
       },
       "privacy": 1.0,
-      "utility": 0.9584,
-      "composite": 0.9807,
+      "utility": 0.9591,
+      "composite": 0.981,
       "at_risk_after": 0,
       "rows_released": 46398,
       "steps": [
@@ -84,7 +84,7 @@
         {
           "step": "suppress",
           "column": "date_of_birth, municipality, arrival_ts",
-          "rows_changed": 20
+          "rows_changed": 62
         },
         {
           "step": "drop_rows",
@@ -102,14 +102,14 @@
       "name": "date_of_birth:widen_band-arrival_ts:widen_hour-municipality:set",
       "tasks": {
         "H-U2": 0.9978835978835979,
-        "H-U4": 0.9611008273587289,
-        "H-U6": 0.957945651760686,
+        "H-U4": 0.9548787140825844,
+        "H-U6": 0.9577987630780451,
         "H-U7": 1.0,
-        "H-U8": 0.8769059466441341
+        "H-U8": 0.9445713805003781
       },
       "privacy": 1.0,
-      "utility": 0.9588,
-      "composite": 0.9808,
+      "utility": 0.971,
+      "composite": 0.9866,
       "at_risk_after": 0,
       "rows_released": 46398,
       "steps": [
@@ -126,12 +126,12 @@
         {
           "step": "municipality:set",
           "column": "municipality",
-          "rows_changed": 589
+          "rows_changed": 737
         },
         {
           "step": "suppress",
           "column": "date_of_birth, municipality, arrival_ts",
-          "rows_changed": 60
+          "rows_changed": 59
         },
         {
           "step": "drop_rows",
@@ -152,13 +152,13 @@
         "H-U4": 0.7284996896337128,
         "H-U6": 0.9641950063457823,
         "H-U7": 0.999961467418641,
-        "H-U8": 0.9960463190767378
+        "H-U8": 0.9968816805356796
       },
       "privacy": 1.0,
-      "utility": 0.9373,
-      "composite": 0.9705,
+      "utility": 0.9375,
+      "composite": 0.9706,
       "at_risk_after": 0,
-      "rows_released": 46390,
+      "rows_released": 46394,
       "steps": [
         {
           "step": "municipality:set",
@@ -178,12 +178,12 @@
         {
           "step": "suppress",
           "column": "date_of_birth, municipality, arrival_ts",
-          "rows_changed": 8
+          "rows_changed": 18
         },
         {
           "step": "drop_rows",
           "column": "(row)",
-          "rows_changed": 8
+          "rows_changed": 4
         }
       ]
     },
@@ -199,13 +199,13 @@
         "H-U4": 0.7284996896337128,
         "H-U6": 0.9641950063457823,
         "H-U7": 0.999961467418641,
-        "H-U8": 0.9960463190767378
+        "H-U8": 0.9968816805356796
       },
       "privacy": 1.0,
-      "utility": 0.9373,
-      "composite": 0.9705,
+      "utility": 0.9375,
+      "composite": 0.9706,
       "at_risk_after": 0,
-      "rows_released": 46390,
+      "rows_released": 46394,
       "steps": [
         {
           "step": "municipality:set",
@@ -220,17 +220,17 @@
         {
           "step": "date_of_birth:widen_band",
           "column": "date_of_birth",
-          "rows_changed": 8
+          "rows_changed": 18
         },
         {
           "step": "suppress",
           "column": "date_of_birth, municipality, arrival_ts",
-          "rows_changed": 8
+          "rows_changed": 18
         },
         {
           "step": "drop_rows",
           "column": "(row)",
-          "rows_changed": 8
+          "rows_changed": 4
         }
       ]
     },
@@ -243,14 +243,14 @@
       "name": "arrival_ts:widen_hour-date_of_birth:widen_band-municipality:set",
       "tasks": {
         "H-U2": 0.9978835978835979,
-        "H-U4": 0.9515710428649724,
-        "H-U6": 0.9634716972448838,
+        "H-U4": 0.9493014196055335,
+        "H-U6": 0.9580989762649222,
         "H-U7": 1.0,
-        "H-U8": 0.8201375382738438
+        "H-U8": 0.9127290601706518
       },
       "privacy": 1.0,
-      "utility": 0.9466,
-      "composite": 0.975,
+      "utility": 0.9636,
+      "composite": 0.9831,
       "at_risk_after": 0,
       "rows_released": 46398,
       "steps": [
@@ -262,17 +262,17 @@
         {
           "step": "date_of_birth:widen_band",
           "column": "date_of_birth",
-          "rows_changed": 797
+          "rows_changed": 1282
         },
         {
           "step": "municipality:set",
           "column": "municipality",
-          "rows_changed": 611
+          "rows_changed": 921
         },
         {
           "step": "suppress",
           "column": "date_of_birth, municipality, arrival_ts",
-          "rows_changed": 50
+          "rows_changed": 25
         },
         {
           "step": "drop_rows",
@@ -290,16 +290,16 @@
       "name": "arrival_ts:widen_hour-municipality:set-date_of_birth:widen_band",
       "tasks": {
         "H-U2": 0.9978835978835979,
-        "H-U4": 0.9398459598655233,
-        "H-U6": 0.9641950063457823,
-        "H-U7": 0.999961467418641,
-        "H-U8": 0.8181015264514625
+        "H-U4": 0.9245025521698605,
+        "H-U6": 0.9650355885006274,
+        "H-U7": 1.0,
+        "H-U8": 0.9127290601706518
       },
       "privacy": 1.0,
-      "utility": 0.944,
-      "composite": 0.9737,
+      "utility": 0.96,
+      "composite": 0.9814,
       "at_risk_after": 0,
-      "rows_released": 46394,
+      "rows_released": 46398,
       "steps": [
         {
           "step": "arrival_ts:widen_hour",
@@ -309,22 +309,22 @@
         {
           "step": "municipality:set",
           "column": "municipality",
-          "rows_changed": 797
+          "rows_changed": 1282
         },
         {
           "step": "date_of_birth:widen_band",
           "column": "date_of_birth",
-          "rows_changed": 4
+          "rows_changed": 104
         },
         {
           "step": "suppress",
           "column": "date_of_birth, municipality, arrival_ts",
-          "rows_changed": 4
+          "rows_changed": 83
         },
         {
           "step": "drop_rows",
           "column": "(row)",
-          "rows_changed": 4
+          "rows_changed": 0
         }
       ]
     }

@@ -6,210 +6,342 @@
     "columns": [
       "ts_created",
       "postcode",
+      "category",
+      "language",
       "lat",
-      "lon",
-      "ts_closed"
+      "lon"
     ],
     "linked": {},
-    "reason": "Every released service_requests row shares its kept quasi-identifiers (ts_created, postcode, lat, lon, ts_closed) with at least 4 other rows; only the rows that miss the target are coarsened, and rows still at risk get those columns suppressed."
+    "reason": "The organisers' suggested key for PUB-S3 (postcode, category, month, language) plus the released 1 km grid: every released row shares these with at least 4 other rows; only the rows that miss it are coarsened, rows still at risk get those columns suppressed."
   },
   "ladder": {
-    "ts_created:to_month": {
-      "column": "ts_created",
-      "op": "to_month",
-      "reason": "At-risk rows only: date coarsened to its month."
+    "lat:round": {
+      "column": "lat",
+      "op": "round",
+      "decimals": 1,
+      "reason": "At-risk rows only: coordinate grid made 10 times coarser."
+    },
+    "lon:round": {
+      "column": "lon",
+      "op": "round",
+      "decimals": 1,
+      "reason": "At-risk rows only: coordinate grid made 10 times coarser."
+    },
+    "language:set": {
+      "column": "language",
+      "op": "set",
+      "value": "other",
+      "reason": "At-risk rows only: language becomes other."
     },
     "postcode:prefix": {
       "column": "postcode",
       "op": "prefix",
       "n": 2,
       "reason": "At-risk rows only: one postcode digit fewer."
-    },
-    "lat:round": {
-      "column": "lat",
-      "op": "round",
-      "decimals": 2,
-      "reason": "At-risk rows only: coordinate grid made 10 times coarser."
-    },
-    "lon:round": {
-      "column": "lon",
-      "op": "round",
-      "decimals": 2,
-      "reason": "At-risk rows only: coordinate grid made 10 times coarser."
-    },
-    "ts_closed:to_month": {
-      "column": "ts_closed",
-      "op": "to_month",
-      "reason": "At-risk rows only: date coarsened to its month."
     }
   },
   "floor": 0.85,
   "rule": "best composite among orders with no row at risk and every required task at or above the floor",
-  "chosen": "ts_created:to_month-postcode:prefix-lat:round-lon:round-ts_closed:to_month",
+  "chosen": "language:set-lat:round-lon:round-postcode:prefix",
   "orders": [
     {
       "order": [
-        "ts_created:to_month",
-        "postcode:prefix",
         "lat:round",
         "lon:round",
-        "ts_closed:to_month"
-      ],
-      "name": "ts_created:to_month-postcode:prefix-lat:round-lon:round-ts_closed:to_month",
-      "tasks": {
-        "PUB-U1": 0.0,
-        "PUB-U2": 0.0,
-        "PUB-U3": 0.6666666666666666
-      },
-      "privacy": 1.0,
-      "utility": 0.2222,
-      "composite": 0.386,
-      "at_risk_after": 0,
-      "rows_released": 31653,
-      "steps": [
-        {
-          "step": "ts_created:to_month",
-          "column": "ts_created",
-          "rows_changed": 31653
-        },
-        {
-          "step": "postcode:prefix",
-          "column": "postcode",
-          "rows_changed": 31643
-        },
-        {
-          "step": "lat:round",
-          "column": "lat",
-          "rows_changed": 31643
-        },
-        {
-          "step": "lon:round",
-          "column": "lon",
-          "rows_changed": 31622
-        },
-        {
-          "step": "ts_closed:to_month",
-          "column": "ts_closed",
-          "rows_changed": 30775
-        },
-        {
-          "step": "suppress",
-          "column": "ts_created, postcode, lat, lon, ts_closed",
-          "rows_changed": 16515
-        },
-        {
-          "step": "drop_rows",
-          "column": "(row)",
-          "rows_changed": 0
-        }
-      ]
-    },
-    {
-      "order": [
-        "postcode:prefix",
-        "lat:round",
-        "lon:round",
-        "ts_closed:to_month",
-        "ts_created:to_month"
-      ],
-      "name": "postcode:prefix-lat:round-lon:round-ts_closed:to_month-ts_created:to_month",
-      "tasks": {
-        "PUB-U1": 0.0,
-        "PUB-U2": 0.0,
-        "PUB-U3": 0.6666666666666666
-      },
-      "privacy": 1.0,
-      "utility": 0.2222,
-      "composite": 0.386,
-      "at_risk_after": 0,
-      "rows_released": 31653,
-      "steps": [
-        {
-          "step": "postcode:prefix",
-          "column": "postcode",
-          "rows_changed": 31653
-        },
-        {
-          "step": "lat:round",
-          "column": "lat",
-          "rows_changed": 31653
-        },
-        {
-          "step": "lon:round",
-          "column": "lon",
-          "rows_changed": 31653
-        },
-        {
-          "step": "ts_closed:to_month",
-          "column": "ts_closed",
-          "rows_changed": 31643
-        },
-        {
-          "step": "ts_created:to_month",
-          "column": "ts_created",
-          "rows_changed": 31541
-        },
-        {
-          "step": "suppress",
-          "column": "ts_created, postcode, lat, lon, ts_closed",
-          "rows_changed": 16511
-        },
-        {
-          "step": "drop_rows",
-          "column": "(row)",
-          "rows_changed": 0
-        }
-      ]
-    },
-    {
-      "order": [
-        "lat:round",
-        "lon:round",
-        "ts_closed:to_month",
-        "ts_created:to_month",
+        "language:set",
         "postcode:prefix"
       ],
-      "name": "lat:round-lon:round-ts_closed:to_month-ts_created:to_month-postcode:prefix",
+      "name": "lat:round-lon:round-language:set-postcode:prefix",
       "tasks": {
-        "PUB-U1": 0.0,
-        "PUB-U2": 0.0,
-        "PUB-U3": 0.6666666666666666
+        "PUB-U1": 0.3132041711093162,
+        "PUB-U2": 0.9703580693482727,
+        "PUB-U3": 0.28205128205128205
       },
       "privacy": 1.0,
-      "utility": 0.2222,
-      "composite": 0.386,
+      "utility": 0.5219,
+      "composite": 0.706,
       "at_risk_after": 0,
       "rows_released": 31653,
       "steps": [
         {
           "step": "lat:round",
           "column": "lat",
-          "rows_changed": 31653
+          "rows_changed": 28721
         },
         {
           "step": "lon:round",
           "column": "lon",
-          "rows_changed": 31653
+          "rows_changed": 24458
         },
         {
-          "step": "ts_closed:to_month",
-          "column": "ts_closed",
-          "rows_changed": 31653
-        },
-        {
-          "step": "ts_created:to_month",
-          "column": "ts_created",
-          "rows_changed": 31607
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 10446
         },
         {
           "step": "postcode:prefix",
           "column": "postcode",
-          "rows_changed": 18924
+          "rows_changed": 9208
         },
         {
           "step": "suppress",
-          "column": "ts_created, postcode, lat, lon, ts_closed",
-          "rows_changed": 17325
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 5265
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "lat:round",
+        "lon:round",
+        "postcode:prefix",
+        "language:set"
+      ],
+      "name": "lat:round-lon:round-postcode:prefix-language:set",
+      "tasks": {
+        "PUB-U1": 0.1879892145626766,
+        "PUB-U2": 0.9758186107303252,
+        "PUB-U3": 0.28205128205128205
+      },
+      "privacy": 1.0,
+      "utility": 0.482,
+      "composite": 0.6718,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 28721
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 24458
+        },
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 10446
+        },
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 7376
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 5531
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "lat:round",
+        "language:set",
+        "lon:round",
+        "postcode:prefix"
+      ],
+      "name": "lat:round-language:set-lon:round-postcode:prefix",
+      "tasks": {
+        "PUB-U1": 0.3906124949046136,
+        "PUB-U2": 0.9770140034447018,
+        "PUB-U3": 0.28205128205128205
+      },
+      "privacy": 1.0,
+      "utility": 0.5499,
+      "composite": 0.7288,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 28721
+        },
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 24458
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 23399
+        },
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 7878
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 5241
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "lat:round",
+        "language:set",
+        "postcode:prefix",
+        "lon:round"
+      ],
+      "name": "lat:round-language:set-postcode:prefix-lon:round",
+      "tasks": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.9723543760999719,
+        "PUB-U3": 0.25
+      },
+      "privacy": 1.0,
+      "utility": 0.4075,
+      "composite": 0.602,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 28721
+        },
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 24458
+        },
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 23399
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 18390
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 3987
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "lat:round",
+        "postcode:prefix",
+        "lon:round",
+        "language:set"
+      ],
+      "name": "lat:round-postcode:prefix-lon:round-language:set",
+      "tasks": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.9769826463934678,
+        "PUB-U3": 0.25
+      },
+      "privacy": 1.0,
+      "utility": 0.409,
+      "composite": 0.6036,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 28721
+        },
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 24458
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 20118
+        },
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 6193
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 5391
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "lat:round",
+        "postcode:prefix",
+        "language:set",
+        "lon:round"
+      ],
+      "name": "lat:round-postcode:prefix-language:set-lon:round",
+      "tasks": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.9723543760999719,
+        "PUB-U3": 0.25
+      },
+      "privacy": 1.0,
+      "utility": 0.4075,
+      "composite": 0.602,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 28721
+        },
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 24458
+        },
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 20118
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 18543
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 3977
         },
         {
           "step": "drop_rows",
@@ -221,52 +353,199 @@
     {
       "order": [
         "lon:round",
-        "ts_closed:to_month",
-        "ts_created:to_month",
+        "lat:round",
+        "language:set",
+        "postcode:prefix"
+      ],
+      "name": "lon:round-lat:round-language:set-postcode:prefix",
+      "tasks": {
+        "PUB-U1": 0.2878833073138629,
+        "PUB-U2": 0.9721484816730617,
+        "PUB-U3": 0.3333333333333333
+      },
+      "privacy": 1.0,
+      "utility": 0.5311,
+      "composite": 0.7136,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 28721
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 19618
+        },
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 11304
+        },
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 9543
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 5273
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "lon:round",
+        "lat:round",
+        "postcode:prefix",
+        "language:set"
+      ],
+      "name": "lon:round-lat:round-postcode:prefix-language:set",
+      "tasks": {
+        "PUB-U1": 0.14227073374096955,
+        "PUB-U2": 0.9735639670932673,
+        "PUB-U3": 0.3333333333333333
+      },
+      "privacy": 1.0,
+      "utility": 0.4831,
+      "composite": 0.6728,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 28721
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 19618
+        },
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 11304
+        },
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 7373
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 5631
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "lon:round",
+        "language:set",
+        "lat:round",
+        "postcode:prefix"
+      ],
+      "name": "lon:round-language:set-lat:round-postcode:prefix",
+      "tasks": {
+        "PUB-U1": 0.3311694294139197,
+        "PUB-U2": 0.9788954980026158,
+        "PUB-U3": 0.3333333333333333
+      },
+      "privacy": 1.0,
+      "utility": 0.5478,
+      "composite": 0.7272,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 28721
+        },
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 19618
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 18429
+        },
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 8921
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 5259
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "lon:round",
+        "language:set",
         "postcode:prefix",
         "lat:round"
       ],
-      "name": "lon:round-ts_closed:to_month-ts_created:to_month-postcode:prefix-lat:round",
+      "name": "lon:round-language:set-postcode:prefix-lat:round",
       "tasks": {
         "PUB-U1": 0.0,
-        "PUB-U2": 0.0,
-        "PUB-U3": 0.6666666666666666
+        "PUB-U2": 0.9757359182204705,
+        "PUB-U3": 0.2987012987012987
       },
       "privacy": 1.0,
-      "utility": 0.2222,
-      "composite": 0.386,
+      "utility": 0.4248,
+      "composite": 0.619,
       "at_risk_after": 0,
       "rows_released": 31653,
       "steps": [
         {
           "step": "lon:round",
           "column": "lon",
-          "rows_changed": 31653
+          "rows_changed": 28721
         },
         {
-          "step": "ts_closed:to_month",
-          "column": "ts_closed",
-          "rows_changed": 31653
-        },
-        {
-          "step": "ts_created:to_month",
-          "column": "ts_created",
-          "rows_changed": 31653
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 19618
         },
         {
           "step": "postcode:prefix",
           "column": "postcode",
-          "rows_changed": 30733
+          "rows_changed": 18429
         },
         {
           "step": "lat:round",
           "column": "lat",
-          "rows_changed": 30143
+          "rows_changed": 14531
         },
         {
           "step": "suppress",
-          "column": "ts_created, postcode, lat, lon, ts_closed",
-          "rows_changed": 16635
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 4361
         },
         {
           "step": "drop_rows",
@@ -277,53 +556,710 @@
     },
     {
       "order": [
-        "ts_closed:to_month",
-        "ts_created:to_month",
+        "lon:round",
+        "postcode:prefix",
+        "lat:round",
+        "language:set"
+      ],
+      "name": "lon:round-postcode:prefix-lat:round-language:set",
+      "tasks": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.9742524075432352,
+        "PUB-U3": 0.3157894736842105
+      },
+      "privacy": 1.0,
+      "utility": 0.43,
+      "composite": 0.624,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 28721
+        },
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 19618
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 16316
+        },
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 6610
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 5450
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "lon:round",
+        "postcode:prefix",
+        "language:set",
+        "lat:round"
+      ],
+      "name": "lon:round-postcode:prefix-language:set-lat:round",
+      "tasks": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.976593273621989,
+        "PUB-U3": 0.2987012987012987
+      },
+      "privacy": 1.0,
+      "utility": 0.4251,
+      "composite": 0.6193,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 28721
+        },
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 19618
+        },
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 16316
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 14761
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 4302
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "language:set",
+        "lat:round",
+        "lon:round",
+        "postcode:prefix"
+      ],
+      "name": "language:set-lat:round-lon:round-postcode:prefix",
+      "tasks": {
+        "PUB-U1": 0.38881767333900696,
+        "PUB-U2": 0.9766661870976283,
+        "PUB-U3": 0.2987012987012987
+      },
+      "privacy": 1.0,
+      "utility": 0.5547,
+      "composite": 0.7327,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 28721
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 28216
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 23175
+        },
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 7932
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 5219
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "language:set",
+        "lat:round",
+        "postcode:prefix",
+        "lon:round"
+      ],
+      "name": "language:set-lat:round-postcode:prefix-lon:round",
+      "tasks": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.9723543760999719,
+        "PUB-U3": 0.26582278481012656
+      },
+      "privacy": 1.0,
+      "utility": 0.4127,
+      "composite": 0.6072,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 28721
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 28216
+        },
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 23175
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 18304
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 3986
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "language:set",
+        "lon:round",
+        "lat:round",
+        "postcode:prefix"
+      ],
+      "name": "language:set-lon:round-lat:round-postcode:prefix",
+      "tasks": {
+        "PUB-U1": 0.3380787954464787,
+        "PUB-U2": 0.9711144475263632,
+        "PUB-U3": 0.3333333333333333
+      },
+      "privacy": 1.0,
+      "utility": 0.5475,
+      "composite": 0.7269,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 28721
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 28216
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 17727
+        },
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 8845
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 5224
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "language:set",
+        "lon:round",
+        "postcode:prefix",
+        "lat:round"
+      ],
+      "name": "language:set-lon:round-postcode:prefix-lat:round",
+      "tasks": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.9753479063327563,
+        "PUB-U3": 0.3157894736842105
+      },
+      "privacy": 1.0,
+      "utility": 0.4304,
+      "composite": 0.6244,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 28721
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 28216
+        },
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 17727
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 14409
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 4340
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "language:set",
         "postcode:prefix",
         "lat:round",
         "lon:round"
       ],
-      "name": "ts_closed:to_month-ts_created:to_month-postcode:prefix-lat:round-lon:round",
+      "name": "language:set-postcode:prefix-lat:round-lon:round",
       "tasks": {
         "PUB-U1": 0.0,
-        "PUB-U2": 0.0,
-        "PUB-U3": 0.6666666666666666
+        "PUB-U2": 0.9723543760999719,
+        "PUB-U3": 0.28205128205128205
       },
       "privacy": 1.0,
-      "utility": 0.2222,
-      "composite": 0.386,
+      "utility": 0.4181,
+      "composite": 0.6125,
       "at_risk_after": 0,
       "rows_released": 31653,
       "steps": [
         {
-          "step": "ts_closed:to_month",
-          "column": "ts_closed",
-          "rows_changed": 31653
-        },
-        {
-          "step": "ts_created:to_month",
-          "column": "ts_created",
-          "rows_changed": 31653
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 28721
         },
         {
           "step": "postcode:prefix",
           "column": "postcode",
-          "rows_changed": 31540
+          "rows_changed": 28216
         },
         {
           "step": "lat:round",
           "column": "lat",
-          "rows_changed": 31540
+          "rows_changed": 26645
         },
         {
           "step": "lon:round",
           "column": "lon",
-          "rows_changed": 30668
+          "rows_changed": 17748
         },
         {
           "step": "suppress",
-          "column": "ts_created, postcode, lat, lon, ts_closed",
-          "rows_changed": 16558
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 4027
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "language:set",
+        "postcode:prefix",
+        "lon:round",
+        "lat:round"
+      ],
+      "name": "language:set-postcode:prefix-lon:round-lat:round",
+      "tasks": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.9758605883745831,
+        "PUB-U3": 0.3157894736842105
+      },
+      "privacy": 1.0,
+      "utility": 0.4306,
+      "composite": 0.6245,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 28721
+        },
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 28216
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 26645
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 13138
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 4676
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "postcode:prefix",
+        "lat:round",
+        "lon:round",
+        "language:set"
+      ],
+      "name": "postcode:prefix-lat:round-lon:round-language:set",
+      "tasks": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.9769826463934678,
+        "PUB-U3": 0.28205128205128205
+      },
+      "privacy": 1.0,
+      "utility": 0.4197,
+      "composite": 0.614,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 28721
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 27359
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 19699
+        },
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 6233
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 5382
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "postcode:prefix",
+        "lat:round",
+        "language:set",
+        "lon:round"
+      ],
+      "name": "postcode:prefix-lat:round-language:set-lon:round",
+      "tasks": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.9723543760999719,
+        "PUB-U3": 0.28205128205128205
+      },
+      "privacy": 1.0,
+      "utility": 0.4181,
+      "composite": 0.6125,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 28721
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 27359
+        },
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 19699
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 18272
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 3996
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "postcode:prefix",
+        "lon:round",
+        "lat:round",
+        "language:set"
+      ],
+      "name": "postcode:prefix-lon:round-lat:round-language:set",
+      "tasks": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.9719635398827187,
+        "PUB-U3": 0.3157894736842105
+      },
+      "privacy": 1.0,
+      "utility": 0.4293,
+      "composite": 0.6233,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 28721
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 27359
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 15250
+        },
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 6909
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 5410
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "postcode:prefix",
+        "lon:round",
+        "language:set",
+        "lat:round"
+      ],
+      "name": "postcode:prefix-lon:round-language:set-lat:round",
+      "tasks": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.975199455719052,
+        "PUB-U3": 0.3157894736842105
+      },
+      "privacy": 1.0,
+      "utility": 0.4303,
+      "composite": 0.6243,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 28721
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 27359
+        },
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 15250
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 14314
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 4379
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "postcode:prefix",
+        "language:set",
+        "lat:round",
+        "lon:round"
+      ],
+      "name": "postcode:prefix-language:set-lat:round-lon:round",
+      "tasks": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.9723543760999719,
+        "PUB-U3": 0.28205128205128205
+      },
+      "privacy": 1.0,
+      "utility": 0.4181,
+      "composite": 0.6125,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 28721
+        },
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 27359
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 26687
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 17732
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 4039
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "postcode:prefix",
+        "language:set",
+        "lon:round",
+        "lat:round"
+      ],
+      "name": "postcode:prefix-language:set-lon:round-lat:round",
+      "tasks": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.9758605883745831,
+        "PUB-U3": 0.3157894736842105
+      },
+      "privacy": 1.0,
+      "utility": 0.4306,
+      "composite": 0.6245,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 28721
+        },
+        {
+          "step": "language:set",
+          "column": "language",
+          "rows_changed": 27359
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 26687
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 13141
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, category, language, lat, lon",
+          "rows_changed": 4676
         },
         {
           "step": "drop_rows",

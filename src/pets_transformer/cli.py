@@ -38,6 +38,7 @@ def main(argv=None):
     k.add_argument("--protected", required=True)
     k.add_argument("--original", required=True)
     k.add_argument("--out", required=True)
+    k.add_argument("--contract", required=True, help="contract JSON with a k_target (table, k columns, sensitive column, join flags)")
     k.add_argument("--truth", help="truth/ folder; attacker rows are the visits in health__ed_visits.csv (default: every original visit)")
     r = sub.add_parser("redteam", help="attacks the scorecard does not run, with a pass/fail gate")
     r.add_argument("--protected", required=True)
@@ -67,7 +68,7 @@ def main(argv=None):
         plan = build.run(a.scenario, a.original, a.out, a.results, a.submission, a.pets_eval, a.contract)
         print(f"built {a.scenario}: {len(plan)} plan rows, results in {a.results or 'results/' + a.scenario.lower() + '-build'}")
     elif a.cmd == "checks":
-        checks.run(a.protected, a.original, a.out, a.truth, sys.argv[1:] if argv is None else argv)
+        checks.run(a.protected, a.original, a.out, a.truth, sys.argv[1:] if argv is None else argv, contract.load(a.contract))
         print(f"wrote checks to {a.out}")
     elif a.cmd == "select":
         import json

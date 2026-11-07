@@ -21,7 +21,7 @@
             "share_dates_rebuilt": 0.0002
           }
         ],
-        "best_ordering": "file order",
+        "best_ordering": "sorted by ed_visits.visit_id",
         "share_rows_date_rebuilt": 0.0002
       },
       "threshold": 0.05,
@@ -42,7 +42,7 @@
     },
     "person_fingerprint": {
       "metric": "share_persons_unique",
-      "value": 0.2906,
+      "value": 0.2935,
       "detail": {
         "table": "ed_visits",
         "applicable": true,
@@ -50,12 +50,12 @@
         "fingerprint": [
           "date_of_birth",
           "municipality",
-          "arrival_ts"
+          "set of arrival_ts"
         ],
         "persons": 25955,
         "persons_with_2plus_rows": 9885,
-        "share_persons_unique": 0.2906,
-        "share_repeat_persons_unique": 0.7501,
+        "share_persons_unique": 0.2935,
+        "share_repeat_persons_unique": 0.7549,
         "tables_checked": [
           {
             "table": "ed_visits",
@@ -64,12 +64,12 @@
             "fingerprint": [
               "date_of_birth",
               "municipality",
-              "arrival_ts"
+              "set of arrival_ts"
             ],
             "persons": 25955,
             "persons_with_2plus_rows": 9885,
-            "share_persons_unique": 0.2906,
-            "share_repeat_persons_unique": 0.7501
+            "share_persons_unique": 0.2935,
+            "share_repeat_persons_unique": 0.7549
           },
           {
             "table": "lab_results",
@@ -89,6 +89,7 @@
       "detail": {
         "specs": [
           {
+            "table": "ed_visits",
             "adversary": "news_clips_health",
             "qis_used": [
               {
@@ -109,7 +110,7 @@
             "n_unique_claims": 0,
             "n_targets_in_data": 200,
             "share_targets_in_candidate_set_le5": 0.0,
-            "median_candidate_set": 548.0,
+            "median_candidate_set": 543.5,
             "attribute_inference": {
               "sensitive": "icd10_primary",
               "inferred": 0,
@@ -119,6 +120,7 @@
             }
           },
           {
+            "table": "ed_visits",
             "adversary": "social_posts_health",
             "qis_used": [
               {
@@ -133,7 +135,7 @@
             "n_unique_claims": 0,
             "n_targets_in_data": 850,
             "share_targets_in_candidate_set_le5": 0.0,
-            "median_candidate_set": 18282.0,
+            "median_candidate_set": 18278.0,
             "attribute_inference": {
               "sensitive": "icd10_primary",
               "inferred": 0,
@@ -143,6 +145,7 @@
             }
           },
           {
+            "table": "ed_visits",
             "adversary": "public_directory",
             "qis_used": [
               {
@@ -157,7 +160,7 @@
             "n_unique_claims": 0,
             "n_targets_in_data": 739,
             "share_targets_in_candidate_set_le5": 0.0,
-            "median_candidate_set": 4839.0,
+            "median_candidate_set": 4821.0,
             "attribute_inference": {
               "sensitive": "icd10_primary",
               "inferred": 0,
@@ -187,10 +190,10 @@
     "rule": "every required task scores at least 0.5",
     "scores": {
       "H-U2": 0.9978835978835979,
-      "H-U4": 0.9611008273587289,
-      "H-U6": 0.957945651760686,
+      "H-U4": 0.9548787140825844,
+      "H-U6": 0.9577987630780451,
       "H-U7": 1.0,
-      "H-U8": 0.8769059466441341
+      "H-U8": 0.9445713805003781
     },
     "pass": true,
     "below_floor": {}

@@ -1,0 +1,57 @@
+{
+  "target": {
+    "table": "meter_readings_hourly",
+    "k": 5,
+    "l": 1,
+    "columns": [
+      "ts"
+    ],
+    "linked": {},
+    "reason": "Every released meter_readings_hourly row shares its kept quasi-identifiers (ts) with at least 4 other rows; only the rows that miss the target are coarsened, and rows still at risk get those columns suppressed."
+  },
+  "ladder": {
+    "ts:to_day": {
+      "column": "ts",
+      "op": "to_day",
+      "reason": "At-risk rows only: hour dropped, date kept."
+    }
+  },
+  "floor": 0.85,
+  "rule": "best composite among orders with no row at risk and every required task at or above the floor",
+  "chosen": "ts:to_day",
+  "orders": [
+    {
+      "order": [
+        "ts:to_day"
+      ],
+      "name": "ts:to_day",
+      "tasks": {
+        "ENERGY-U3": 1.0,
+        "ENERGY-U4": 1.0,
+        "ENERGY-U7": 1.0
+      },
+      "privacy": 1.0,
+      "utility": 1.0,
+      "composite": 1.0,
+      "at_risk_after": 0,
+      "rows_released": 1635120,
+      "steps": [
+        {
+          "step": "ts:to_day",
+          "column": "ts",
+          "rows_changed": 0
+        },
+        {
+          "step": "suppress",
+          "column": "ts",
+          "rows_changed": 0
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    }
+  ]
+}

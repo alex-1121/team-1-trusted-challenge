@@ -10,12 +10,12 @@
 | ed_visits | postcode | quasi_identifier | drop |  | Quasi-identifier finer than needed; municipality serves H-U4 (attacker: linkage to public directory). |  |
 | ed_visits | municipality | quasi_identifier | top_n_exact_else_other | {'n': 8} | Eight largest municipalities exact for H-U4 diagnosis mix, rest become other to lift k (attacker: linkage). |  |
 | ed_visits | arrival_ts | quasi_identifier | hour_of_day |  | Exact timestamp is a quasi-identifier; hour of day as HH:00 serves H-U8 arrival curve, date dropped (no seasonality study possible). |  |
-| ed_visits | arrival_mode | non_sensitive | drop |  | Catalogued quasi-identifier (helicopter and police arrivals are rare); no required task reads it, and dropping it cuts the share of groups with a single diagnosis from 0.2787 (results/checks/l_diversity.json at commit a7c9b76) to 0.1128 (results/checks/l_diversity.json). |  |
+| ed_visits | arrival_mode | non_sensitive | drop |  | Catalogued quasi-identifier (helicopter and police arrivals are rare); no required task reads it, and dropping it cuts the share of groups with a single diagnosis from 0.2787 (results/checks/l_diversity.json at commit a7c9b76) to 0.1128 (results/checks/l_diversity.json at commit 7cf541b). |  |
 | ed_visits | ambulance_unit | technical_identifier | drop |  | Device, staff or foreign-key code; no required task needs it (attacker: linkage). |  |
 | ed_visits | triage | non_sensitive | keep |  | Low-risk descriptive or clinical value the study uses. |  |
 | ed_visits | chief_complaint | free_text | drop |  | Free text can carry identifying detail; coded fields serve the tasks instead. |  |
 | ed_visits | icd10_primary | sensitive_attribute | keep |  | Clinical measurement or diagnosis code the study needs; not an identifier at this granularity. |  |
-| ed_visits | icd10_secondary | non_sensitive | keep |  | Low-risk descriptive or clinical value the study uses. |  |
+| ed_visits | icd10_secondary | sensitive_attribute | keep |  | Clinical measurement or diagnosis code the study needs; not an identifier at this granularity. |  |
 | ed_visits | systolic_bp | sensitive_attribute | keep |  | Clinical measurement or diagnosis code the study needs; not an identifier at this granularity. |  |
 | ed_visits | diastolic_bp | sensitive_attribute | keep |  | Clinical measurement or diagnosis code the study needs; not an identifier at this granularity. |  |
 | ed_visits | heart_rate | sensitive_attribute | keep |  | Clinical measurement or diagnosis code the study needs; not an identifier at this granularity. |  |
@@ -30,9 +30,9 @@
 | ed_visits | disposition | non_sensitive | keep |  | Low-risk descriptive or clinical value the study uses. |  |
 | ed_visits | readmit_30d | non_sensitive | keep |  | Low-risk descriptive or clinical value the study uses. |  |
 | ed_visits | date_of_birth |  | repair:age20 | {'op': 'widen_band', 'width': 20} | At-risk rows only: 10-year age band widened to 20 years (also in age). | 3613 rows (only rows in groups with k<5 or l<2) |
-| ed_visits | municipality |  | repair:town_other | {'op': 'set', 'value': 'other'} | At-risk rows only: municipality becomes other. | 2458 rows (only rows in groups with k<5 or l<2) |
-| ed_visits | arrival_ts |  | repair:hour3 | {'op': 'widen_hour', 'block': 3} | At-risk rows only: arrival hour widened to a 3-hour block. | 125 rows (only rows in groups with k<5 or l<2) |
-| ed_visits | date_of_birth, sex, municipality, arrival_ts |  | repair:suppress |  | Rows still at risk after the ladder: every k column suppressed. | 28 rows (only rows in groups with k<5 or l<2) |
+| ed_visits | arrival_ts |  | repair:hour3 | {'op': 'widen_hour', 'block': 3} | At-risk rows only: arrival hour widened to a 3-hour block. | 2458 rows (only rows in groups with k<5 or l<2) |
+| ed_visits | municipality |  | repair:town_other | {'op': 'set', 'value': 'other'} | At-risk rows only: municipality becomes other. | 751 rows (only rows in groups with k<5 or l<2) |
+| ed_visits | date_of_birth, sex, municipality, arrival_ts |  | repair:suppress |  | Rows still at risk after the ladder: every k column suppressed. | 62 rows (only rows in groups with k<5 or l<2) |
 | ed_visits | (row) |  | repair:drop_rows |  | Rows still at risk after suppression are not released. | 0 rows (only rows in groups with k<5 or l<2) |
 | lab_results | lab_id | record_key | token | {'prefix': 'L'} | Record key numbered in visit order: kept as is, the first lab id per visit gives back the arrival order. Keyed token, no order. |  |
 | lab_results | visit_id | technical_identifier | token | {'prefix': 'V'} | Join key to ed_visits; same keyed token as ed_visits.visit_id, so H-U7 still joins, and no visit order is left. |  |

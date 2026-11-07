@@ -32,7 +32,7 @@
       "table": "ed_visits",
       "status": "released",
       "rows_original": 46398,
-      "rows_protected": 46390,
+      "rows_protected": 46394,
       "columns_dropped": [
         "patient_name",
         "sex",
@@ -64,14 +64,14 @@
           "municipality",
           "arrival_ts"
         ],
-        "n": 46390,
-        "n_classes": 1366,
+        "n": 46394,
+        "n_classes": 1368,
         "min_k": 5,
         "median_k": 66.0,
         "share_below": {
           "k<2": 0.0,
           "k<5": 0.0,
-          "k<10": 0.0503
+          "k<10": 0.0506
         },
         "sample_uniqueness": 0.0
       },
@@ -104,7 +104,7 @@
         "min_entropy_l": 1.0,
         "share_records_l1": 0.0012,
         "share_classes_l1": 0.0073,
-        "n_classes": 1366
+        "n_classes": 1368
       },
       "row_alignment": "row map",
       "linkage": {
@@ -245,7 +245,7 @@
         "linkage re-identification": 0.0,
         "free-text identifier leakage": 0.0
       },
-      "seconds": 8.1
+      "seconds": 8.4
     },
     "lab_results": {
       "table": "lab_results",
@@ -273,7 +273,7 @@
       "risks": {
         "direct identifiers retained": 0.0
       },
-      "seconds": 0.2
+      "seconds": 0.3
     },
     "published_weekly_stats": {
       "table": "published_weekly_stats",
@@ -377,17 +377,17 @@
       "kind": "distribution",
       "description": "Hour-of-day arrival curve",
       "required": true,
-      "score": 0.9960463190767378,
+      "score": 0.9968816805356796,
       "metric": "TVD of hour-of-day arrival distribution",
       "detail": {
-        "tvd": 0.0012
+        "tvd": 0.0009
       }
     }
   ],
   "summary": {
     "privacy": 1.0,
-    "utility": 0.9373,
-    "composite": 0.9705,
+    "utility": 0.9375,
+    "composite": 0.9706,
     "label": "self-assessment, not the official judging score",
     "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
   },

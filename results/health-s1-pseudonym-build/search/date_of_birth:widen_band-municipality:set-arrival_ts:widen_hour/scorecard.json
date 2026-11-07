@@ -65,13 +65,13 @@
           "arrival_ts"
         ],
         "n": 46398,
-        "n_classes": 1634,
+        "n_classes": 1637,
         "min_k": 5,
         "median_k": 56.0,
         "share_below": {
           "k<2": 0.0,
           "k<5": 0.0,
-          "k<10": 0.0737
+          "k<10": 0.0742
         },
         "sample_uniqueness": 0.0
       },
@@ -104,7 +104,7 @@
         "min_entropy_l": 1.0,
         "share_records_l1": 0.0016,
         "share_classes_l1": 0.0086,
-        "n_classes": 1634
+        "n_classes": 1637
       },
       "row_alignment": "row map",
       "linkage": {
@@ -245,7 +245,7 @@
         "linkage re-identification": 0.0,
         "free-text identifier leakage": 0.0
       },
-      "seconds": 8.1
+      "seconds": 8.9
     },
     "lab_results": {
       "table": "lab_results",
@@ -273,7 +273,7 @@
       "risks": {
         "direct identifiers retained": 0.0
       },
-      "seconds": 0.2
+      "seconds": 0.3
     },
     "published_weekly_stats": {
       "table": "published_weekly_stats",
@@ -329,10 +329,10 @@
       "kind": "relationship",
       "description": "30-day revisit rate by age band (needs readmit_30d or a consistent patient pseudonym)",
       "required": true,
-      "score": 0.9577084368601625,
+      "score": 0.9581072056891449,
       "metric": "mean |revisit rate diff| by age band / overall rate",
       "detail": {
-        "rel_error": 0.0211,
+        "rel_error": 0.0209,
         "orig": {
           "0-9": 0.2408,
           "10-19": 0.0877,
@@ -345,13 +345,13 @@
           "80+": 0.2934
         },
         "prot": {
-          "0-9": 0.2319,
+          "0-9": 0.232,
           "10-19": 0.0865,
-          "20-29": 0.0991,
+          "20-29": 0.099,
           "30-39": 0.0773,
-          "40-49": 0.0896,
+          "40-49": 0.0895,
           "50-59": 0.084,
-          "60-69": 0.158,
+          "60-69": 0.1579,
           "70-79": 0.1855,
           "80+": 0.2951
         }
@@ -377,17 +377,17 @@
       "kind": "distribution",
       "description": "Hour-of-day arrival curve",
       "required": true,
-      "score": 0.9936777864287692,
+      "score": 0.996629530006826,
       "metric": "TVD of hour-of-day arrival distribution",
       "detail": {
-        "tvd": 0.0019
+        "tvd": 0.001
       }
     }
   ],
   "summary": {
     "privacy": 1.0,
-    "utility": 0.9584,
-    "composite": 0.9807,
+    "utility": 0.9591,
+    "composite": 0.981,
     "label": "self-assessment, not the official judging score",
     "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
   },

@@ -145,7 +145,7 @@ def test_selector_takes_the_most_private_candidate_that_keeps_the_task(tmp_path)
     from pets_transformer import selector
     d = tmp_path / "toy"
     d.mkdir()
-    ts = [f"2025-0{1 + i % 9}-1{i % 9} {i % 24:02d}:15:00" for i in range(40)]
+    ts = [f"2025-0{1 + i % 4}-1{i % 9} {i % 24:02d}:15:00" for i in range(40)]  # 10 rows per month, so k>=5 holds
     pd.DataFrame({"rec": [f"RC-{i:05d}" for i in range(40)], "ts": ts}).to_csv(d / "t.csv", index=False)
     labels = pd.DataFrame({"dataset": "toy", "table": "t", "column": ["rec", "ts"],
                            "privacy_role": ["record_key", "quasi_identifier"], "subtype": ["RECORD_ID", "TIMESTAMP"]})
@@ -157,3 +157,75 @@ def test_selector_takes_the_most_private_candidate_that_keeps_the_task(tmp_path)
         return [{"id": "U1", "score": 1.0 if good else 0.0}]
     c, _ = selector.select(d, "TOY", tmp_path, labels=labels, scen=scen, utility_fn=util, log=lambda *_: None)
     assert c["columns"]["t"]["ts"]["pet"] == "month"
+
+
+def test_hour_block_is_explicit_and_covers_its_hours():
+    from pets_transformer import generalise as g
+    from pets_transformer import repair as rp
+    assert rp._widen_hour("07:00", 3) == "06:00 to 08:59"
+    assert rp._widen_hour("06:00 to 08:59", 3) == "06:00 to 08:59"
+    assert g.hours("06:00 to 08:59") == {6, 7, 8} and g.hours("suppressed") == set(range(24))
+    step = {"op": "widen_hour", "block": 3}
+    assert g.covers("06:00 to 08:59", "07:00", [step]) and not g.covers("06:00 to 08:59", "09:00", [step])
+    assert g.covers("20-39", "30-39", [{"op": "widen_band", "width": 20}]) and not g.covers("20-39", "40-49", [{"op": "widen_band"}])
+    assert g.covers("other", "Turku", [{"op": "set", "value": "other"}]) and not g.covers("other", "Turku")
+    assert g.covers("suppressed", "anything")
+
+
+def test_informed_attacker_counts_generalised_rows_as_matches():
+    import pandas as pd
+    from pets_transformer import checks as ck
+    # Released: one exact row "a/07:00" and one block row covering 06-08. The attacker for R1 sees two candidates.
+    att = pd.DataFrame({"m": ["a", "a", "b"], "h": ["07:00", "08:00", "07:00"], "record_id": ["R1", "R2", "R3"]})
+    rel = pd.DataFrame({"m": ["a", "a", "b"], "h": ["07:00", "06:00 to 08:59", "07:00"]})
+    ops = {"h": [{"op": "widen_hour", "block": 3}]}
+    r = ck.singled_out_covering(att, rel, ["R1", "R2", "R3"], ["m", "h"], ops)
+    # R1 matches both a-rows; R2 matches only the block row (correct); R3 matches its own row (correct)
+    assert r["n_singled_out"] == 2 and r["n_correct"] == 2
+
+
+def test_date_hour_pet_and_to_day_repair():
+    import pandas as pd
+    from pets_transformer import pets, repair, selector
+    assert pets.date_hour(pd.Series(["2025-12-01T07:42", None])).tolist()[0] == "2025-12-01T07:00"
+    assert repair._op(pd.Series(["2025-12-01T07:00", "2025-12"]), {"op": "to_day"}).tolist() == ["2025-12-01", "2025-12"]
+    names = [n for _, n in selector.candidates("quasi_identifier", "TIMESTAMP")]
+    assert names[-1] == "date and hour" and names.index("hour of day") < names.index("date and hour")
+
+
+def test_selector_moves_a_column_when_the_repair_would_wipe_it_out(tmp_path):
+    from pets_transformer import selector
+    d = tmp_path / "toy"
+    d.mkdir()
+    # 40 rows, every date distinct: "date" passes before the repair, but k>=5 can only hold on months (10 per month)
+    ts = [f"2025-0{1 + i % 4}-{1 + i // 4:02d} 08:15:00" for i in range(40)]
+    pd.DataFrame({"rec": [f"RC-{i:05d}" for i in range(40)], "ts": ts}).to_csv(d / "t.csv", index=False)
+    labels = pd.DataFrame({"dataset": "toy", "table": "t", "column": ["rec", "ts"],
+                           "privacy_role": ["record_key", "quasi_identifier"], "subtype": ["RECORD_ID", "TIMESTAMP"]})
+    scen = {"id": "TOY", "recipient": "r", "purpose": "p", "trust_level": "t", "threat_model": "m", "utility_requirements": ["U1"]}
+
+    def util(domain, orig, prot, scen):  # U1: half for the right month, half for the right date, per row
+        t = prot.get("t", pd.DataFrame())
+        if "ts" not in t or len(t) != 40:
+            return [{"id": "U1", "score": 0.0}]
+        p, o = t.ts.astype(str).values, orig["t"].ts.values
+        return [{"id": "U1", "score": float(sum(0.5 * (a[:7] == b[:7]) + 0.5 * (a[:10] == b[:10]) for a, b in zip(p, o)) / 40)}]
+    c, ev = selector.select(d, "TOY", tmp_path, labels=labels, scen=scen, utility_fn=util, log=lambda *_: None)
+    # before the repair only the date keeps the task; after it, the date becomes the month anyway, so month is chosen
+    ts_trail = next(x for x in ev["trail"] if x["column"] == "ts")
+    assert ts_trail["chosen"] == "date"
+    assert ev["moved_after_repair"] and ev["moved_after_repair"][0]["to"] == "month"
+    assert c["columns"]["t"]["ts"]["pet"] == "month" and "repaired release" in c["columns"]["t"]["ts"]["reason"]
+
+
+def test_duration_pet_replaces_two_timestamps_with_the_interval():
+    import pandas as pd
+    from pets_transformer import protect
+    df = pd.DataFrame({"rid": ["R1", "R2"], "opened": ["2025-03-01T08:00", "2025-03-02T10:30"],
+                       "closed": ["2025-03-01T20:00", "2025-03-05T10:30"]})
+    c = {"tables": {"t": {"action": "release", "record_id": "rid"}},
+         "columns": {"t": {"rid": {"pet": "drop", "reason": "r"}, "opened": {"pet": "month", "reason": "r"},
+                           "closed": {"pet": "duration", "params": {"since": "opened", "as": "resolution_hours"}, "reason": "r"}}}}
+    out, _, _ = protect.protect_table("t", df, c, b"k" * 32)
+    assert list(out.columns) == ["opened", "resolution_hours"]
+    assert out.resolution_hours.tolist() == ["12", "72"] and out.opened.tolist() == ["2025-03", "2025-03"]

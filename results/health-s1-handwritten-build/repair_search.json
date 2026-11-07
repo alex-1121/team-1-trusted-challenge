@@ -39,7 +39,7 @@
   },
   "floor": 0.85,
   "rule": "best composite among orders with no row at risk and every required task at or above the floor",
-  "chosen": "age20-town_other-hour3",
+  "chosen": "age20-hour3-town_other",
   "orders": [
     {
       "order": [
@@ -51,13 +51,13 @@
       "tasks": {
         "H-U2": 1.0,
         "H-U4": 0.8744085633885061,
-        "H-U6": 0.9641009930884665,
+        "H-U6": 0.9648924075427383,
         "H-U7": 1.0,
-        "H-U8": 0.9945320392350445
+        "H-U8": 0.9970361614385473
       },
       "privacy": 1.0,
-      "utility": 0.9666,
-      "composite": 0.9845,
+      "utility": 0.9673,
+      "composite": 0.9849,
       "at_risk_after": 0,
       "rows_released": 46398,
       "steps": [
@@ -79,7 +79,7 @@
         {
           "step": "suppress",
           "column": "date_of_birth, sex, municipality, arrival_ts",
-          "rows_changed": 28
+          "rows_changed": 84
         },
         {
           "step": "drop_rows",
@@ -97,14 +97,14 @@
       "name": "age20-hour3-town_other",
       "tasks": {
         "H-U2": 1.0,
-        "H-U4": 0.9628473605950546,
-        "H-U6": 0.963939166656612,
+        "H-U4": 0.960200522764551,
+        "H-U6": 0.9637647789559142,
         "H-U7": 1.0,
-        "H-U8": 0.8861748435603534
+        "H-U8": 0.9430691403546433
       },
       "privacy": 1.0,
-      "utility": 0.9626,
-      "composite": 0.9826,
+      "utility": 0.9734,
+      "composite": 0.9877,
       "at_risk_after": 0,
       "rows_released": 46398,
       "steps": [
@@ -121,12 +121,12 @@
         {
           "step": "town_other",
           "column": "municipality",
-          "rows_changed": 606
+          "rows_changed": 751
         },
         {
           "step": "suppress",
           "column": "date_of_birth, sex, municipality, arrival_ts",
-          "rows_changed": 59
+          "rows_changed": 62
         },
         {
           "step": "drop_rows",
@@ -146,14 +146,14 @@
         "H-U2": 1.0,
         "H-U4": 0.7897981567363148,
         "H-U6": 0.9641950063457823,
-        "H-U7": 0.9995844890319983,
-        "H-U8": 0.9976270147730443
+        "H-U7": 1.0,
+        "H-U8": 0.9980042687225691
       },
       "privacy": 1.0,
-      "utility": 0.9502,
+      "utility": 0.9504,
       "composite": 0.9768,
       "at_risk_after": 0,
-      "rows_released": 46395,
+      "rows_released": 46398,
       "steps": [
         {
           "step": "town_other",
@@ -173,12 +173,12 @@
         {
           "step": "suppress",
           "column": "date_of_birth, sex, municipality, arrival_ts",
-          "rows_changed": 3
+          "rows_changed": 16
         },
         {
           "step": "drop_rows",
           "column": "(row)",
-          "rows_changed": 3
+          "rows_changed": 0
         }
       ]
     },
@@ -193,14 +193,14 @@
         "H-U2": 1.0,
         "H-U4": 0.7897981567363148,
         "H-U6": 0.9641950063457823,
-        "H-U7": 0.9995844890319983,
-        "H-U8": 0.9976270147730443
+        "H-U7": 1.0,
+        "H-U8": 0.9980042687225691
       },
       "privacy": 1.0,
-      "utility": 0.9502,
+      "utility": 0.9504,
       "composite": 0.9768,
       "at_risk_after": 0,
-      "rows_released": 46395,
+      "rows_released": 46398,
       "steps": [
         {
           "step": "town_other",
@@ -215,17 +215,17 @@
         {
           "step": "age20",
           "column": "date_of_birth",
-          "rows_changed": 3
+          "rows_changed": 16
         },
         {
           "step": "suppress",
           "column": "date_of_birth, sex, municipality, arrival_ts",
-          "rows_changed": 3
+          "rows_changed": 16
         },
         {
           "step": "drop_rows",
           "column": "(row)",
-          "rows_changed": 3
+          "rows_changed": 0
         }
       ]
     },
@@ -238,14 +238,14 @@
       "name": "hour3-age20-town_other",
       "tasks": {
         "H-U2": 1.0,
-        "H-U4": 0.9561502357787641,
-        "H-U6": 0.9693786628601387,
+        "H-U4": 0.9445336028607947,
+        "H-U6": 0.9669291632231803,
         "H-U7": 1.0,
-        "H-U8": 0.8281804757084542
+        "H-U8": 0.9055899836555124
       },
       "privacy": 1.0,
-      "utility": 0.9507,
-      "composite": 0.977,
+      "utility": 0.9634,
+      "composite": 0.983,
       "at_risk_after": 0,
       "rows_released": 46398,
       "steps": [
@@ -257,17 +257,17 @@
         {
           "step": "age20",
           "column": "date_of_birth",
-          "rows_changed": 781
+          "rows_changed": 1249
         },
         {
           "step": "town_other",
           "column": "municipality",
-          "rows_changed": 627
+          "rows_changed": 935
         },
         {
           "step": "suppress",
           "column": "date_of_birth, sex, municipality, arrival_ts",
-          "rows_changed": 57
+          "rows_changed": 45
         },
         {
           "step": "drop_rows",
@@ -285,14 +285,14 @@
       "name": "hour3-town_other-age20",
       "tasks": {
         "H-U2": 1.0,
-        "H-U4": 0.9451502601091255,
-        "H-U6": 0.9641950063457823,
+        "H-U4": 0.9237645484775081,
+        "H-U6": 0.9633106602555184,
         "H-U7": 1.0,
-        "H-U8": 0.8256416904329791
+        "H-U8": 0.9055899836555124
       },
       "privacy": 1.0,
-      "utility": 0.947,
-      "composite": 0.9752,
+      "utility": 0.9585,
+      "composite": 0.9807,
       "at_risk_after": 0,
       "rows_released": 46398,
       "steps": [
@@ -304,17 +304,17 @@
         {
           "step": "town_other",
           "column": "municipality",
-          "rows_changed": 781
+          "rows_changed": 1249
         },
         {
           "step": "age20",
           "column": "date_of_birth",
-          "rows_changed": 0
+          "rows_changed": 104
         },
         {
           "step": "suppress",
           "column": "date_of_birth, sex, municipality, arrival_ts",
-          "rows_changed": 0
+          "rows_changed": 83
         },
         {
           "step": "drop_rows",

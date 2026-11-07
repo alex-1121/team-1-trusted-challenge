@@ -41,16 +41,19 @@
       "detail": {
         "specs": [
           {
+            "table": "ed_visits",
             "adversary": "news_clips_health",
             "evaluated": false,
             "reason": "no QI of this attacker survives in the release"
           },
           {
+            "table": "ed_visits",
             "adversary": "social_posts_health",
             "evaluated": false,
             "reason": "no QI of this attacker survives in the release"
           },
           {
+            "table": "ed_visits",
             "adversary": "public_directory",
             "evaluated": false,
             "reason": "no QI of this attacker survives in the release"

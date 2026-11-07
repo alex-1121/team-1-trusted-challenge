@@ -21,12 +21,12 @@
     {
       "step": "municipality:set",
       "column": "municipality",
-      "rows_changed": 589
+      "rows_changed": 737
     },
     {
       "step": "suppress",
       "column": "date_of_birth, municipality, arrival_ts",
-      "rows_changed": 60
+      "rows_changed": 59
     },
     {
       "step": "drop_rows",

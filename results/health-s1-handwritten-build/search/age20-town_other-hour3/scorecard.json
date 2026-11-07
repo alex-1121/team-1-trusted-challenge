@@ -58,13 +58,13 @@
           "arrival_ts"
         ],
         "n": 46398,
-        "n_classes": 2681,
+        "n_classes": 2682,
         "min_k": 5,
         "median_k": 28.0,
         "share_below": {
           "k<2": 0.0,
           "k<5": 0.0,
-          "k<10": 0.1762
+          "k<10": 0.1771
         },
         "sample_uniqueness": 0.0
       },
@@ -99,7 +99,7 @@
         "min_entropy_l": 1.0,
         "share_records_l1": 0.0005,
         "share_classes_l1": 0.0015,
-        "n_classes": 2681
+        "n_classes": 2682
       },
       "row_alignment": "row map",
       "linkage": {
@@ -249,7 +249,7 @@
         "linkage re-identification": 0.0,
         "free-text identifier leakage": 0.0
       },
-      "seconds": 8.3
+      "seconds": 8.4
     },
     "lab_results": {
       "table": "lab_results",
@@ -328,10 +328,10 @@
       "kind": "relationship",
       "description": "30-day revisit rate by age band (needs readmit_30d or a consistent patient pseudonym)",
       "required": true,
-      "score": 0.9641009930884665,
+      "score": 0.9648924075427383,
       "metric": "mean |revisit rate diff| by age band / overall rate",
       "detail": {
-        "rel_error": 0.0179,
+        "rel_error": 0.0176,
         "orig": {
           "0-9": 0.2408,
           "10-19": 0.0877,
@@ -344,13 +344,13 @@
           "80+": 0.2934
         },
         "prot": {
-          "0-9": 0.2316,
+          "0-9": 0.2317,
           "10-19": 0.0868,
-          "20-29": 0.0977,
+          "20-29": 0.098,
           "30-39": 0.0795,
-          "40-49": 0.0886,
+          "40-49": 0.0885,
           "50-59": 0.0861,
-          "60-69": 0.1585,
+          "60-69": 0.1586,
           "70-79": 0.1852,
           "80+": 0.2951
         }
@@ -376,17 +376,17 @@
       "kind": "distribution",
       "description": "Hour-of-day arrival curve",
       "required": true,
-      "score": 0.9945320392350445,
+      "score": 0.9970361614385473,
       "metric": "TVD of hour-of-day arrival distribution",
       "detail": {
-        "tvd": 0.0016
+        "tvd": 0.0009
       }
     }
   ],
   "summary": {
     "privacy": 1.0,
-    "utility": 0.9666,
-    "composite": 0.9845,
+    "utility": 0.9673,
+    "composite": 0.9849,
     "label": "self-assessment, not the official judging score",
     "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
   },

@@ -1,0 +1,40 @@
+{
+  "order": [
+    "ts_created:widen_hour",
+    "lat:round",
+    "lon:round"
+  ],
+  "rows": 31653,
+  "at_risk_before": 31648,
+  "share_at_risk_before": 0.9998,
+  "steps": [
+    {
+      "step": "ts_created:widen_hour",
+      "column": "ts_created",
+      "rows_changed": 31648
+    },
+    {
+      "step": "lat:round",
+      "column": "lat",
+      "rows_changed": 31643
+    },
+    {
+      "step": "lon:round",
+      "column": "lon",
+      "rows_changed": 31621
+    },
+    {
+      "step": "suppress",
+      "column": "ts_created, lat, lon, ts_closed",
+      "rows_changed": 26664
+    },
+    {
+      "step": "drop_rows",
+      "column": "(row)",
+      "rows_changed": 0
+    }
+  ],
+  "rows_released": 31653,
+  "at_risk_after": 0,
+  "share_at_risk_after": 0.0
+}

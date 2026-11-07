@@ -32,7 +32,7 @@
       "table": "ed_visits",
       "status": "released",
       "rows_original": 46398,
-      "rows_protected": 46395,
+      "rows_protected": 46398,
       "columns_dropped": [
         "patient_hetu",
         "patient_name",
@@ -57,14 +57,14 @@
           "municipality",
           "arrival_ts"
         ],
-        "n": 46395,
-        "n_classes": 2346,
+        "n": 46398,
+        "n_classes": 2347,
         "min_k": 5,
         "median_k": 33.0,
         "share_below": {
           "k<2": 0.0,
           "k<5": 0.0,
-          "k<10": 0.1378
+          "k<10": 0.1381
         },
         "sample_uniqueness": 0.0
       },
@@ -99,7 +99,7 @@
         "min_entropy_l": 1.0,
         "share_records_l1": 0.0005,
         "share_classes_l1": 0.0017,
-        "n_classes": 2346
+        "n_classes": 2347
       },
       "row_alignment": "row map",
       "linkage": {
@@ -249,7 +249,7 @@
         "linkage re-identification": 0.0,
         "free-text identifier leakage": 0.0
       },
-      "seconds": 8.2
+      "seconds": 8.5
     },
     "lab_results": {
       "table": "lab_results",
@@ -362,12 +362,12 @@
       "kind": "relationship",
       "description": "CRP vs temperature relationship and CRP by diagnosis group (needs visit join)",
       "required": true,
-      "score": 0.9995844890319983,
+      "score": 1.0,
       "metric": "Spearman(CRP, temp) difference + CRP median by diagnosis group (log scale)",
       "detail": {
         "spearman_orig": 0.5635,
-        "spearman_prot": 0.5634,
-        "joined_rows": 22028
+        "spearman_prot": 0.5635,
+        "joined_rows": 22029
       }
     },
     {
@@ -376,16 +376,16 @@
       "kind": "distribution",
       "description": "Hour-of-day arrival curve",
       "required": true,
-      "score": 0.9976270147730443,
+      "score": 0.9980042687225691,
       "metric": "TVD of hour-of-day arrival distribution",
       "detail": {
-        "tvd": 0.0007
+        "tvd": 0.0006
       }
     }
   ],
   "summary": {
     "privacy": 1.0,
-    "utility": 0.9502,
+    "utility": 0.9504,
     "composite": 0.9768,
     "label": "self-assessment, not the official judging score",
     "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"

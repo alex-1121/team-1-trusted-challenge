@@ -1,8 +1,8 @@
 {
   "order": [
     "age20",
-    "town_other",
-    "hour3"
+    "hour3",
+    "town_other"
   ],
   "rows": 46398,
   "at_risk_before": 3613,
@@ -14,19 +14,19 @@
       "rows_changed": 3613
     },
     {
-      "step": "town_other",
-      "column": "municipality",
+      "step": "hour3",
+      "column": "arrival_ts",
       "rows_changed": 2458
     },
     {
-      "step": "hour3",
-      "column": "arrival_ts",
-      "rows_changed": 125
+      "step": "town_other",
+      "column": "municipality",
+      "rows_changed": 751
     },
     {
       "step": "suppress",
       "column": "date_of_birth, sex, municipality, arrival_ts",
-      "rows_changed": 28
+      "rows_changed": 62
     },
     {
       "step": "drop_rows",

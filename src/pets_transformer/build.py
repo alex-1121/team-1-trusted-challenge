@@ -65,13 +65,13 @@ def run(scenario, original=None, out=None, results=None, submission=None, pets_e
 
     card = score.run(original, protected, scenario, results, baseline, cpath, pets_eval)
     rel = lambda p: str(p.relative_to(ROOT)) if p.is_relative_to(ROOT) else str(p)  # noqa: E731
-    try:  # the three extra checks are written for the health ED tables
+    try:  # the three extra checks read the contract's k target
         checks.run(protected, original, results / "checks", PG / "truth", ["checks", "--protected", rel(protected),
-                   "--original", "data/proving-ground/data/" + original.name, "--truth", "data/proving-ground/truth", "--out", rel(results / "checks")])
-    except (KeyError, FileNotFoundError, ValueError) as e:
+                   "--original", "data/proving-ground/data/" + original.name, "--contract", rel(cpath), "--truth", "data/proving-ground/truth",
+                   "--out", rel(results / "checks")], contract)
+    except KeyError as e:
         (results / "checks").mkdir(parents=True, exist_ok=True)
-        (results / "checks" / "not_run.txt").write_text(
-            f"The three extra checks are written for the health ED tables (ed_visits, lab_results); not run on this release ({type(e).__name__}).\n")
+        (results / "checks" / "not_run.txt").write_text(f"Checks not run: {e.args[0]}.\n")
     gate = redteam.run(protected, original, contract, results, PG / "truth", PG / "adversary", label=f"{run_name} ({rel(cpath)})",
                        specs_path=PG / "metadata" / "attack_specs.json")
     # utility gate: a release that no longer serves its purpose is refused too

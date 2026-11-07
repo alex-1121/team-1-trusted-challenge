@@ -60,6 +60,19 @@ def day(s: pd.Series) -> pd.Series:
     return parse.to_datetime(s).dt.strftime("%Y-%m-%d").where(lambda x: x.notna())
 
 
+def date_hour(s: pd.Series) -> pd.Series:
+    """Date and hour, YYYY-MM-DDTHH:00 (minutes and seconds dropped)."""
+    return parse.to_datetime(s).dt.strftime("%Y-%m-%dT%H:00").where(lambda x: x.notna())
+
+
+def duration(start: pd.Series, end: pd.Series, unit: str = "hours", decimals: int = 0) -> pd.Series:
+    """Time from start to end in whole hours (or days), instead of the two timestamps: the interval survives, the
+    calendar position (which links to outside events) does not."""
+    secs = (parse.to_datetime(end) - parse.to_datetime(start)).dt.total_seconds()
+    v = (secs / {"hours": 3600, "days": 86400}[unit]).round(decimals)
+    return v.map(lambda x: f"{x:.{decimals}f}" if x == x else x)
+
+
 def round_decimals(s: pd.Series, decimals: int) -> pd.Series:
     """Coordinates snapped to a grid: 2 decimals of latitude is about 1.1 km, 3 decimals about 110 m."""
     v = pd.to_numeric(s, errors="coerce")

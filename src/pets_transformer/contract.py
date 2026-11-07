@@ -3,7 +3,7 @@ from pathlib import Path
 
 REQUIRED = ("recipient", "purpose", "trust_level", "threat_model", "required_tasks", "tables", "columns")
 PETS = {"pseudonym", "token", "drop", "hour_of_day", "age_band", "top_n_exact_else_other", "keep",
-        "month", "week", "day", "round_decimals", "prefix"}
+        "month", "week", "day", "date_hour", "duration", "round_decimals", "prefix"}
 
 
 def load(path) -> dict:
@@ -27,7 +27,10 @@ def load(path) -> dict:
         for need in ("table", "k", "columns", "ladder", "reason"):
             if need not in kt:
                 raise ValueError(f"k_target missing {need}")
+        inf = kt.get("informed")
+        if inf and (not kt.get("sensitive") or not isinstance(inf.get("k"), int) or not inf.get("reason")):
+            raise ValueError("k_target.informed needs a sensitive column, an integer k and a reason")
         for name, step in kt["ladder"].items():
-            if step.get("op") not in ("widen_band", "widen_hour", "set", "round", "prefix", "to_month") or step.get("column") not in kt["columns"] or not step.get("reason"):
+            if step.get("op") not in ("widen_band", "widen_hour", "set", "round", "prefix", "to_month", "to_day") or step.get("column") not in kt["columns"] or not step.get("reason"):
                 raise ValueError(f"k_target ladder step {name}: op, a k column and a reason are required")
     return c

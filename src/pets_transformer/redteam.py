@@ -24,9 +24,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from .generalise import SUPPRESSED, age_ok, hours
+
 GATE = {"order_attack": 0.05, "news_linkage": 0.0, "person_fingerprint": 0.05, "scorer_linkage_band_aware": 0.01,
         "plain_hash": 0.0}
-HOUR = re.compile(r"^\d\d:00$")
+HOUR = re.compile(r"^\d\d:00")  # an exact hour or the start of a repair block "03:00 to 05:59"
 
 
 def _read(p):
@@ -93,24 +95,19 @@ def order_attack(rel, orig_dates, main, time_col, join_tables):
         if best is None or rate * len(idx) > best[1] * len(best[2]):
             best = (name, rate, idx, days, offset)
     name, rate, idx, days, offset = best
-    arr = np.full(len(rel), np.datetime64("NaT"), dtype="datetime64[ns]")
+    arr = np.full(len(rel), np.datetime64("NaT", "ns"), dtype="datetime64[ns]")
     arr[idx] = (t0 + pd.to_timedelta(days.values + offset, unit="D")).values.astype("datetime64[ns]")
     rebuilt = pd.Series(arr, index=rel.index)
     share_all = float((rebuilt.dt.normalize() == pd.to_datetime(orig_dates, errors="coerce").dt.normalize()).mean())
     return {"orderings_tried": tried, "best_ordering": name, "share_rows_date_rebuilt": round(share_all, 4)}, rebuilt
 
 
-def _age_ok(band, age):
-    if not isinstance(band, str):
-        return False
-    if band.endswith("+"):
-        return age >= int(band[:-1])
-    m = re.fullmatch(r"(\d+)-(\d+)", band)
-    return bool(m) and int(m.group(1)) <= age <= int(m.group(2))
-
-
 def news_linkage(rel, rebuilt, rec_ids, news, truth_news, truth_rec, time_col, age_col="date_of_birth"):
+    """A released row stays a candidate for a clip whenever its values can stand for the clip's facts: an hour block
+    holding the clip's hour, a band holding the age, "other" for a place the release does not show, or suppressed."""
     rel = rel.assign(_date=rebuilt.dt.strftime("%Y-%m-%d").values, _rec=rec_ids)
+    hour_sets = rel[time_col].map(hours)
+    shown = set(rel["municipality"].dropna()) - {"other", SUPPRESSED} if "municipality" in rel else set()
     t_news = truth_news.set_index("adv_row_id")["person_id"]
     t_rec = truth_rec.set_index("record_id")["person_id"]
     usable = singled = correct = 0
@@ -119,14 +116,16 @@ def news_linkage(rel, rebuilt, rec_ids, news, truth_news, truth_rec, time_col, a
         if not m or not isinstance(n.get("event_date"), str):
             continue
         usable += 1
-        c = rel[(rel._date == n.event_date) & (rel[time_col] == f"{int(m.group(1)):02d}:00")]
+        h = int(m.group(1))
+        c = rel[(rel._date == n.event_date) & hour_sets.map(lambda s: h in s)]
         if isinstance(n.get("sex_mentioned"), str) and "sex" in c:
-            c = c[c.sex == n.sex_mentioned]
+            c = c[c.sex.isin([n.sex_mentioned, SUPPRESSED])]
         if isinstance(n.get("place"), str) and "municipality" in c:
-            c = c[c.municipality.isin([n.place, "other"])]
+            ok = [n.place, SUPPRESSED] + (["other"] if n.place not in shown else [])
+            c = c[c.municipality.isin(ok)]
         if isinstance(n.get("age_mentioned"), str) and age_col in c:
             a = int(n.age_mentioned)
-            c = c[c[age_col].map(lambda b: _age_ok(b, a))]
+            c = c[c[age_col].map(lambda b: age_ok(b, a))]
         if len(c) == 1:
             singled += 1
             correct += int(t_rec.get(c._rec.iloc[0]) == t_news.get(n.adv_row_id))
@@ -139,14 +138,22 @@ def person_fingerprint(rel, person_cols, fp_cols, time_col):
         return {"applicable": False, "why": "no person key released (no pseudonym column)", "share_persons_unique": 0.0}
     pc = person_cols[0]
     rel = rel[rel[pc].notna()]  # rows without a person key link to nobody
-    d = rel[[pc] + [c for c in fp_cols if c in rel.columns and c != time_col]].fillna("")
+    # a fingerprint column is a fact about the person: constant over a person's rows (age band, place). A value that
+    # changes on every row (the timestamp of each meter reading) is not something an outsider knows about a person;
+    # only the hour-only time column enters, as the set of a person's hours (visits seen in the news).
+    static_cols = [c for c in fp_cols if c in rel.columns and c != time_col
+                   and rel.groupby(pc)[c].nunique(dropna=False).le(1).mean() >= 0.9]
+    if not static_cols and not time_col:
+        return {"applicable": False, "person_column": pc, "why": "person key released, but no per-person quasi-identifier in this table",
+                "share_persons_unique": 0.0}
+    d = rel[[pc] + static_cols].fillna("")
     hours = (rel.groupby(pc)[time_col].apply(lambda s: tuple(sorted(s.fillna("")))) if time_col
              else rel.groupby(pc).size().map(lambda n: ("rows", n)))
     static = d.groupby(pc).first()
     sig = static.apply(tuple, axis=1).astype(str) + "|" + hours.astype(str)
     counts = sig.map(sig.value_counts())
     visits = rel.groupby(pc).size()
-    return {"applicable": True, "person_column": pc, "fingerprint": [c for c in fp_cols if c in rel.columns],
+    return {"applicable": True, "person_column": pc, "fingerprint": static_cols + ([f"set of {time_col}"] if time_col else []),
             "persons": int(len(sig)), "persons_with_2plus_rows": int((visits > 1).sum()),
             "share_persons_unique": round(float((counts == 1).mean()), 4),
             "share_repeat_persons_unique": round(float((counts[visits > 1] == 1).mean()), 4) if (visits > 1).any() else 0.0}
@@ -157,7 +164,9 @@ def scorer_linkage_band_aware(rel, rowmap, original, main, rid, truth, specs_pat
     release keeps only "HH:00" (the attacker cannot place an hour on a date)."""
     from pets_eval import attacks
     specs = [s for s in json.loads(Path(specs_path).read_text())["attacks"] if s["dataset"] == original.name and s["table"] == main]
-    hour_only = {c for c in rel.columns if rel[c].astype(str).str.fullmatch(r"\d\d:00|suppressed").mean() > 0.9}
+    if not specs:
+        return {"specs": [], "worst_reidentification_rate": 0.0}
+    hour_only = {c for c in rel.columns if rel[c].astype(str).str.fullmatch(r"\d\d:00|\d\d:00 to \d\d:59|suppressed").mean() > 0.9}
     age_col = "age" if "age" in rel.columns else None
     identity = _read(Path(truth) / f"{original.name}__{main}.csv")
     orig = _read(original / f"{main}.csv")
@@ -256,7 +265,14 @@ def run(protected, original, contract, out, truth=None, adversary=None, label=""
 
     sl = None
     if truth and adversary and specs_path and Path(specs_path).exists():
-        sl = scorer_linkage_band_aware(rel, rowmap, original, main, rid, truth, specs_path, adversary)
+        # every released table an attack spec targets, not only the main one
+        sl = {"specs": [], "worst_reidentification_rate": 0.0}
+        for t in [t for t, s in contract["tables"].items() if s["action"] == "release" and (protected / f"{t}.csv").exists()]:
+            tr = rel if t == main else _read(protected / f"{t}.csv")
+            rm = rowmap if t == main else _read(protected / f"rowmap_{t}.csv")
+            r = scorer_linkage_band_aware(tr, rm, original, t, contract["tables"][t]["record_id"], truth, specs_path, adversary)
+            sl["specs"] += [{"table": t, **x} for x in r["specs"]]
+            sl["worst_reidentification_rate"] = max(sl["worst_reidentification_rate"], r["worst_reidentification_rate"])
     ph = plain_hash(protected, original)
 
     results = {

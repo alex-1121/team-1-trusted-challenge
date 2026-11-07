@@ -1,0 +1,310 @@
+{
+  "target": {
+    "table": "service_requests",
+    "k": 5,
+    "l": 1,
+    "columns": [
+      "ts_created",
+      "lat",
+      "lon",
+      "ts_closed"
+    ],
+    "linked": {},
+    "reason": "Every released service_requests row shares its kept quasi-identifiers (ts_created, lat, lon, ts_closed) with at least 4 other rows; only the rows that miss the target are coarsened, and rows still at risk get those columns suppressed."
+  },
+  "ladder": {
+    "ts_created:widen_hour": {
+      "column": "ts_created",
+      "op": "widen_hour",
+      "block": 3,
+      "reason": "At-risk rows only: hour widened to a 3-hour block."
+    },
+    "lat:round": {
+      "column": "lat",
+      "op": "round",
+      "decimals": 2,
+      "reason": "At-risk rows only: coordinate grid made 10 times coarser."
+    },
+    "lon:round": {
+      "column": "lon",
+      "op": "round",
+      "decimals": 2,
+      "reason": "At-risk rows only: coordinate grid made 10 times coarser."
+    }
+  },
+  "floor": 0.85,
+  "rule": "best composite among orders with no row at risk and every required task at or above the floor",
+  "chosen": "ts_created:widen_hour-lat:round-lon:round",
+  "orders": [
+    {
+      "order": [
+        "ts_created:widen_hour",
+        "lat:round",
+        "lon:round"
+      ],
+      "name": "ts_created:widen_hour-lat:round-lon:round",
+      "tasks": {
+        "PUB-U1": null,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.6666666666666666
+      },
+      "privacy": 1.0,
+      "utility": 0.2222,
+      "composite": 0.386,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "ts_created:widen_hour",
+          "column": "ts_created",
+          "rows_changed": 31648
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 31643
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 31621
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, lat, lon, ts_closed",
+          "rows_changed": 26664
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "ts_created:widen_hour",
+        "lon:round",
+        "lat:round"
+      ],
+      "name": "ts_created:widen_hour-lon:round-lat:round",
+      "tasks": {
+        "PUB-U1": null,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.639344262295082
+      },
+      "privacy": 1.0,
+      "utility": 0.2131,
+      "composite": 0.3734,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "ts_created:widen_hour",
+          "column": "ts_created",
+          "rows_changed": 31648
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 31643
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 31575
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, lat, lon, ts_closed",
+          "rows_changed": 26669
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "lat:round",
+        "ts_created:widen_hour",
+        "lon:round"
+      ],
+      "name": "lat:round-ts_created:widen_hour-lon:round",
+      "tasks": {
+        "PUB-U1": null,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.6666666666666666
+      },
+      "privacy": 1.0,
+      "utility": 0.2222,
+      "composite": 0.386,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 31648
+        },
+        {
+          "step": "ts_created:widen_hour",
+          "column": "ts_created",
+          "rows_changed": 31648
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 31620
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, lat, lon, ts_closed",
+          "rows_changed": 26668
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "lat:round",
+        "lon:round",
+        "ts_created:widen_hour"
+      ],
+      "name": "lat:round-lon:round-ts_created:widen_hour",
+      "tasks": {
+        "PUB-U1": null,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.6666666666666666
+      },
+      "privacy": 1.0,
+      "utility": 0.2222,
+      "composite": 0.386,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 31648
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 31648
+        },
+        {
+          "step": "ts_created:widen_hour",
+          "column": "ts_created",
+          "rows_changed": 30949
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, lat, lon, ts_closed",
+          "rows_changed": 26857
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "lon:round",
+        "ts_created:widen_hour",
+        "lat:round"
+      ],
+      "name": "lon:round-ts_created:widen_hour-lat:round",
+      "tasks": {
+        "PUB-U1": null,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.6666666666666666
+      },
+      "privacy": 1.0,
+      "utility": 0.2222,
+      "composite": 0.386,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 31648
+        },
+        {
+          "step": "ts_created:widen_hour",
+          "column": "ts_created",
+          "rows_changed": 31648
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 31575
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, lat, lon, ts_closed",
+          "rows_changed": 26669
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "lon:round",
+        "lat:round",
+        "ts_created:widen_hour"
+      ],
+      "name": "lon:round-lat:round-ts_created:widen_hour",
+      "tasks": {
+        "PUB-U1": null,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.6666666666666666
+      },
+      "privacy": 1.0,
+      "utility": 0.2222,
+      "composite": 0.386,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 31648
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 31648
+        },
+        {
+          "step": "ts_created:widen_hour",
+          "column": "ts_created",
+          "rows_changed": 30949
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, lat, lon, ts_closed",
+          "rows_changed": 26857
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    }
+  ]
+}

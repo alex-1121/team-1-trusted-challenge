@@ -56,7 +56,20 @@
       "metric": "worst_reidentification_rate",
       "value": 0.0,
       "detail": {
-        "specs": [],
+        "specs": [
+          {
+            "table": "students",
+            "adversary": "graduation_lists",
+            "evaluated": false,
+            "reason": "no QI of this attacker survives in the release"
+          },
+          {
+            "table": "students",
+            "adversary": "sports_club_rosters",
+            "evaluated": false,
+            "reason": "no QI of this attacker survives in the release"
+          }
+        ],
         "worst_reidentification_rate": 0.0
       },
       "threshold": 0.01,

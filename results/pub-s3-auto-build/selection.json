@@ -1,0 +1,655 @@
+{
+  "scenario": "PUB-S3",
+  "required_tasks": [
+    "PUB-U1",
+    "PUB-U2",
+    "PUB-U3"
+  ],
+  "tolerance": 0.05,
+  "reference_scores": {
+    "PUB-U1": 1.0,
+    "PUB-U2": 1.0,
+    "PUB-U3": 1.0
+  },
+  "final_scores_before_repair": {
+    "PUB-U1": 0.0,
+    "PUB-U2": 0.0,
+    "PUB-U3": 0.9607843137254902
+  },
+  "final_scores_after_repair": {
+    "PUB-U1": 0.0,
+    "PUB-U2": 0.0,
+    "PUB-U3": 0.6666666666666666
+  },
+  "moved_after_repair": [
+    {
+      "table": "service_requests",
+      "column": "ts_created",
+      "from": "date and hour",
+      "to": "date",
+      "scores_before": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.04
+      },
+      "scores_after": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.5873015873015873
+      }
+    },
+    {
+      "table": "service_requests",
+      "column": "postcode",
+      "from": "3-digit postcode area",
+      "to": "2-digit postcode area",
+      "scores_before": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.5873015873015873
+      },
+      "scores_after": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.5873015873015873
+      }
+    },
+    {
+      "table": "service_requests",
+      "column": "ts_closed",
+      "from": "date and hour",
+      "to": "date",
+      "scores_before": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.5873015873015873
+      },
+      "scores_after": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.6666666666666666
+      }
+    },
+    {
+      "table": "service_requests",
+      "column": "ts_created",
+      "from": "date",
+      "to": "hour of day",
+      "scores_before": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.6666666666666666
+      },
+      "scores_after": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.6666666666666666
+      }
+    },
+    {
+      "table": "service_requests",
+      "column": "postcode",
+      "from": "2-digit postcode area",
+      "to": "drop",
+      "scores_before": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.6666666666666666
+      },
+      "scores_after": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.6666666666666666
+      }
+    },
+    {
+      "table": "service_requests",
+      "column": "ts_closed",
+      "from": "date",
+      "to": "hour of day",
+      "scores_before": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.6666666666666666
+      },
+      "scores_after": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.6666666666666666
+      }
+    },
+    {
+      "table": "service_requests",
+      "column": "ts_closed",
+      "from": "hour of day",
+      "to": "month",
+      "scores_before": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.6666666666666666
+      },
+      "scores_after": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.6666666666666666
+      }
+    }
+  ],
+  "trail": [
+    {
+      "table": "building_permits",
+      "column": "(table)",
+      "decision": "withhold",
+      "scores": {
+        "PUB-U1": 1.0,
+        "PUB-U2": 1.0,
+        "PUB-U3": 1.0
+      }
+    },
+    {
+      "table": "service_requests",
+      "column": "(table)",
+      "decision": "release",
+      "scores": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.0
+      }
+    },
+    {
+      "table": "service_requests",
+      "column": "ts_created",
+      "role": "quasi_identifier",
+      "subtype": "TIMESTAMP",
+      "chosen": "date and hour",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "PUB-U1": 0.0,
+            "PUB-U2": 0.0,
+            "PUB-U3": 1.0
+          },
+          "ok": false
+        },
+        {
+          "candidate": "month",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.0,
+            "PUB-U3": 1.0
+          },
+          "ok": false
+        },
+        {
+          "candidate": "ISO week",
+          "scores": {
+            "PUB-U1": 0.7825457431498934,
+            "PUB-U2": 0.0,
+            "PUB-U3": 1.0
+          },
+          "ok": false
+        },
+        {
+          "candidate": "hour of day",
+          "scores": {
+            "PUB-U1": 0.0,
+            "PUB-U2": 0.0,
+            "PUB-U3": 1.0
+          },
+          "ok": false
+        },
+        {
+          "candidate": "date",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.5511168078279403,
+            "PUB-U3": 1.0
+          },
+          "ok": false
+        },
+        {
+          "candidate": "date and hour",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.9849349187569327,
+            "PUB-U3": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "service_requests",
+      "column": "language",
+      "role": "quasi_identifier",
+      "subtype": "LANGUAGE",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.9849349187569327,
+            "PUB-U3": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "service_requests",
+      "column": "postcode",
+      "role": "quasi_identifier",
+      "subtype": "POSTCODE",
+      "chosen": "3-digit postcode area",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "PUB-U1": 0.0,
+            "PUB-U2": 0.9849349187569327,
+            "PUB-U3": 1.0
+          },
+          "ok": false
+        },
+        {
+          "candidate": "2-digit postcode area",
+          "scores": {
+            "PUB-U1": 0.0,
+            "PUB-U2": 0.9849349187569327,
+            "PUB-U3": 1.0
+          },
+          "ok": false
+        },
+        {
+          "candidate": "3-digit postcode area",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.9849349187569327,
+            "PUB-U3": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "service_requests",
+      "column": "municipality",
+      "role": "quasi_identifier",
+      "subtype": "MUNICIPALITY",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.9849349187569327,
+            "PUB-U3": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "service_requests",
+      "column": "lat",
+      "role": "quasi_identifier",
+      "subtype": "GPS_COORDINATE",
+      "chosen": "3-decimal grid (about 100 m)",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.9849349187569327,
+            "PUB-U3": 0.0
+          },
+          "ok": false
+        },
+        {
+          "candidate": "2-decimal grid (about 1 km)",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.9849349187569327,
+            "PUB-U3": 0.6666666666666666
+          },
+          "ok": false
+        },
+        {
+          "candidate": "3-decimal grid (about 100 m)",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.9849349187569327,
+            "PUB-U3": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "service_requests",
+      "column": "lon",
+      "role": "quasi_identifier",
+      "subtype": "GPS_COORDINATE",
+      "chosen": "3-decimal grid (about 100 m)",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.9849349187569327,
+            "PUB-U3": 0.0
+          },
+          "ok": false
+        },
+        {
+          "candidate": "2-decimal grid (about 1 km)",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.9849349187569327,
+            "PUB-U3": 0.8867924528301887
+          },
+          "ok": false
+        },
+        {
+          "candidate": "3-decimal grid (about 100 m)",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.9849349187569327,
+            "PUB-U3": 0.9607843137254902
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "service_requests",
+      "column": "ts_closed",
+      "role": "quasi_identifier",
+      "subtype": "TIMESTAMP",
+      "chosen": "date and hour",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.0,
+            "PUB-U3": 0.9607843137254902
+          },
+          "ok": false
+        },
+        {
+          "candidate": "month",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.0,
+            "PUB-U3": 0.9607843137254902
+          },
+          "ok": false
+        },
+        {
+          "candidate": "ISO week",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.0,
+            "PUB-U3": 0.9607843137254902
+          },
+          "ok": false
+        },
+        {
+          "candidate": "hour of day",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.0,
+            "PUB-U3": 0.9607843137254902
+          },
+          "ok": false
+        },
+        {
+          "candidate": "date",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.6442017733127502,
+            "PUB-U3": 0.9607843137254902
+          },
+          "ok": false
+        },
+        {
+          "candidate": "date and hour",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.9944297403481245,
+            "PUB-U3": 0.9607843137254902
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "service_requests",
+      "column": "reporter_account_id",
+      "role": "technical_identifier",
+      "subtype": "RECORD_ID",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.9944297403481245,
+            "PUB-U3": 0.9607843137254902
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "service_requests",
+      "column": "description",
+      "role": "free_text",
+      "subtype": "FREE_TEXT",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 1.0,
+            "PUB-U3": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "service_requests",
+      "column": "response_text",
+      "role": "free_text",
+      "subtype": "FREE_TEXT",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 1.0,
+            "PUB-U3": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "service_requests",
+      "column": "channel",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.9944297403481245,
+            "PUB-U3": 0.9607843137254902
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "service_requests",
+      "column": "category",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "kept",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "PUB-U1": 0.0,
+            "PUB-U2": 0.0,
+            "PUB-U3": 0.9607843137254902
+          },
+          "ok": false
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.9944297403481245,
+            "PUB-U3": 0.9607843137254902
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "service_requests",
+      "column": "status",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.9944297403481245,
+            "PUB-U3": 0.9607843137254902
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "service_requests",
+      "column": "request_id",
+      "role": "record_key",
+      "subtype": "RECORD_ID",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 0.9944297403481245,
+            "PUB-U3": 0.9607843137254902
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "service_requests",
+      "column": "reporter_name",
+      "role": "direct_identifier",
+      "subtype": "PERSON_NAME",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 1.0,
+            "PUB-U3": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "service_requests",
+      "column": "reporter_phone",
+      "role": "direct_identifier",
+      "subtype": "PHONE",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 1.0,
+            "PUB-U3": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "service_requests",
+      "column": "reporter_email",
+      "role": "direct_identifier",
+      "subtype": "EMAIL",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 1.0,
+            "PUB-U3": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "service_requests",
+      "column": "street_address",
+      "role": "direct_identifier",
+      "subtype": "STREET_ADDRESS",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 1.0,
+            "PUB-U3": 1.0
+          },
+          "ok": true
+        }
+      ]
+    },
+    {
+      "table": "service_requests",
+      "column": "handler_name",
+      "role": "direct_identifier",
+      "subtype": "PERSON_NAME",
+      "chosen": "drop",
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "PUB-U1": 1.0,
+            "PUB-U2": 1.0,
+            "PUB-U3": 1.0
+          },
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

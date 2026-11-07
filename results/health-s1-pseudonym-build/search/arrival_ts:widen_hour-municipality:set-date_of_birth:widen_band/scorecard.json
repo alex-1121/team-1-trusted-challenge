@@ -32,7 +32,7 @@
       "table": "ed_visits",
       "status": "released",
       "rows_original": 46398,
-      "rows_protected": 46394,
+      "rows_protected": 46398,
       "columns_dropped": [
         "patient_name",
         "sex",
@@ -64,14 +64,14 @@
           "municipality",
           "arrival_ts"
         ],
-        "n": 46394,
-        "n_classes": 1504,
+        "n": 46398,
+        "n_classes": 1704,
         "min_k": 5,
-        "median_k": 57.0,
+        "median_k": 55.0,
         "share_below": {
           "k<2": 0.0,
           "k<5": 0.0,
-          "k<10": 0.0487
+          "k<10": 0.0802
         },
         "sample_uniqueness": 0.0
       },
@@ -103,8 +103,8 @@
         "min_distinct_l": 1,
         "min_entropy_l": 1.0,
         "share_records_l1": 0.0013,
-        "share_classes_l1": 0.0066,
-        "n_classes": 1504
+        "share_classes_l1": 0.0065,
+        "n_classes": 1704
       },
       "row_alignment": "row map",
       "linkage": {
@@ -147,7 +147,7 @@
           "claim_precision": null,
           "n_unique_claims": 0,
           "share_targets_in_candidate_set_le5": 0.0,
-          "median_candidate_set": 0.0,
+          "median_candidate_set": 42.0,
           "attribute_inference": {
             "sensitive": "icd10_primary",
             "inferred": 0,
@@ -187,7 +187,7 @@
           "claim_precision": null,
           "n_unique_claims": 0,
           "share_targets_in_candidate_set_le5": 0.0,
-          "median_candidate_set": 0.0,
+          "median_candidate_set": 359.0,
           "attribute_inference": {
             "sensitive": "icd10_primary",
             "inferred": 0,
@@ -218,7 +218,7 @@
           "claim_precision": null,
           "n_unique_claims": 0,
           "share_targets_in_candidate_set_le5": 0.0,
-          "median_candidate_set": 4853.0,
+          "median_candidate_set": 4795.0,
           "attribute_inference": {
             "sensitive": "icd10_primary",
             "inferred": 0,
@@ -245,7 +245,7 @@
         "linkage re-identification": 0.0,
         "free-text identifier leakage": 0.0
       },
-      "seconds": 8.1
+      "seconds": 8.9
     },
     "lab_results": {
       "table": "lab_results",
@@ -317,10 +317,10 @@
       "kind": "distribution",
       "description": "Diagnosis-group mix in the eight largest municipalities",
       "required": true,
-      "score": 0.9398459598655233,
+      "score": 0.9245025521698605,
       "metric": "1 - mean TVD/0.15 of diagnosis-group mix in top-8 municipalities",
       "detail": {
-        "mean_tvd": 0.009
+        "mean_tvd": 0.0113
       }
     },
     {
@@ -329,10 +329,10 @@
       "kind": "relationship",
       "description": "30-day revisit rate by age band (needs readmit_30d or a consistent patient pseudonym)",
       "required": true,
-      "score": 0.9641950063457823,
+      "score": 0.9650355885006274,
       "metric": "mean |revisit rate diff| by age band / overall rate",
       "detail": {
-        "rel_error": 0.0179,
+        "rel_error": 0.0175,
         "orig": {
           "0-9": 0.2408,
           "10-19": 0.0877,
@@ -345,14 +345,14 @@
           "80+": 0.2934
         },
         "prot": {
-          "0-9": 0.2438,
-          "10-19": 0.0853,
-          "20-29": 0.0995,
+          "0-9": 0.2441,
+          "10-19": 0.0859,
+          "20-29": 0.0996,
           "30-39": 0.0793,
           "40-49": 0.0897,
           "50-59": 0.0847,
-          "60-69": 0.1554,
-          "70-79": 0.1862,
+          "60-69": 0.156,
+          "70-79": 0.186,
           "80+": 0.2951
         }
       }
@@ -363,12 +363,12 @@
       "kind": "relationship",
       "description": "CRP vs temperature relationship and CRP by diagnosis group (needs visit join)",
       "required": true,
-      "score": 0.999961467418641,
+      "score": 1.0,
       "metric": "Spearman(CRP, temp) difference + CRP median by diagnosis group (log scale)",
       "detail": {
         "spearman_orig": 0.5635,
         "spearman_prot": 0.5635,
-        "joined_rows": 22028
+        "joined_rows": 22029
       }
     },
     {
@@ -377,17 +377,17 @@
       "kind": "distribution",
       "description": "Hour-of-day arrival curve",
       "required": true,
-      "score": 0.8181015264514625,
+      "score": 0.9127290601706518,
       "metric": "TVD of hour-of-day arrival distribution",
       "detail": {
-        "tvd": 0.0546
+        "tvd": 0.0262
       }
     }
   ],
   "summary": {
     "privacy": 1.0,
-    "utility": 0.944,
-    "composite": 0.9737,
+    "utility": 0.96,
+    "composite": 0.9814,
     "label": "self-assessment, not the official judging score",
     "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
   },

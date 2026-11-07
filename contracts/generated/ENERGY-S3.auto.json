@@ -1,0 +1,244 @@
+{
+  "scenario": "ENERGY-S3",
+  "dataset": "energy",
+  "generated_by": "pets_transformer.selector",
+  "tolerance": 0.05,
+  "recipient": "University research group (controlled research environment)",
+  "purpose": "Relate heating type, payment problems and winter consumption.",
+  "trust_level": "controlled_research",
+  "threat_model": "Researcher with public_directory; private: broker_profiles.",
+  "required_tasks": [
+    "ENERGY-U3",
+    "ENERGY-U4",
+    "ENERGY-U7"
+  ],
+  "tables": {
+    "customers": {
+      "action": "release",
+      "record_id": "customer_id",
+      "reason": "Released: without it ENERGY-U3 0.0000, ENERGY-U4 0.0000, ENERGY-U7 0.0000."
+    },
+    "meter_readings_hourly": {
+      "action": "release",
+      "record_id": "reading_id",
+      "reason": "Released: without it ENERGY-U3 0.0000, ENERGY-U4 0.0000, ENERGY-U7 0.0000."
+    },
+    "weather_hourly": {
+      "action": "withhold",
+      "record_id": "obs_id",
+      "reason": "Withheld: without it every required task stays within 0.05 of the reference (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000)."
+    }
+  },
+  "columns": {
+    "customers": {
+      "customer_id": {
+        "pet": "drop",
+        "reason": "Detected record_key (RECORD_ID). Candidates tried, most private first: drop: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: drop."
+      },
+      "metering_point_id": {
+        "pet": "token",
+        "params": {
+          "prefix": "T"
+        },
+        "reason": "Detected technical_identifier (METER_ID). Candidates tried, most private first: drop: outside 0.05 (ENERGY-U3 0.0000, ENERGY-U4 0.0000, ENERGY-U7 0.0000); keyed token: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: keyed token. A keyed HMAC-SHA256 token keeps joins and carries no order, which a sequential id would give back."
+      },
+      "customer_name": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (PERSON_NAME). The only candidate for this type is drop."
+      },
+      "hetu": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (NATIONAL_ID). The only candidate for this type is drop."
+      },
+      "birth_date": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (BIRTH_DATE). Candidates tried, most private first: drop: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: drop."
+      },
+      "street_address": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (STREET_ADDRESS). The only candidate for this type is drop."
+      },
+      "postcode": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (POSTCODE). Candidates tried, most private first: drop: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: drop."
+      },
+      "municipality": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (MUNICIPALITY). Candidates tried, most private first: drop: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: drop."
+      },
+      "email": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (EMAIL). The only candidate for this type is drop."
+      },
+      "phone": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (PHONE). The only candidate for this type is drop."
+      },
+      "contract_type": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: drop."
+      },
+      "heating_type": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: outside 0.05 (ENERGY-U3 0.0000, ENERGY-U4 0.0000, ENERGY-U7 0.0000); kept: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: kept."
+      },
+      "floor_area_m2": {
+        "pet": "drop",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: drop."
+      },
+      "main_fuse_a": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (MEASUREMENT). Candidates tried, most private first: drop: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: drop."
+      },
+      "ev_charger": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: drop."
+      },
+      "solar_pv_kw": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (MEASUREMENT). Candidates tried, most private first: drop: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: drop."
+      },
+      "payment_method": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: drop."
+      },
+      "iban": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (IBAN). The only candidate for this type is drop."
+      },
+      "late_payment_count": {
+        "pet": "keep",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: outside 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 0.0000); kept: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: kept."
+      },
+      "payment_plan": {
+        "pet": "drop",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: drop."
+      },
+      "medical_device_priority": {
+        "pet": "drop",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: drop."
+      },
+      "contract_start": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (DATE). Candidates tried, most private first: drop: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: drop."
+      },
+      "dso_notes": {
+        "pet": "drop",
+        "reason": "Detected free_text (FREE_TEXT). The only candidate for this type is drop."
+      }
+    },
+    "meter_readings_hourly": {
+      "reading_id": {
+        "pet": "drop",
+        "reason": "Detected record_key (RECORD_ID). Candidates tried, most private first: drop: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: drop."
+      },
+      "metering_point_id": {
+        "pet": "token",
+        "params": {
+          "prefix": "T"
+        },
+        "reason": "Detected technical_identifier (METER_ID). Candidates tried, most private first: drop: outside 0.05 (ENERGY-U3 0.0000, ENERGY-U4 0.0000, ENERGY-U7 0.0000); keyed token: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: keyed token. A keyed HMAC-SHA256 token keeps joins and carries no order, which a sequential id would give back."
+      },
+      "ts": {
+        "pet": "date_hour",
+        "reason": "Detected quasi_identifier (TIMESTAMP). Candidates tried, most private first: drop: outside 0.05 (ENERGY-U3 0.0000, ENERGY-U4 0.0000, ENERGY-U7 0.0000); month: outside 0.05 (ENERGY-U3 0.0000, ENERGY-U4 0.0000, ENERGY-U7 1.0000); ISO week: outside 0.05 (ENERGY-U3 0.3068, ENERGY-U4 0.0000, ENERGY-U7 1.0000); hour of day: outside 0.05 (ENERGY-U3 0.0000, ENERGY-U4 0.9744, ENERGY-U7 1.0000); date: outside 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.0000, ENERGY-U7 1.0000); date and hour: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: date and hour."
+      },
+      "kwh": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (MEASUREMENT). Candidates tried, most private first: drop: outside 0.05 (ENERGY-U3 0.0000, ENERGY-U4 0.0000, ENERGY-U7 0.0000); kept: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: kept."
+      },
+      "quality": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (ENERGY-U3 1.0000, ENERGY-U4 0.9973, ENERGY-U7 1.0000). Chosen: drop."
+      }
+    }
+  },
+  "roles": {
+    "customers": {
+      "quasi_identifier": {
+        "pet": "drop",
+        "reason": "default for a quasi identifier the contract does not name"
+      },
+      "technical_identifier": {
+        "pet": "drop",
+        "reason": "default for a technical identifier the contract does not name"
+      },
+      "sensitive_attribute": {
+        "pet": "keep",
+        "reason": "default for a sensitive attribute the contract does not name"
+      },
+      "free_text": {
+        "pet": "drop",
+        "reason": "default for a free text the contract does not name"
+      },
+      "non_sensitive": {
+        "pet": "keep",
+        "reason": "default for a non sensitive the contract does not name"
+      },
+      "record_key": {
+        "pet": "token",
+        "params": {
+          "prefix": "T"
+        },
+        "reason": "default for a record key the contract does not name"
+      },
+      "direct_identifier": {
+        "pet": "drop",
+        "reason": "default for a direct identifier the contract does not name"
+      }
+    },
+    "meter_readings_hourly": {
+      "quasi_identifier": {
+        "pet": "drop",
+        "reason": "default for a quasi identifier the contract does not name"
+      },
+      "technical_identifier": {
+        "pet": "drop",
+        "reason": "default for a technical identifier the contract does not name"
+      },
+      "sensitive_attribute": {
+        "pet": "keep",
+        "reason": "default for a sensitive attribute the contract does not name"
+      },
+      "free_text": {
+        "pet": "drop",
+        "reason": "default for a free text the contract does not name"
+      },
+      "non_sensitive": {
+        "pet": "keep",
+        "reason": "default for a non sensitive the contract does not name"
+      },
+      "record_key": {
+        "pet": "token",
+        "params": {
+          "prefix": "T"
+        },
+        "reason": "default for a record key the contract does not name"
+      },
+      "direct_identifier": {
+        "pet": "drop",
+        "reason": "default for a direct identifier the contract does not name"
+      }
+    }
+  },
+  "k_target": {
+    "table": "meter_readings_hourly",
+    "k": 5,
+    "l": 1,
+    "columns": [
+      "ts"
+    ],
+    "linked": {},
+    "ladder": {
+      "ts:to_day": {
+        "column": "ts",
+        "op": "to_day",
+        "reason": "At-risk rows only: hour dropped, date kept."
+      }
+    },
+    "reason": "Every released meter_readings_hourly row shares its kept quasi-identifiers (ts) with at least 4 other rows; only the rows that miss the target are coarsened, and rows still at risk get those columns suppressed."
+  },
+  "k_columns": [
+    "ts"
+  ]
+}

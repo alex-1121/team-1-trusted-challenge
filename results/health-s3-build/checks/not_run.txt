@@ -1,1 +1,1 @@
-The three extra checks are written for the health ED tables (ed_visits, lab_results); not run on this release (ValueError: no quasi-identifier is released, so there is no group to check).
+Checks not run: the contract has no k_target: nothing to check l-diversity, an informed attacker or joined k against.

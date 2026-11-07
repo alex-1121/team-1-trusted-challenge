@@ -9,10 +9,15 @@
     "EDU-U2": 1.0,
     "EDU-U4": 1.0
   },
-  "final_scores": {
+  "final_scores_before_repair": {
     "EDU-U2": 0.9926033981354205,
     "EDU-U4": 1.0
   },
+  "final_scores_after_repair": {
+    "EDU-U2": 0.9926033981354205,
+    "EDU-U4": 1.0
+  },
+  "moved_after_repair": [],
   "trail": [
     {
       "table": "absences",

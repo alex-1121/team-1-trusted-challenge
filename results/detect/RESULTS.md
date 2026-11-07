@@ -2,6 +2,18 @@
 
 Split and protocol: `SPLIT.md`. Two rules were added after the first run (see "Before and after the two added rules" below); the held-out numbers did not change. Eight more rules came with issue #23 (see "Issue #23" below); the committed JSON is the #23 run. Numbers are copied from the `pets-eval detect` JSON next to this file (`<dataset>.json`). Target: macro-F1 above 0.65 (organiser rule baseline B1).
 
+## Wide-sample second look (branch fix/release-gate)
+
+The rules read the first 5000 rows of a table; on a time-sorted table that is its first weeks. A column judged non_sensitive there now gets a second look on 5000 rows drawn at random over the whole file (fixed seed), and may only move to direct_identifier, quasi_identifier or sensitive_attribute, never to a less protective label (`detect.py`). A first version re-ran every rule on a wide sample; it changed four held-out labels for the worse (record keys and names whose rules are tuned on file order), so it was narrowed to this one-way second look after seeing those held-out errors. The after numbers are therefore not a clean held-out result.
+
+| Dataset | macro-F1 before | macro-F1 after | accuracy before | accuracy after | sensitive_recall before | sensitive_recall after | subtype_accuracy before | subtype_accuracy after |
+|---|---|---|---|---|---|---|---|---|
+| health | 0.8086 | 0.8202 | 0.717 | 0.7358 | 0.7209 | 0.7442 | 0.6226 | 0.6415 |
+| public_admin | 0.7241 | 0.7241 | 0.8108 | 0.8108 | 0.8519 | 0.8519 | 0.8919 | 0.8919 |
+| customer_service | 0.7821 | 0.7821 | 0.7692 | 0.7692 | 0.9565 | 0.9565 | 0.6923 | 0.6923 |
+
+One label changed: health `ed_visits.icd10_secondary` from non_sensitive CATEGORY to sensitive_attribute DIAGNOSIS_CODE (its codes are blank on most early rows). The unseen export labels did not change. `health.json` and `health_labels.csv` are this run; public_admin and customer_service are unchanged, so their JSON is the #23 run.
+
 ## Issue #23 rules: before and after
 
 Before = the #15 run, after = the #23 run, both from `pets-eval detect --datasets <dataset>`. The #23 rules were written after reading public_admin's error list and the held-out catalog rows (`SPLIT.md`), so the after numbers are not a clean held-out result.

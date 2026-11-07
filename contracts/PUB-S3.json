@@ -1,0 +1,205 @@
+{
+  "scenario": "PUB-S3",
+  "dataset": "public_admin",
+  "generated_by": "pets_transformer.selector, then reviewed by hand (contracts/generated/PUB-S3.auto.json is the selector's output)",
+  "tolerance": 0.05,
+  "recipient": "University research group",
+  "purpose": "Do response times differ between areas and languages?",
+  "trust_level": "controlled_research",
+  "threat_model": "Researchers with public data (forum, permits).",
+  "required_tasks": [
+    "PUB-U1",
+    "PUB-U2",
+    "PUB-U3"
+  ],
+  "tables": {
+    "building_permits": {
+      "action": "withhold",
+      "record_id": "permit_id",
+      "reason": "Withheld: without it every required task stays within 0.05 of the reference (PUB-U1 1.0000, PUB-U2 1.0000, PUB-U3 1.0000)."
+    },
+    "service_requests": {
+      "action": "release",
+      "record_id": "request_id",
+      "reason": "Released: without it PUB-U1 0.0000, PUB-U2 0.0000, PUB-U3 0.0000."
+    }
+  },
+  "columns": {
+    "service_requests": {
+      "request_id": {
+        "pet": "drop",
+        "reason": "Detected record_key (RECORD_ID). Candidates tried, most private first: drop: within 0.05 (PUB-U1 1.0000, PUB-U2 0.9944, PUB-U3 0.9608). Chosen: drop."
+      },
+      "ts_created": {
+        "pet": "month",
+        "reason": "Reviewer edit of the selector's contract: month of creation: PUB-U1 counts by month, and the month is in the organisers' suggested k key (postcode, category, month, language)."
+      },
+      "channel": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (PUB-U1 1.0000, PUB-U2 0.9944, PUB-U3 0.9608). Chosen: drop."
+      },
+      "category": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: outside 0.05 (PUB-U1 0.0000, PUB-U2 0.0000, PUB-U3 0.9608); kept: within 0.05 (PUB-U1 1.0000, PUB-U2 0.9944, PUB-U3 0.9608). Chosen: kept."
+      },
+      "language": {
+        "pet": "keep",
+        "reason": "Reviewer edit of the selector's contract: kept: the purpose asks whether response times differ between languages, and language is in the suggested k key."
+      },
+      "description": {
+        "pet": "drop",
+        "reason": "Detected free_text (FREE_TEXT). The only candidate for this type is drop."
+      },
+      "reporter_name": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (PERSON_NAME). The only candidate for this type is drop."
+      },
+      "reporter_phone": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (PHONE). The only candidate for this type is drop."
+      },
+      "reporter_email": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (EMAIL). The only candidate for this type is drop."
+      },
+      "reporter_account_id": {
+        "pet": "drop",
+        "reason": "Detected technical_identifier (RECORD_ID). Candidates tried, most private first: drop: within 0.05 (PUB-U1 1.0000, PUB-U2 0.9944, PUB-U3 0.9608). Chosen: drop."
+      },
+      "street_address": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (STREET_ADDRESS). The only candidate for this type is drop."
+      },
+      "postcode": {
+        "pet": "prefix",
+        "params": {
+          "n": 3
+        },
+        "reason": "Reviewer edit of the selector's contract: 3-digit postcode area, the area unit of PUB-U1 and of the suggested k key."
+      },
+      "municipality": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (MUNICIPALITY). Candidates tried, most private first: drop: within 0.05 (PUB-U1 1.0000, PUB-U2 0.9849, PUB-U3 1.0000). Chosen: drop."
+      },
+      "lat": {
+        "pet": "round_decimals",
+        "params": {
+          "decimals": 2
+        },
+        "reason": "Reviewer edit of the selector's contract: 2-decimal grid (about 1 km), the cell size of PUB-U3's hotspot map."
+      },
+      "lon": {
+        "pet": "round_decimals",
+        "params": {
+          "decimals": 2
+        },
+        "reason": "Reviewer edit of the selector's contract: 2-decimal grid (about 1 km), the cell size of PUB-U3's hotspot map."
+      },
+      "handler_name": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (PERSON_NAME). The only candidate for this type is drop."
+      },
+      "status": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (PUB-U1 1.0000, PUB-U2 0.9944, PUB-U3 0.9608). Chosen: drop."
+      },
+      "ts_closed": {
+        "pet": "duration",
+        "params": {
+          "since": "ts_created",
+          "unit": "hours",
+          "as": "resolution_hours"
+        },
+        "reason": "Reviewer edit of the selector's contract: the closing time becomes the hours from creation to closing (resolution_hours, a name the organisers' PUB-U2 reads). PUB-U2 needs the interval, not the calendar; two coarse timestamps cannot give it and two exact ones are a quasi-identifier pair."
+      },
+      "response_text": {
+        "pet": "drop",
+        "reason": "Detected free_text (FREE_TEXT). The only candidate for this type is drop."
+      }
+    }
+  },
+  "roles": {
+    "service_requests": {
+      "quasi_identifier": {
+        "pet": "drop",
+        "reason": "default for a quasi identifier the contract does not name"
+      },
+      "technical_identifier": {
+        "pet": "drop",
+        "reason": "default for a technical identifier the contract does not name"
+      },
+      "sensitive_attribute": {
+        "pet": "keep",
+        "reason": "default for a sensitive attribute the contract does not name"
+      },
+      "free_text": {
+        "pet": "drop",
+        "reason": "default for a free text the contract does not name"
+      },
+      "non_sensitive": {
+        "pet": "keep",
+        "reason": "default for a non sensitive the contract does not name"
+      },
+      "record_key": {
+        "pet": "token",
+        "params": {
+          "prefix": "T"
+        },
+        "reason": "default for a record key the contract does not name"
+      },
+      "direct_identifier": {
+        "pet": "drop",
+        "reason": "default for a direct identifier the contract does not name"
+      }
+    }
+  },
+  "k_target": {
+    "table": "service_requests",
+    "k": 5,
+    "l": 1,
+    "columns": [
+      "ts_created",
+      "postcode",
+      "category",
+      "language",
+      "lat",
+      "lon"
+    ],
+    "linked": {},
+    "ladder": {
+      "lat:round": {
+        "column": "lat",
+        "op": "round",
+        "decimals": 1,
+        "reason": "At-risk rows only: coordinate grid made 10 times coarser."
+      },
+      "lon:round": {
+        "column": "lon",
+        "op": "round",
+        "decimals": 1,
+        "reason": "At-risk rows only: coordinate grid made 10 times coarser."
+      },
+      "language:set": {
+        "column": "language",
+        "op": "set",
+        "value": "other",
+        "reason": "At-risk rows only: language becomes other."
+      },
+      "postcode:prefix": {
+        "column": "postcode",
+        "op": "prefix",
+        "n": 2,
+        "reason": "At-risk rows only: one postcode digit fewer."
+      }
+    },
+    "reason": "The organisers' suggested key for PUB-S3 (postcode, category, month, language) plus the released 1 km grid: every released row shares these with at least 4 other rows; only the rows that miss it are coarsened, rows still at risk get those columns suppressed."
+  },
+  "k_columns": [
+    "ts_created",
+    "postcode",
+    "category",
+    "language",
+    "lat",
+    "lon"
+  ]
+}

@@ -1,0 +1,696 @@
+{
+  "target": {
+    "table": "ed_visits",
+    "join_flags": [
+      {
+        "table": "lab_results",
+        "on": "visit_id"
+      }
+    ],
+    "k": 5,
+    "l": 2,
+    "sensitive": "icd10_primary",
+    "columns": [
+      "date_of_birth",
+      "municipality",
+      "arrival_ts"
+    ],
+    "linked": {
+      "date_of_birth": [
+        "age"
+      ]
+    },
+    "reason": "Every released ed_visits row shares its kept quasi-identifiers (date_of_birth, municipality, arrival_ts) with at least 4 other rows, and every such group holds at least 2 distinct icd10_primary values; only the rows that miss the target are coarsened, and rows still at risk get those columns suppressed.",
+    "informed": {
+      "k": 2,
+      "reason": "An attacker who already knows a visit's diagnosis group, age band, municipality and arrival hour must still find at least 2 matching rows; rows that miss it are coarsened like the others."
+    }
+  },
+  "ladder": {
+    "date_of_birth:widen_band": {
+      "column": "date_of_birth",
+      "op": "widen_band",
+      "width": 20,
+      "reason": "At-risk rows only: age band widened to 20 years."
+    },
+    "municipality:set": {
+      "column": "municipality",
+      "op": "set",
+      "value": "other",
+      "reason": "At-risk rows only: place becomes other."
+    },
+    "arrival_ts:widen_hour": {
+      "column": "arrival_ts",
+      "op": "widen_hour",
+      "block": 3,
+      "reason": "At-risk rows only: hour widened to a 3-hour block."
+    },
+    "arrival_ts:widen_hour_8": {
+      "column": "arrival_ts",
+      "op": "widen_hour",
+      "block": 8,
+      "reason": "At-risk rows only: hour widened to an 8-hour block (night, day, evening)."
+    }
+  },
+  "floor": 0.85,
+  "rule": "best composite among orders with no row at risk and every required task at or above the floor",
+  "chosen": "date_of_birth:widen_band-arrival_ts:widen_hour-arrival_ts:widen_hour_8-municipality:set",
+  "orders": [
+    {
+      "order": [
+        "date_of_birth:widen_band",
+        "municipality:set",
+        "arrival_ts:widen_hour",
+        "arrival_ts:widen_hour_8"
+      ],
+      "name": "date_of_birth:widen_band-municipality:set-arrival_ts:widen_hour-arrival_ts:widen_hour_8",
+      "tasks": {
+        "H-U2": 0.9978835978835979,
+        "H-U4": 0.42962311140954146,
+        "H-U6": 0.9536607431864812,
+        "H-U7": 0.9999784041373936,
+        "H-U8": 0.9602345909617697
+      },
+      "privacy": 1.0,
+      "utility": 0.8683,
+      "composite": 0.9355,
+      "at_risk_after": 0,
+      "rows_released": 46374,
+      "steps": [
+        {
+          "step": "date_of_birth:widen_band",
+          "column": "date_of_birth",
+          "rows_changed": 10543
+        },
+        {
+          "step": "municipality:set",
+          "column": "municipality",
+          "rows_changed": 9814
+        },
+        {
+          "step": "arrival_ts:widen_hour",
+          "column": "arrival_ts",
+          "rows_changed": 2795
+        },
+        {
+          "step": "arrival_ts:widen_hour_8",
+          "column": "arrival_ts",
+          "rows_changed": 1441
+        },
+        {
+          "step": "suppress",
+          "column": "date_of_birth, municipality, arrival_ts",
+          "rows_changed": 796
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 24
+        }
+      ]
+    },
+    {
+      "order": [
+        "date_of_birth:widen_band",
+        "arrival_ts:widen_hour",
+        "municipality:set",
+        "arrival_ts:widen_hour_8"
+      ],
+      "name": "date_of_birth:widen_band-arrival_ts:widen_hour-municipality:set-arrival_ts:widen_hour_8",
+      "tasks": {
+        "H-U2": 0.9978835978835979,
+        "H-U4": 0.6019531743466383,
+        "H-U6": 0.9471169978221544,
+        "H-U7": 0.9999624162965084,
+        "H-U8": 0.8736095539220898
+      },
+      "privacy": 1.0,
+      "utility": 0.8841,
+      "composite": 0.9438,
+      "at_risk_after": 0,
+      "rows_released": 46364,
+      "steps": [
+        {
+          "step": "date_of_birth:widen_band",
+          "column": "date_of_birth",
+          "rows_changed": 10543
+        },
+        {
+          "step": "arrival_ts:widen_hour",
+          "column": "arrival_ts",
+          "rows_changed": 9814
+        },
+        {
+          "step": "municipality:set",
+          "column": "municipality",
+          "rows_changed": 6596
+        },
+        {
+          "step": "arrival_ts:widen_hour_8",
+          "column": "arrival_ts",
+          "rows_changed": 1251
+        },
+        {
+          "step": "suppress",
+          "column": "date_of_birth, municipality, arrival_ts",
+          "rows_changed": 559
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 34
+        }
+      ]
+    },
+    {
+      "order": [
+        "date_of_birth:widen_band",
+        "arrival_ts:widen_hour",
+        "arrival_ts:widen_hour_8",
+        "municipality:set"
+      ],
+      "name": "date_of_birth:widen_band-arrival_ts:widen_hour-arrival_ts:widen_hour_8-municipality:set",
+      "tasks": {
+        "H-U2": 0.9978835978835979,
+        "H-U4": 0.8333842831330617,
+        "H-U6": 0.9479672299578997,
+        "H-U7": 0.9999062075956668,
+        "H-U8": 0.8485461091956953
+      },
+      "privacy": 1.0,
+      "utility": 0.9255,
+      "composite": 0.9647,
+      "at_risk_after": 0,
+      "rows_released": 46395,
+      "steps": [
+        {
+          "step": "date_of_birth:widen_band",
+          "column": "date_of_birth",
+          "rows_changed": 10543
+        },
+        {
+          "step": "arrival_ts:widen_hour",
+          "column": "arrival_ts",
+          "rows_changed": 9814
+        },
+        {
+          "step": "arrival_ts:widen_hour_8",
+          "column": "arrival_ts",
+          "rows_changed": 6596
+        },
+        {
+          "step": "municipality:set",
+          "column": "municipality",
+          "rows_changed": 2706
+        },
+        {
+          "step": "suppress",
+          "column": "date_of_birth, municipality, arrival_ts",
+          "rows_changed": 190
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 3
+        }
+      ]
+    },
+    {
+      "order": [
+        "municipality:set",
+        "date_of_birth:widen_band",
+        "arrival_ts:widen_hour",
+        "arrival_ts:widen_hour_8"
+      ],
+      "name": "municipality:set-date_of_birth:widen_band-arrival_ts:widen_hour-arrival_ts:widen_hour_8",
+      "tasks": {
+        "H-U2": 0.9978835978835979,
+        "H-U4": 0.264217049772981,
+        "H-U6": 0.961775019063609,
+        "H-U7": 0.9999401998779054,
+        "H-U8": 0.9657043360338874
+      },
+      "privacy": 1.0,
+      "utility": 0.8379,
+      "composite": 0.9192,
+      "at_risk_after": 0,
+      "rows_released": 46388,
+      "steps": [
+        {
+          "step": "municipality:set",
+          "column": "municipality",
+          "rows_changed": 10543
+        },
+        {
+          "step": "date_of_birth:widen_band",
+          "column": "date_of_birth",
+          "rows_changed": 3191
+        },
+        {
+          "step": "arrival_ts:widen_hour",
+          "column": "arrival_ts",
+          "rows_changed": 2559
+        },
+        {
+          "step": "arrival_ts:widen_hour_8",
+          "column": "arrival_ts",
+          "rows_changed": 1411
+        },
+        {
+          "step": "suppress",
+          "column": "date_of_birth, municipality, arrival_ts",
+          "rows_changed": 658
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 10
+        }
+      ]
+    },
+    {
+      "order": [
+        "municipality:set",
+        "arrival_ts:widen_hour",
+        "date_of_birth:widen_band",
+        "arrival_ts:widen_hour_8"
+      ],
+      "name": "municipality:set-arrival_ts:widen_hour-date_of_birth:widen_band-arrival_ts:widen_hour_8",
+      "tasks": {
+        "H-U2": 0.9978835978835979,
+        "H-U4": 0.27807601004724103,
+        "H-U6": 0.9710072846739817,
+        "H-U7": 0.9998857051574466,
+        "H-U8": 0.9602644994824733
+      },
+      "privacy": 1.0,
+      "utility": 0.8414,
+      "composite": 0.9211,
+      "at_risk_after": 0,
+      "rows_released": 46380,
+      "steps": [
+        {
+          "step": "municipality:set",
+          "column": "municipality",
+          "rows_changed": 10543
+        },
+        {
+          "step": "arrival_ts:widen_hour",
+          "column": "arrival_ts",
+          "rows_changed": 3191
+        },
+        {
+          "step": "date_of_birth:widen_band",
+          "column": "date_of_birth",
+          "rows_changed": 1729
+        },
+        {
+          "step": "arrival_ts:widen_hour_8",
+          "column": "arrival_ts",
+          "rows_changed": 1450
+        },
+        {
+          "step": "suppress",
+          "column": "date_of_birth, municipality, arrival_ts",
+          "rows_changed": 812
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 18
+        }
+      ]
+    },
+    {
+      "order": [
+        "municipality:set",
+        "arrival_ts:widen_hour",
+        "arrival_ts:widen_hour_8",
+        "date_of_birth:widen_band"
+      ],
+      "name": "municipality:set-arrival_ts:widen_hour-arrival_ts:widen_hour_8-date_of_birth:widen_band",
+      "tasks": {
+        "H-U2": 0.9978835978835979,
+        "H-U4": 0.2672340827406141,
+        "H-U6": 0.9689716710685807,
+        "H-U7": 0.9999341451735069,
+        "H-U8": 0.9602644994824733
+      },
+      "privacy": 1.0,
+      "utility": 0.8389,
+      "composite": 0.9197,
+      "at_risk_after": 0,
+      "rows_released": 46362,
+      "steps": [
+        {
+          "step": "municipality:set",
+          "column": "municipality",
+          "rows_changed": 10543
+        },
+        {
+          "step": "arrival_ts:widen_hour",
+          "column": "arrival_ts",
+          "rows_changed": 3191
+        },
+        {
+          "step": "arrival_ts:widen_hour_8",
+          "column": "arrival_ts",
+          "rows_changed": 1729
+        },
+        {
+          "step": "date_of_birth:widen_band",
+          "column": "date_of_birth",
+          "rows_changed": 1122
+        },
+        {
+          "step": "suppress",
+          "column": "date_of_birth, municipality, arrival_ts",
+          "rows_changed": 798
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 36
+        }
+      ]
+    },
+    {
+      "order": [
+        "arrival_ts:widen_hour",
+        "date_of_birth:widen_band",
+        "municipality:set",
+        "arrival_ts:widen_hour_8"
+      ],
+      "name": "arrival_ts:widen_hour-date_of_birth:widen_band-municipality:set-arrival_ts:widen_hour_8",
+      "tasks": {
+        "H-U2": 0.9978835978835979,
+        "H-U4": 0.6256842878004645,
+        "H-U6": 0.9592187026227875,
+        "H-U7": 0.9999308018323446,
+        "H-U8": 0.8551466849519315
+      },
+      "privacy": 1.0,
+      "utility": 0.8876,
+      "composite": 0.9456,
+      "at_risk_after": 0,
+      "rows_released": 46373,
+      "steps": [
+        {
+          "step": "arrival_ts:widen_hour",
+          "column": "arrival_ts",
+          "rows_changed": 10543
+        },
+        {
+          "step": "date_of_birth:widen_band",
+          "column": "date_of_birth",
+          "rows_changed": 7381
+        },
+        {
+          "step": "municipality:set",
+          "column": "municipality",
+          "rows_changed": 6873
+        },
+        {
+          "step": "arrival_ts:widen_hour_8",
+          "column": "arrival_ts",
+          "rows_changed": 1580
+        },
+        {
+          "step": "suppress",
+          "column": "date_of_birth, municipality, arrival_ts",
+          "rows_changed": 467
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 25
+        }
+      ]
+    },
+    {
+      "order": [
+        "arrival_ts:widen_hour",
+        "date_of_birth:widen_band",
+        "arrival_ts:widen_hour_8",
+        "municipality:set"
+      ],
+      "name": "arrival_ts:widen_hour-date_of_birth:widen_band-arrival_ts:widen_hour_8-municipality:set",
+      "tasks": {
+        "H-U2": 0.9978835978835979,
+        "H-U4": 0.7694999829793566,
+        "H-U6": 0.9591018318362147,
+        "H-U7": 0.999992939310022,
+        "H-U8": 0.8471661175396478
+      },
+      "privacy": 1.0,
+      "utility": 0.9147,
+      "composite": 0.9593,
+      "at_risk_after": 0,
+      "rows_released": 46395,
+      "steps": [
+        {
+          "step": "arrival_ts:widen_hour",
+          "column": "arrival_ts",
+          "rows_changed": 10543
+        },
+        {
+          "step": "date_of_birth:widen_band",
+          "column": "date_of_birth",
+          "rows_changed": 7381
+        },
+        {
+          "step": "arrival_ts:widen_hour_8",
+          "column": "arrival_ts",
+          "rows_changed": 6873
+        },
+        {
+          "step": "municipality:set",
+          "column": "municipality",
+          "rows_changed": 3302
+        },
+        {
+          "step": "suppress",
+          "column": "date_of_birth, municipality, arrival_ts",
+          "rows_changed": 213
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 3
+        }
+      ]
+    },
+    {
+      "order": [
+        "arrival_ts:widen_hour",
+        "municipality:set",
+        "date_of_birth:widen_band",
+        "arrival_ts:widen_hour_8"
+      ],
+      "name": "arrival_ts:widen_hour-municipality:set-date_of_birth:widen_band-arrival_ts:widen_hour_8",
+      "tasks": {
+        "H-U2": 0.9978835978835979,
+        "H-U4": 0.5777560076403673,
+        "H-U6": 0.9629446588358918,
+        "H-U7": 0.9999560722342686,
+        "H-U8": 0.8589707873470017
+      },
+      "privacy": 1.0,
+      "utility": 0.8795,
+      "composite": 0.9414,
+      "at_risk_after": 0,
+      "rows_released": 46360,
+      "steps": [
+        {
+          "step": "arrival_ts:widen_hour",
+          "column": "arrival_ts",
+          "rows_changed": 10543
+        },
+        {
+          "step": "municipality:set",
+          "column": "municipality",
+          "rows_changed": 7381
+        },
+        {
+          "step": "date_of_birth:widen_band",
+          "column": "date_of_birth",
+          "rows_changed": 2123
+        },
+        {
+          "step": "arrival_ts:widen_hour_8",
+          "column": "arrival_ts",
+          "rows_changed": 1562
+        },
+        {
+          "step": "suppress",
+          "column": "date_of_birth, municipality, arrival_ts",
+          "rows_changed": 654
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 38
+        }
+      ]
+    },
+    {
+      "order": [
+        "arrival_ts:widen_hour",
+        "municipality:set",
+        "arrival_ts:widen_hour_8",
+        "date_of_birth:widen_band"
+      ],
+      "name": "arrival_ts:widen_hour-municipality:set-arrival_ts:widen_hour_8-date_of_birth:widen_band",
+      "tasks": {
+        "H-U2": 0.9978835978835979,
+        "H-U4": 0.5739831981309682,
+        "H-U6": 0.9618631214820442,
+        "H-U7": 0.9998679599178081,
+        "H-U8": 0.8569008751330318
+      },
+      "privacy": 1.0,
+      "utility": 0.8781,
+      "composite": 0.9406,
+      "at_risk_after": 0,
+      "rows_released": 46343,
+      "steps": [
+        {
+          "step": "arrival_ts:widen_hour",
+          "column": "arrival_ts",
+          "rows_changed": 10543
+        },
+        {
+          "step": "municipality:set",
+          "column": "municipality",
+          "rows_changed": 7381
+        },
+        {
+          "step": "arrival_ts:widen_hour_8",
+          "column": "arrival_ts",
+          "rows_changed": 2123
+        },
+        {
+          "step": "date_of_birth:widen_band",
+          "column": "date_of_birth",
+          "rows_changed": 902
+        },
+        {
+          "step": "suppress",
+          "column": "date_of_birth, municipality, arrival_ts",
+          "rows_changed": 657
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 55
+        }
+      ]
+    },
+    {
+      "order": [
+        "arrival_ts:widen_hour",
+        "arrival_ts:widen_hour_8",
+        "date_of_birth:widen_band",
+        "municipality:set"
+      ],
+      "name": "arrival_ts:widen_hour-arrival_ts:widen_hour_8-date_of_birth:widen_band-municipality:set",
+      "tasks": {
+        "H-U2": 0.9978835978835979,
+        "H-U4": 0.7710394937564518,
+        "H-U6": 0.9623118141572067,
+        "H-U7": 1.0,
+        "H-U8": 0.8403839406819823
+      },
+      "privacy": 1.0,
+      "utility": 0.9143,
+      "composite": 0.9591,
+      "at_risk_after": 0,
+      "rows_released": 46398,
+      "steps": [
+        {
+          "step": "arrival_ts:widen_hour",
+          "column": "arrival_ts",
+          "rows_changed": 10543
+        },
+        {
+          "step": "arrival_ts:widen_hour_8",
+          "column": "arrival_ts",
+          "rows_changed": 7381
+        },
+        {
+          "step": "date_of_birth:widen_band",
+          "column": "date_of_birth",
+          "rows_changed": 4120
+        },
+        {
+          "step": "municipality:set",
+          "column": "municipality",
+          "rows_changed": 3170
+        },
+        {
+          "step": "suppress",
+          "column": "date_of_birth, municipality, arrival_ts",
+          "rows_changed": 512
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "arrival_ts:widen_hour",
+        "arrival_ts:widen_hour_8",
+        "municipality:set",
+        "date_of_birth:widen_band"
+      ],
+      "name": "arrival_ts:widen_hour-arrival_ts:widen_hour_8-municipality:set-date_of_birth:widen_band",
+      "tasks": {
+        "H-U2": 0.9978835978835979,
+        "H-U4": 0.7334627245044805,
+        "H-U6": 0.9654383838411099,
+        "H-U7": 0.9998913065299131,
+        "H-U8": 0.8403839406819823
+      },
+      "privacy": 1.0,
+      "utility": 0.9074,
+      "composite": 0.9557,
+      "at_risk_after": 0,
+      "rows_released": 46394,
+      "steps": [
+        {
+          "step": "arrival_ts:widen_hour",
+          "column": "arrival_ts",
+          "rows_changed": 10543
+        },
+        {
+          "step": "arrival_ts:widen_hour_8",
+          "column": "arrival_ts",
+          "rows_changed": 7381
+        },
+        {
+          "step": "municipality:set",
+          "column": "municipality",
+          "rows_changed": 4120
+        },
+        {
+          "step": "date_of_birth:widen_band",
+          "column": "date_of_birth",
+          "rows_changed": 441
+        },
+        {
+          "step": "suppress",
+          "column": "date_of_birth, municipality, arrival_ts",
+          "rows_changed": 375
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 4
+        }
+      ]
+    }
+  ]
+}

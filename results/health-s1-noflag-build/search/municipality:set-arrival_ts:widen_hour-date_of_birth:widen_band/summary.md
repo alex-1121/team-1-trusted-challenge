@@ -10,7 +10,7 @@ Every number is copied from scorecard.json or computed by `score`. self-assessme
 | H-U4 | Diagnosis-group mix in the eight largest municipalities | not run | 0.9278 |
 | H-U6 | 30-day revisit rate by age band (needs readmit_30d or a consistent patient pseudonym) | not run | 0.9642 |
 | H-U7 | CRP vs temperature relationship and CRP by diagnosis group (needs visit join) | not run | 1.0000 |
-| H-U8 | Hour-of-day arrival curve | not run | 0.9981 |
+| H-U8 | Hour-of-day arrival curve | not run | 0.9982 |
 
 ## Privacy risk components (lower is better)
 
