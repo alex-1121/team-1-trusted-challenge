@@ -14,8 +14,9 @@ def drop(df: pd.DataFrame, col: str) -> pd.DataFrame:
     return df.drop(columns=[col])
 
 
-def hour_of_day(s: pd.Series) -> pd.Series:
-    return parse.to_datetime(s).dt.strftime("%H:00")
+def hour_of_day(s: pd.Series, block: int = 1) -> pd.Series:
+    h = parse.to_datetime(s).dt.hour
+    return (h - h % block).map(lambda x: f"{int(x):02d}:00" if x == x else x)
 
 
 def age_band(s: pd.Series, width: int = 10) -> pd.Series:
