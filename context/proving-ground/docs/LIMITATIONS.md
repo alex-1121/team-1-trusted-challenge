@@ -1,5 +1,6 @@
-# Limitations: what this data is and is not
+# Limitations
 
-- **Scale.** The population (100,000) is about a fifth of the real region. The share of unique people on a given set of quasi-identifiers is therefore somewhat higher than it would be in reality, especially in small archipelago postcodes.
-- **Utility tasks are proxies.** They capture typical analytical needs for each scenario, not every possible use. Report the tasks your scenario needs, and say which ones you sacrificed.
+What our tool does not do yet, in plain words.
+
 - **Separate releases can be linked back together.** Each release is protected and scored on its own. Two releases cut from the same source for different recipients often share columns kept at full precision, such as diagnosis, triage, temperature and length of stay in HEALTH-S1 and HEALTH-S3. Matching rows on those shared values joins the releases, and the joined table reveals more about each person than either release alone. The same holds when one party makes several requests under different purposes. Neither the scorecard nor our red team tests for this, and the tool keeps no record of earlier releases. Today the only safeguards are organisational: a secure processing environment and a data-use agreement that forbids linkage.
+- **When the tool is not sure, it asks a person.** Before it protects anything, the tool reads each column and works out what kind of information it holds: a name, a date, a diagnosis, and so on. Messy data makes that harder. When the tool cannot tell, it marks the column for a person to check. Its best guess stands until that person looks, and the release does not wait for them. So someone has to read that list before the data goes out. The flag comes from our small language model, so it only appears when that model is installed.
