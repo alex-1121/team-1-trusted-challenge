@@ -1,0 +1,45 @@
+{
+  "command": "python -m pets_transformer.cli checks --protected out/health-s1-build/health --original data/proving-ground/data/health --truth data/proving-ground/truth --out results/checks",
+  "protected": "out/health-s1-build/health",
+  "original": "data/proving-ground/data/health",
+  "check": "k over the ed_visits-lab_results join",
+  "column_rule": "retained columns of the join that metadata/field_catalog.csv marks quasi_identifier or DIAGNOSIS_CODE",
+  "result": {
+    "join": "ed_visits inner join lab_results on visit_id",
+    "columns": [
+      "arrival_mode",
+      "arrival_ts",
+      "date_of_birth",
+      "icd10_primary",
+      "icd10_secondary",
+      "municipality",
+      "sex"
+    ],
+    "n_joined_rows": 130341,
+    "n_visits": 26209,
+    "n_groups": 22407,
+    "k_unit": "distinct visits per group (one visit has several lab rows, so rows would overstate k)",
+    "share_rows_k_below_5": 0.9799,
+    "share_visits_k_below_5": 0.9794,
+    "share_rows_k_below_5_counting_rows": 0.1601,
+    "min_k": 1
+  },
+  "for_comparison_without_diagnoses": {
+    "join": "ed_visits inner join lab_results on visit_id",
+    "columns": [
+      "arrival_mode",
+      "arrival_ts",
+      "date_of_birth",
+      "municipality",
+      "sex"
+    ],
+    "n_joined_rows": 130341,
+    "n_visits": 26209,
+    "n_groups": 5714,
+    "k_unit": "distinct visits per group (one visit has several lab rows, so rows would overstate k)",
+    "share_rows_k_below_5": 0.2844,
+    "share_visits_k_below_5": 0.2967,
+    "share_rows_k_below_5_counting_rows": 0.0224,
+    "min_k": 1
+  }
+}
