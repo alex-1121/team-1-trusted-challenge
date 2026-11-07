@@ -83,7 +83,7 @@ def run(original, protected, scenario, out, baseline=None, contract=None, pets_e
     if sc.returncode:
         raise RuntimeError(f"pets-eval scorecard failed: {sc.stderr[-500:]}")
     ck = subprocess.run([pets_eval, "check", str(protected)], cwd=pg, capture_output=True, text=True)
-    prefixes = [Path(__file__).resolve().parents[2], pg.resolve().parents[1], Path.home()]
+    prefixes = [Path(__file__).resolve().parents[2], pg.absolute().parents[1], pg.resolve().parents[1], Path.home()]
     texts = {"check.txt": ck.stdout + ck.stderr}
     for n in ("scorecard.json", "scorecard.html"):
         texts[n] = (out / n).read_text()

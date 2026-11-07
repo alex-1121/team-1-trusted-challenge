@@ -20,7 +20,7 @@
     "suggested_privacy_targets": "No direct identifiers; consistent pseudonymous patient key; QIs generalised so that k>=5 on (age band, sex, municipality, arrival week); free text redacted (recall >=0.95 on PERSON/PHONE/ADDRESS/NATIONAL_ID).",
     "notes": "Revisit analysis needs a stable patient pseudonym and joinable visit/lab keys."
   },
-  "original": "Desktop/Business/team-1-trusted/data/proving-ground/data/health",
+  "original": "data/proving-ground/data/health",
   "protected": "out/health-s1/health",
   "tables": {
     "clinical_notes": {
