@@ -1,0 +1,51 @@
+{
+ "commit": "27c8e446bd1b863755cb2bd05974a24dfbdfcee2",
+ "uncommitted_changes": false,
+ "encoder": "intfloat/multilingual-e5-small",
+ "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+ "head_created": "2026-11-07T19:05:03Z",
+ "temperature": 2.6,
+ "thresholds": {
+  "decide": {
+   "conf": 0.8,
+   "risk": 0.2
+  },
+  "combine": {
+   "agree": 0.3,
+   "conf": 0.8
+  }
+ },
+ "created": "2026-11-07T19:26:34Z",
+ "machine": "zray's laptop, 12 CPU threads, CPU-only torch",
+ "model_load_seconds": 1.9,
+ "seconds": {
+  "lexicon": {
+   "finance": 3.06,
+   "cyber": 3.8,
+   "education": 3.24,
+   "mobility": 2.43,
+   "energy": 1.05,
+   "smart_city": 1.48,
+   "health": 3.38,
+   "public_admin": 1.46,
+   "customer_service": 2.24
+  },
+  "hybrid": {
+   "finance": 7.45,
+   "cyber": 11.97,
+   "education": 9.36,
+   "mobility": 5.0,
+   "energy": 2.59,
+   "smart_city": 2.51,
+   "health": 9.24,
+   "public_admin": 5.23,
+   "customer_service": 6.4
+  }
+ },
+ "total_seconds": {
+  "lexicon": 22.1,
+  "hybrid": 59.8
+ },
+ "ratio_hybrid_to_lexicon": 2.71,
+ "gate_at_most_3x": true
+}
