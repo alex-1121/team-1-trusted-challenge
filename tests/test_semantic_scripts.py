@@ -73,3 +73,71 @@ def test_catalog_matches_columns(tmp_path):
     for ds, g in cat.groupby("dataset"):
         cols = pd.read_csv(tmp_path / ds / "customers.csv", dtype=str, nrows=1).columns
         assert set(g.column) == set(cols)
+
+
+# Task 6: train.py
+
+def _write_corpus(d: Path, header: dict | None, records: list[dict]) -> None:
+    d.mkdir(parents=True, exist_ok=True)
+    for split in ("train", "calib"):
+        lines = ([json.dumps(header | {"split": split})] if header is not None else []) + [json.dumps(r) for r in records]
+        (d / f"{split}.jsonl").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def _train(*args):
+    return subprocess.run([sys.executable, str(SCRIPTS / "train.py"), *map(str, args)], capture_output=True,
+                          text=True, cwd=ROOT)
+
+
+TOY = [{"locale": "xx_XX", "type": t, "values": vals} for t, vals in [
+    ("PERSON_NAME", ["Anna Berg", "Otto Lind", "Mia Koski", "Eero Salo", "Liisa Aho", "Kari Mäki"]),
+    ("PERSON_NAME", ["Jan Novak", "Eva Horn", "Ida Vik", "Per Dahl", "Ole Moe", "Siv Lie"]),
+    ("SEX", ["F", "M", "F", "F", "M", "M", "F"]),
+    ("SEX", ["female", "male", "male", "female", "female", "male"]),
+    ("CATEGORY", ["open", "closed", "pending", "open", "open", "closed"]),
+    ("CATEGORY", ["low", "high", "medium", "low", "low", "high"]),
+]]
+HEADER = {"corpus": "pets_transformer.semantic", "synthetic": True, "version": 1}
+
+
+def test_train_refuses_non_corpus_input(tmp_path):
+    pytest.importorskip("sklearn")
+    csv_dir = tmp_path / "csv"
+    csv_dir.mkdir()
+    (csv_dir / "people.csv").write_text("name\nAnna Berg\n")
+    no_flag = tmp_path / "noflag"
+    _write_corpus(no_flag, {"corpus": "pets_transformer.semantic", "version": 1}, TOY)
+    pg = tmp_path / "data" / "proving-ground" / "health"
+    _write_corpus(pg, HEADER, TOY)
+    for d in (csv_dir, no_flag, pg):
+        r = _train("--corpus", d, "--out", tmp_path / "m", "--encoder", "stub")
+        assert r.returncode != 0, d
+        assert "not a pets_transformer.semantic corpus" in r.stderr, (d, r.stderr)
+    assert not (tmp_path / "m" / "head.npz").exists()
+
+
+def test_train_roundtrip_with_stub_encoder(tmp_path):
+    pytest.importorskip("sklearn")
+    import numpy as np
+    from pets_transformer.semantic.model import TypeModel
+    from train import stub_encode
+    corpus = tmp_path / "corpus"
+    _write_corpus(corpus, HEADER, TOY)
+    r = _train("--corpus", corpus, "--out", tmp_path / "m", "--encoder", "stub", "--device", "cpu")
+    assert r.returncode == 0, r.stderr
+    meta = json.loads((tmp_path / "m" / "meta.json").read_text())
+    report = json.loads((tmp_path / "m" / "train_report.json").read_text())
+    assert set(meta["types"]) == {"PERSON_NAME", "SEX", "CATEGORY"}
+    assert meta["device"] == "cpu" and set(meta["trained_on"]["sha256"]) == {"train", "calib"}
+    assert 0.5 <= report["temperature"] <= 5.0 and "ece_calib" in report and "f1_calib" in report
+    h = np.load(tmp_path / "m" / "head.npz")
+    m = TypeModel(stub_encode, h["W"], h["b"], h["mu"], h["sigma"], meta["temperature"], tuple(meta["types"]))
+    for rec in TOY:
+        p = m.predict_proba(rec["values"])
+        assert max(p, key=p.get) == rec["type"], (rec["type"], p)
+
+
+def test_pick_device_cpu_without_torch_accelerators():
+    from train import pick_device
+    assert pick_device("cpu") == "cpu"
+    assert pick_device("auto") in {"cpu", "cuda", "mps"}
