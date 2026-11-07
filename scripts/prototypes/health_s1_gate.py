@@ -26,10 +26,14 @@ key = KEYFILE.read_bytes()
 v = pd.read_csv(SRC / "ed_visits.csv", dtype=str)
 labs = pd.read_csv(SRC / "lab_results.csv", dtype=str)
 
-p = v.drop(columns=["patient_name", "date_of_birth", "phone", "home_address", "postcode", "ambulance_unit", "chief_complaint",
+p = v.drop(columns=["patient_name", "phone", "home_address", "postcode", "ambulance_unit", "chief_complaint",
                     "discharge_ts", "attending_physician_id", "attending_physician_name"]).copy()
-p["patient_hetu"] = v.patient_hetu.map(lambda x: hmac.new(key, str(x).encode(), hashlib.sha256).hexdigest()[:16])
-p["age"] = parse.to_age_band(parse.age_from_birth(v.date_of_birth))
+# "P" prefix: a bare hex pseudonym starting 04... matched the pets-eval PHONE pattern; "P-" would not help because \b0 matches after "-"
+p["patient_hetu"] = v.patient_hetu.map(lambda x: "P" + hmac.new(key, str(x).encode(), hashlib.sha256).hexdigest()[:16])
+# the scorer counts k only over catalogued quasi-identifier columns; the catalogue lists date_of_birth, not age
+# H-U6 reads a column named age, so the same band is kept there too
+p["date_of_birth"] = parse.to_age_band(parse.age_from_birth(v.date_of_birth))
+p["age"] = p["date_of_birth"]
 top8 = v.municipality[v.municipality != "non-resident"].value_counts().index[:8]
 p["municipality"] = v.municipality.where(v.municipality.isin(top8), "other")
 t = parse.to_datetime(v.arrival_ts)

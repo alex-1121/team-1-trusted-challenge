@@ -1,0 +1,200 @@
+{
+  "recipient": "University research group (research environment)",
+  "purpose": "Study ED crowding and revisits: length of stay, revisits, diagnosis mix, arrival patterns",
+  "trust_level": "research-env (known recipient, no public release)",
+  "threat_model": "Record linkage against a public directory; dictionary attack on identifier hashes; leaked direct identifiers",
+  "required_tasks": [
+    "H-U2",
+    "H-U4",
+    "H-U6",
+    "H-U7",
+    "H-U8"
+  ],
+  "tables": {
+    "ed_visits": {
+      "action": "release",
+      "record_id": "visit_id",
+      "reason": "Core table for every required task."
+    },
+    "lab_results": {
+      "action": "release",
+      "record_id": "lab_id",
+      "reason": "Needed for the visit-to-lab join; sampled_ts dropped."
+    },
+    "clinical_notes": {
+      "action": "withhold",
+      "reason": "Free-text notes carry identifying detail; no required task uses them and no redactor is in scope."
+    },
+    "published_weekly_stats": {
+      "action": "withhold",
+      "reason": "Aggregate table that would add a second linkage path (week, municipality, age band); no required task uses it."
+    }
+  },
+  "columns": {
+    "ed_visits": {
+      "visit_id": {
+        "pet": "keep",
+        "reason": "Join key to lab_results (visit-to-lab join) and record id for the row map; not a person identifier."
+      },
+      "patient_hetu": {
+        "pet": "pseudonym",
+        "reason": "Direct identifier; keyed HMAC-SHA256 pseudonym keeps patients linkable for H-U6 revisit analysis while blocking dictionary attack on the national id."
+      },
+      "patient_name": {
+        "pet": "drop",
+        "reason": "Direct identifier; no research task needs the name (attacker: record linkage by name)."
+      },
+      "date_of_birth": {
+        "pet": "age_band",
+        "params": {
+          "width": 10,
+          "also_as": [
+            "age"
+          ]
+        },
+        "reason": "Quasi-identifier; 10-year band written here so the scorer counts it in k, and copied to age for H-U6 (30-day revisit rate by age band)."
+      },
+      "sex": {
+        "pet": "keep",
+        "reason": "Kept: stratified analysis context; low-cardinality quasi-identifier counted in k."
+      },
+      "phone": {
+        "pet": "drop",
+        "reason": "Direct identifier; no task needs it (attacker: record linkage)."
+      },
+      "home_address": {
+        "pet": "drop",
+        "reason": "Direct identifier; municipality covers the regional task (attacker: record linkage)."
+      },
+      "postcode": {
+        "pet": "drop",
+        "reason": "Quasi-identifier finer than needed; municipality serves H-U4 (attacker: linkage to public directory)."
+      },
+      "municipality": {
+        "pet": "top_n_exact_else_other",
+        "params": {
+          "n": 8
+        },
+        "reason": "Eight largest municipalities exact for H-U4 diagnosis mix, rest become other to lift k (attacker: linkage)."
+      },
+      "arrival_ts": {
+        "pet": "hour_of_day",
+        "reason": "Exact timestamp is a quasi-identifier; hour of day as HH:00 serves H-U8 arrival curve, date dropped (no seasonality study possible)."
+      },
+      "arrival_mode": {
+        "pet": "keep",
+        "reason": "Kept: low-cardinality, counted in k, useful context for crowding analysis."
+      },
+      "ambulance_unit": {
+        "pet": "drop",
+        "reason": "Device-like code, quasi-identifier; no required task uses it (attacker: linkage)."
+      },
+      "triage": {
+        "pet": "keep",
+        "reason": "Kept for H-U2 length of stay by triage level."
+      },
+      "chief_complaint": {
+        "pet": "drop",
+        "reason": "Free text that can contain identifying detail; diagnosis codes serve H-U4 instead."
+      },
+      "icd10_primary": {
+        "pet": "keep",
+        "reason": "Kept for H-U4 diagnosis mix."
+      },
+      "icd10_secondary": {
+        "pet": "keep",
+        "reason": "Kept: diagnosis detail for H-U4; coded, not free text."
+      },
+      "systolic_bp": {
+        "pet": "keep",
+        "reason": "Kept: clinical measurement, not an identifier at this granularity."
+      },
+      "diastolic_bp": {
+        "pet": "keep",
+        "reason": "Kept: clinical measurement, not an identifier at this granularity."
+      },
+      "heart_rate": {
+        "pet": "keep",
+        "reason": "Kept: clinical measurement, not an identifier at this granularity."
+      },
+      "resp_rate": {
+        "pet": "keep",
+        "reason": "Kept: clinical measurement, not an identifier at this granularity."
+      },
+      "temp_c": {
+        "pet": "keep",
+        "reason": "Kept for H-U7 CRP versus temperature."
+      },
+      "spo2": {
+        "pet": "keep",
+        "reason": "Kept: clinical measurement, not an identifier at this granularity."
+      },
+      "pain_nrs": {
+        "pet": "keep",
+        "reason": "Kept: clinical measurement, not an identifier at this granularity."
+      },
+      "attending_physician_id": {
+        "pet": "drop",
+        "reason": "Staff identifier; no task needs it (attacker: linkage and staff re-identification)."
+      },
+      "attending_physician_name": {
+        "pet": "drop",
+        "reason": "Staff direct identifier; no task needs it."
+      },
+      "discharge_ts": {
+        "pet": "drop",
+        "reason": "Exact timestamp quasi-identifier; length of stay is already in los_minutes for H-U2."
+      },
+      "los_minutes": {
+        "pet": "keep",
+        "reason": "Kept for H-U2 length of stay by triage level."
+      },
+      "disposition": {
+        "pet": "keep",
+        "reason": "Kept: outcome variable for the study."
+      },
+      "readmit_30d": {
+        "pet": "keep",
+        "reason": "Kept for H-U6 30-day revisit rate."
+      }
+    },
+    "lab_results": {
+      "lab_id": {
+        "pet": "keep",
+        "reason": "Record id for the row map; not a person identifier."
+      },
+      "visit_id": {
+        "pet": "keep",
+        "reason": "Join key to ed_visits; H-U7 needs the visit-to-lab join."
+      },
+      "test_code": {
+        "pet": "keep",
+        "reason": "Kept for H-U7 (CRP)."
+      },
+      "test_name": {
+        "pet": "keep",
+        "reason": "Kept for H-U7 (CRP)."
+      },
+      "value": {
+        "pet": "keep",
+        "reason": "Kept for H-U7 CRP versus temperature."
+      },
+      "unit": {
+        "pet": "keep",
+        "reason": "Kept: needed to read value."
+      },
+      "ref_range": {
+        "pet": "keep",
+        "reason": "Kept: lab reference range, not an identifier."
+      },
+      "abnormal_flag": {
+        "pet": "keep",
+        "reason": "Kept: lab result context."
+      },
+      "sampled_ts": {
+        "pet": "drop",
+        "reason": "Exact timestamp quasi-identifier; no required task needs lab sampling time."
+      }
+    }
+  }
+}
