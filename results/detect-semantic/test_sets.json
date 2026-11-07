@@ -1,0 +1,31 @@
+{
+ "commit": "3a4df8e6a4dcaa7d023f5b85e60f8fc24098080d",
+ "faker": "40.44.0",
+ "generator": "scripts/semantic/gen_eu_tables.py",
+ "generator_sha256": {
+  "scripts/semantic/gen_eu_tables.py": "cd366e8ff0c953950db8e609bab6dd648b762bb898cd36c13efe85c46c2af797",
+  "scripts/semantic/locales.py": "fe16e7f211c22622b48dee6a75e35e6268804835bdf5aa411e0b70b79fb3c85f"
+ },
+ "note": "dev regenerated after Faker's it_IT city list (built from a set, order varied per process) was sorted; it_IT, pl_PL and mixed_EU hashes changed. Dev now gives identical bytes under any PYTHONHASHSEED. Locked regenerated to a scratch folder gives the recorded hashes and was not opened.",
+ "rows": 2000,
+ "splits": {
+  "dev": {
+   "catalog.csv": "dff89261f17efac823618cfe8b23217b9355bd983d4cbf9f51fffd8445960eb2",
+   "de_DE/customers.csv": "f2ed02ba5f31446588ea2257d7f3b1e93628070c6ef0977f74892fe00afb7513",
+   "es_ES/customers.csv": "a9d2b7f2604bc8b2ef147186fd6fea6b8409ba4e01dde97c15071c451393bde7",
+   "fi_FI/customers.csv": "54dcbe0209d3d7a1123043633bf9a7ea4bc7be3d738548d03c38bb8fd653269e",
+   "fr_FR/customers.csv": "3887be7b898a1d2881143464120b6b36a88dded3d0e435a589e90b1e63ec3168",
+   "it_IT/customers.csv": "44d70315f974bf248b93358efa63e348b02de4a8833e4db74eb5c7e11679fbc8",
+   "mixed_EU/customers.csv": "eeb71e5db87cbfb29b29ef5422da67a9427190e11c1f9fff73fbe04a0df67367",
+   "nl_NL/customers.csv": "c39c9a8a0c98f41b9d734d844362184433e2b4100ca93dd264c81cc6b5c55112",
+   "pl_PL/customers.csv": "93d5eaab199b1dacf9ca23259e37ecd8c9e17dfbfcc4a84e4b6e24b5caf4059c",
+   "sv_SE/customers.csv": "4d01a0b07b75437ee3d0aa43b9908dcf0a3cdd6a3e5758a2fe765fd7ffff9997"
+  },
+  "locked": {
+   "catalog.csv": "10402e47656e45b49c274855b6aefb1293eb077f130f9dde236de6c80da58d99",
+   "cs_CZ/customers.csv": "9c3c93eb05a3218c6c88028a1d93e22b2187c72bf99efc70aabeb4c1ecb329f9",
+   "hu_HU/customers.csv": "d236e6fdea357c7f53f7c5f6bbe0cedb94ac534b21d5810db26073c192e1fbe2",
+   "pt_PT/customers.csv": "dffb630c0902049dc4396c961b3721f61c46ec724cb64933b8702c7909366508"
+  }
+ }
+}
