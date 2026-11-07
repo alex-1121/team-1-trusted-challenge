@@ -1,0 +1,364 @@
+{
+  "revision": "1b9b8dec6321627a259451094c14aa56033c1a1f",
+  "date": "2026-11-07",
+  "scope": "Full repository static audit, eight build cases across seven distinct scenarios, targeted probes and independent model validation",
+  "tests": {
+    "command": ".venv/bin/python -m pytest -q",
+    "passed": 87,
+    "seconds": 25.28
+  },
+  "python": "3.13.18 (main, Oct 26 2026, 14:08:20) [Clang 23.1.3 ]",
+  "packages": {
+    "pandas": "3.1.1",
+    "numpy": "2.5.4",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.18.1",
+    "pets-eval": "1.0.0",
+    "pytest": "9.2.0"
+  },
+  "runs": [
+    {
+      "case": "health-s1",
+      "scenario": "HEALTH-S1",
+      "exit_code": 0,
+      "seconds": 247.66,
+      "baseline_file": "baseline-scores/health_HEALTH-S1_research-env_raw.json",
+      "raw": {
+        "privacy": 0.1716,
+        "utility": 1.0,
+        "composite": 0.2752,
+        "label": "self-assessment, not the official judging score",
+        "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+      },
+      "protected": {
+        "privacy": 1.0,
+        "utility": 0.971,
+        "composite": 0.9866,
+        "label": "self-assessment, not the official judging score",
+        "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+      },
+      "gate": "pass",
+      "tasks": {
+        "H-U2": 0.9978835978835979,
+        "H-U4": 0.9548787140825844,
+        "H-U6": 0.9577987630780451,
+        "H-U7": 1.0,
+        "H-U8": 0.9445713805003781
+      },
+      "command": [
+        "/tmp/trusted-audit-20261107/source/.venv/bin/python",
+        "-m",
+        "pets_transformer.cli",
+        "build",
+        "--scenario",
+        "HEALTH-S1",
+        "--out",
+        "/tmp/trusted-audit-20261107/runs/health-s1/out",
+        "--results",
+        "/tmp/trusted-audit-20261107/runs/health-s1/results",
+        "--submission",
+        "/tmp/trusted-audit-20261107/runs/health-s1/submission"
+      ]
+    },
+    {
+      "case": "health-s3",
+      "scenario": "HEALTH-S3",
+      "exit_code": 0,
+      "seconds": 226.09,
+      "baseline_file": "baseline-scores/health_HEALTH-S3_ai-vendor-triage_raw.json",
+      "raw": {
+        "privacy": 0.1728,
+        "utility": 1.0,
+        "composite": 0.2769,
+        "label": "self-assessment, not the official judging score",
+        "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+      },
+      "protected": {
+        "privacy": 1.0,
+        "utility": 1.0,
+        "composite": 1.0,
+        "label": "self-assessment, not the official judging score",
+        "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+      },
+      "gate": "pass",
+      "tasks": {
+        "H-U2": 1.0,
+        "H-U3": 1.0,
+        "H-U5": 1.0
+      },
+      "command": [
+        "/tmp/trusted-audit-20261107/source/.venv/bin/python",
+        "-m",
+        "pets_transformer.cli",
+        "build",
+        "--scenario",
+        "HEALTH-S3",
+        "--out",
+        "/tmp/trusted-audit-20261107/runs/health-s3/out",
+        "--results",
+        "/tmp/trusted-audit-20261107/runs/health-s3/results",
+        "--submission",
+        "/tmp/trusted-audit-20261107/runs/health-s3/submission"
+      ]
+    },
+    {
+      "case": "edu-s2",
+      "scenario": "EDU-S2",
+      "exit_code": 0,
+      "seconds": 155.89,
+      "baseline_file": "baseline-scores/education_EDU-S2_edtech-vendor_raw.json",
+      "raw": {
+        "privacy": 0.219,
+        "utility": 1.0,
+        "composite": 0.3395,
+        "label": "self-assessment, not the official judging score",
+        "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+      },
+      "protected": {
+        "privacy": 1.0,
+        "utility": 0.9963,
+        "composite": 0.9983,
+        "label": "self-assessment, not the official judging score",
+        "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+      },
+      "gate": "pass",
+      "tasks": {
+        "EDU-U2": 0.9926033981354205,
+        "EDU-U4": 1.0
+      },
+      "command": [
+        "/tmp/trusted-audit-20261107/source/.venv/bin/python",
+        "-m",
+        "pets_transformer.cli",
+        "build",
+        "--scenario",
+        "EDU-S2",
+        "--out",
+        "/tmp/trusted-audit-20261107/runs/edu-s2/out",
+        "--results",
+        "/tmp/trusted-audit-20261107/runs/edu-s2/results",
+        "--submission",
+        "/tmp/trusted-audit-20261107/runs/edu-s2/submission"
+      ]
+    },
+    {
+      "case": "pub-s3",
+      "scenario": "PUB-S3",
+      "exit_code": 1,
+      "seconds": 194.91,
+      "baseline_file": "baseline-scores/public-admin_PUB-S3_equity-research_raw.json",
+      "raw": {
+        "privacy": 0.0833,
+        "utility": 1.0,
+        "composite": 0.1429,
+        "label": "self-assessment, not the official judging score",
+        "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+      },
+      "protected": {
+        "privacy": 1.0,
+        "utility": 0.5547,
+        "composite": 0.7327,
+        "label": "self-assessment, not the official judging score",
+        "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+      },
+      "gate": "fail",
+      "tasks": {
+        "PUB-U1": 0.38881767333900696,
+        "PUB-U2": 0.9766661870976283,
+        "PUB-U3": 0.2987012987012987
+      },
+      "command": [
+        "/tmp/trusted-audit-20261107/source/.venv/bin/python",
+        "-m",
+        "pets_transformer.cli",
+        "build",
+        "--scenario",
+        "PUB-S3",
+        "--out",
+        "/tmp/trusted-audit-20261107/runs/pub-s3/out",
+        "--results",
+        "/tmp/trusted-audit-20261107/runs/pub-s3/results",
+        "--submission",
+        "/tmp/trusted-audit-20261107/runs/pub-s3/submission"
+      ]
+    },
+    {
+      "case": "pub-s3-auto",
+      "scenario": "PUB-S3",
+      "exit_code": 1,
+      "seconds": 62.05,
+      "baseline_file": "baseline-scores/public-admin_PUB-S3_equity-research_raw.json",
+      "raw": {
+        "privacy": 0.0833,
+        "utility": 1.0,
+        "composite": 0.1429,
+        "label": "self-assessment, not the official judging score",
+        "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+      },
+      "protected": {
+        "privacy": 1.0,
+        "utility": 0.2131,
+        "composite": 0.3734,
+        "label": "self-assessment, not the official judging score",
+        "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+      },
+      "gate": "fail",
+      "tasks": {
+        "PUB-U1": null,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.639344262295082
+      },
+      "command": [
+        "/tmp/trusted-audit-20261107/source/.venv/bin/python",
+        "-m",
+        "pets_transformer.cli",
+        "build",
+        "--scenario",
+        "PUB-S3",
+        "--out",
+        "/tmp/trusted-audit-20261107/runs/pub-s3-auto/out",
+        "--results",
+        "/tmp/trusted-audit-20261107/runs/pub-s3-auto/results",
+        "--submission",
+        "/tmp/trusted-audit-20261107/runs/pub-s3-auto/submission",
+        "--contract",
+        "/tmp/trusted-audit-20261107/source/contracts/generated/PUB-S3.auto.json"
+      ]
+    },
+    {
+      "case": "energy-s3",
+      "scenario": "ENERGY-S3",
+      "exit_code": 0,
+      "seconds": 233.55,
+      "baseline_file": "baseline-scores/energy_ENERGY-S3_energy-poverty-research_raw.json",
+      "raw": {
+        "privacy": 0.2275,
+        "utility": 1.0,
+        "composite": 0.3506,
+        "label": "self-assessment, not the official judging score",
+        "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+      },
+      "protected": {
+        "privacy": 1.0,
+        "utility": 0.9973,
+        "composite": 0.9988,
+        "label": "self-assessment, not the official judging score",
+        "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+      },
+      "gate": "pass",
+      "tasks": {
+        "ENERGY-U3": 0.9999999999999998,
+        "ENERGY-U4": 0.9919137466307278,
+        "ENERGY-U7": 1.0
+      },
+      "command": [
+        "/tmp/trusted-audit-20261107/source/.venv/bin/python",
+        "-m",
+        "pets_transformer.cli",
+        "build",
+        "--scenario",
+        "ENERGY-S3",
+        "--out",
+        "/tmp/trusted-audit-20261107/runs/energy-s3/out",
+        "--results",
+        "/tmp/trusted-audit-20261107/runs/energy-s3/results",
+        "--submission",
+        "/tmp/trusted-audit-20261107/runs/energy-s3/submission",
+        "--contract",
+        "/tmp/trusted-audit-20261107/source/contracts/generated/ENERGY-S3.auto.json"
+      ]
+    },
+    {
+      "case": "health-s2",
+      "scenario": "HEALTH-S2",
+      "exit_code": 1,
+      "seconds": 525.71,
+      "baseline_file": "baseline-scores/health_HEALTH-S2_public-dashboard_raw.json",
+      "raw": {
+        "privacy": 0.1728,
+        "utility": 1.0,
+        "composite": 0.2769,
+        "label": "self-assessment, not the official judging score",
+        "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+      },
+      "protected": {
+        "privacy": 1.0,
+        "utility": 0.3333,
+        "composite": 0.5238,
+        "label": "self-assessment, not the official judging score",
+        "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+      },
+      "gate": "fail",
+      "tasks": {
+        "H-U1": null,
+        "H-U8": 1.0,
+        "H-DP": 0.0
+      },
+      "command": [
+        "/tmp/trusted-audit-20261107/source/.venv/bin/python",
+        "-m",
+        "pets_transformer.cli",
+        "build",
+        "--scenario",
+        "HEALTH-S2",
+        "--out",
+        "/tmp/trusted-audit-20261107/runs/health-s2/out",
+        "--results",
+        "/tmp/trusted-audit-20261107/runs/health-s2/results",
+        "--submission",
+        "/tmp/trusted-audit-20261107/runs/health-s2/submission"
+      ]
+    },
+    {
+      "case": "cs-s1",
+      "scenario": "CS-S1",
+      "exit_code": 1,
+      "seconds": 15.27,
+      "baseline_file": "baseline-scores/customer-service_CS-S1_llm-vendor_raw.json",
+      "raw": {
+        "privacy": 0.0622,
+        "utility": 1.0,
+        "composite": 0.1084,
+        "label": "self-assessment, not the official judging score",
+        "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+      },
+      "protected": {
+        "privacy": 1.0,
+        "utility": 0.5,
+        "composite": 0.6875,
+        "label": "self-assessment, not the official judging score",
+        "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+      },
+      "gate": "fail",
+      "tasks": {
+        "CS-U1": null,
+        "CS-U3": 1.0,
+        "CS-U4": 1.0,
+        "CS-U5": null
+      },
+      "command": [
+        "/tmp/trusted-audit-20261107/source/.venv/bin/python",
+        "-m",
+        "pets_transformer.cli",
+        "build",
+        "--scenario",
+        "CS-S1",
+        "--out",
+        "/tmp/trusted-audit-20261107/runs/cs-s1/out",
+        "--results",
+        "/tmp/trusted-audit-20261107/runs/cs-s1/results",
+        "--submission",
+        "/tmp/trusted-audit-20261107/runs/cs-s1/submission"
+      ]
+    }
+  ],
+  "notes": [
+    "The main repository source was not modified. Builds ran in a git-archive source copy with private data and venv symlinks.",
+    "Audit runs are fresh evidence for the reviewed revision. Baseline JSON files were already committed and were compared, not regenerated.",
+    "HEALTH-S1 and reviewed PUB-S3 use reviewed contracts. HEALTH-S3, EDU-S2, HEALTH-S2, CS-S1 rerun selector. ENERGY-S3 and automatic PUB-S3 replay committed generated contracts.",
+    "Scientific-library thread limits were set to one through isolated sitecustomize for later child processes. Timings are wall times under audit load, not performance benchmarks.",
+    "Independent model checks reuse the shipped selected contracts. Holdouts were used for audit evaluation only, not selection.",
+    "Privacy-probes includes mock scorer/check failure injection, explicitly separated from actual extra-file-probe using real scorer, scanner and redteam.",
+    "No released tables, row maps, truth, holdout data or keys are included in these evidence artifacts."
+  ]
+}

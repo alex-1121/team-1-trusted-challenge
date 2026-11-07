@@ -1,0 +1,33 @@
+{
+  "order_changes": [],
+  "minimized": [
+    {
+      "column": "visit_id",
+      "dataset": "health",
+      "table": "ed_visits",
+      "privacy_role": "record_key",
+      "subtype": "RECORD_ID"
+    },
+    {
+      "column": "arrival_ts",
+      "dataset": "health",
+      "table": "ed_visits",
+      "privacy_role": "non_sensitive",
+      "subtype": "TIMESTAMP"
+    },
+    {
+      "column": "municipality",
+      "dataset": "health",
+      "table": "ed_visits",
+      "privacy_role": "non_sensitive",
+      "subtype": "MUNICIPALITY"
+    },
+    {
+      "column": "icd10_primary",
+      "dataset": "health",
+      "table": "ed_visits",
+      "privacy_role": "non_sensitive",
+      "subtype": "DIAGNOSIS_CODE"
+    }
+  ]
+}

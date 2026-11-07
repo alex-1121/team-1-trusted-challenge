@@ -1,0 +1,6 @@
+{
+  "method": "Compare 10-year bands at actual arrival vs fixed 2025-12-31 used by pets.age_band, before suppression",
+  "rows": 46398,
+  "different_rows": 2492,
+  "different_share": 0.05370921160394845
+}

@@ -1,0 +1,97 @@
+{
+  "release": "pub-s3-build (contracts/generated/PUB-S3.auto.json)",
+  "table": "service_requests",
+  "time_column": "ts_created",
+  "gate": "fail",
+  "rule": "every attack at or below its threshold; thresholds are our choice, stated here",
+  "attacks": {
+    "order_attack": {
+      "metric": "share_rows_date_rebuilt",
+      "value": 0.001,
+      "detail": {
+        "orderings_tried": [
+          {
+            "ordering": "file order",
+            "rows": 31653,
+            "share_dates_rebuilt": 0.001
+          }
+        ],
+        "best_ordering": "file order",
+        "share_rows_date_rebuilt": 0.001
+      },
+      "threshold": 0.05,
+      "pass": true
+    },
+    "news_linkage": {
+      "metric": "share_clips_reidentified",
+      "value": 0.0,
+      "detail": {
+        "clips": 220,
+        "clips_with_date_and_hour": 25,
+        "singled_out": 2,
+        "correct": 0,
+        "share_clips_reidentified": 0.0
+      },
+      "threshold": 0.0,
+      "pass": true
+    },
+    "person_fingerprint": {
+      "metric": "share_persons_unique",
+      "value": 0.0,
+      "detail": {
+        "applicable": false,
+        "why": "no person key released (no pseudonym, no repeating token)",
+        "share_persons_unique": 0.0,
+        "tables_checked": []
+      },
+      "threshold": 0.05,
+      "pass": true
+    },
+    "scorer_linkage_band_aware": {
+      "metric": "worst_reidentification_rate",
+      "value": 0.0,
+      "detail": {
+        "specs": [
+          {
+            "table": "service_requests",
+            "adversary": "neighbourhood_forum_posts",
+            "evaluated": false,
+            "reason": "no QI of this attacker survives in the release"
+          },
+          {
+            "table": "service_requests",
+            "adversary": "public_directory",
+            "evaluated": false,
+            "reason": "no QI of this attacker survives in the release"
+          }
+        ],
+        "worst_reidentification_rate": 0.0
+      },
+      "threshold": 0.01,
+      "pass": true
+    },
+    "plain_hash": {
+      "metric": "worst_share_reversed",
+      "value": 0.0,
+      "detail": {
+        "hash_like_columns": [],
+        "worst_share_reversed": 0.0
+      },
+      "threshold": 0.0,
+      "pass": true
+    }
+  },
+  "utility_check": {
+    "rule": "every required task scores at least 0.5",
+    "scores": {
+      "PUB-U1": 0.0,
+      "PUB-U2": 0.0,
+      "PUB-U3": 0.639344262295082
+    },
+    "pass": false,
+    "below_floor": {
+      "PUB-U1": 0.0,
+      "PUB-U2": 0.0
+    }
+  }
+}

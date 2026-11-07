@@ -1,0 +1,103 @@
+{
+  "release": "health-s2-build (contracts/generated/HEALTH-S2.auto.json)",
+  "table": "ed_visits",
+  "time_column": "arrival_ts",
+  "gate": "fail",
+  "rule": "every attack at or below its threshold; thresholds are our choice, stated here",
+  "attacks": {
+    "order_attack": {
+      "metric": "share_rows_date_rebuilt",
+      "value": 0.0002,
+      "detail": {
+        "orderings_tried": [
+          {
+            "ordering": "file order",
+            "rows": 46398,
+            "share_dates_rebuilt": 0.0002
+          }
+        ],
+        "best_ordering": "file order",
+        "share_rows_date_rebuilt": 0.0002
+      },
+      "threshold": 0.05,
+      "pass": true
+    },
+    "news_linkage": {
+      "metric": "share_clips_reidentified",
+      "value": 0.0,
+      "detail": {
+        "clips": 220,
+        "clips_with_date_and_hour": 25,
+        "singled_out": 0,
+        "correct": 0,
+        "share_clips_reidentified": 0.0
+      },
+      "threshold": 0.0,
+      "pass": true
+    },
+    "person_fingerprint": {
+      "metric": "share_persons_unique",
+      "value": 0.0,
+      "detail": {
+        "applicable": false,
+        "why": "no person key released (no pseudonym, no repeating token)",
+        "share_persons_unique": 0.0,
+        "tables_checked": []
+      },
+      "threshold": 0.05,
+      "pass": true
+    },
+    "scorer_linkage_band_aware": {
+      "metric": "worst_reidentification_rate",
+      "value": 0.0,
+      "detail": {
+        "specs": [
+          {
+            "table": "ed_visits",
+            "adversary": "news_clips_health",
+            "evaluated": false,
+            "reason": "no QI of this attacker survives in the release"
+          },
+          {
+            "table": "ed_visits",
+            "adversary": "social_posts_health",
+            "evaluated": false,
+            "reason": "no QI of this attacker survives in the release"
+          },
+          {
+            "table": "ed_visits",
+            "adversary": "public_directory",
+            "evaluated": false,
+            "reason": "no QI of this attacker survives in the release"
+          }
+        ],
+        "worst_reidentification_rate": 0.0
+      },
+      "threshold": 0.01,
+      "pass": true
+    },
+    "plain_hash": {
+      "metric": "worst_share_reversed",
+      "value": 0.0,
+      "detail": {
+        "hash_like_columns": [],
+        "worst_share_reversed": 0.0
+      },
+      "threshold": 0.0,
+      "pass": true
+    }
+  },
+  "utility_check": {
+    "rule": "every required task scores at least 0.5",
+    "scores": {
+      "H-U1": 0.0,
+      "H-U8": 1.0,
+      "H-DP": 0.0
+    },
+    "pass": false,
+    "below_floor": {
+      "H-U1": 0.0,
+      "H-DP": 0.0
+    }
+  }
+}

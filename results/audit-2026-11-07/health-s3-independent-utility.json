@@ -1,0 +1,23 @@
+{
+  "original_rows": 46398,
+  "protected_rows": 46398,
+  "holdout_rows": 2514,
+  "known_overlap": {
+    "score": 1.0,
+    "metric": "(AUC_protected-0.5)/(AUC_original-0.5), train on X, test on original",
+    "detail": {
+      "auc_orig": 0.7846,
+      "auc_prot": 0.8058,
+      "test_rows": 13887
+    }
+  },
+  "heldout": {
+    "score": 0.981052781883883,
+    "metric": "(AUC_protected-0.5)/(AUC_original-0.5), train on X, test on original",
+    "detail": {
+      "auc_orig": 0.7985,
+      "auc_prot": 0.7929,
+      "test_rows": 2508
+    }
+  }
+}

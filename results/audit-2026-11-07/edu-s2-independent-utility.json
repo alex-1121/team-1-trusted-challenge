@@ -1,0 +1,30 @@
+{
+  "original_rows": 5161,
+  "protected_rows": 5161,
+  "original_test_rows": 1579,
+  "known_overlap": {
+    "score": 0.9926033981354205,
+    "metric": "AUC retention (train protected, test original)",
+    "detail": {
+      "auc_original": 0.898,
+      "auc_protected": 0.8951,
+      "features": [
+        "mean_grade",
+        "n_low_grades",
+        "unexcused_hours",
+        "late_arrivals"
+      ]
+    }
+  },
+  "identity_aligned_test": {
+    "auc_original": 0.898008857791507,
+    "auc_protected": 0.8952287022218914,
+    "retention": 0.9930148399584818
+  },
+  "heldout": {
+    "test_rows": 286,
+    "auc_original": 0.9016648700443167,
+    "auc_protected": 0.870164091507965,
+    "retention": 0.9215744744297002
+  }
+}

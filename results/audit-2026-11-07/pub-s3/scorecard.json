@@ -1,0 +1,204 @@
+{
+  "tool": "pets-eval 1.0.0",
+  "dataset": "public_admin",
+  "scenario": {
+    "id": "PUB-S3",
+    "dataset": "public_admin",
+    "title": "Research group studying service equity",
+    "recipient": "University research group",
+    "purpose": "Do response times differ between areas and languages?",
+    "trust_level": "controlled_research",
+    "threat_model": "Researchers with public data (forum, permits).",
+    "legal_context": "Research use (GDPR Art. 89) with a data use agreement.",
+    "utility_requirements": [
+      "PUB-U1",
+      "PUB-U2",
+      "PUB-U3"
+    ],
+    "suggested_privacy_targets": "k>=5 on (postcode, category, month, language); no text or redacted text; aggregated reporter activity.",
+    "notes": ""
+  },
+  "original": "data/proving-ground/data/public_admin",
+  "protected": "/tmp/trusted-audit-20261107/runs/pub-s3/out/public_admin",
+  "tables": {
+    "building_permits": {
+      "table": "building_permits",
+      "status": "withheld",
+      "rows_original": 2731
+    },
+    "service_requests": {
+      "table": "service_requests",
+      "status": "released",
+      "rows_original": 31653,
+      "rows_protected": 31653,
+      "columns_dropped": [
+        "request_id",
+        "channel",
+        "description",
+        "reporter_name",
+        "reporter_phone",
+        "reporter_email",
+        "reporter_account_id",
+        "street_address",
+        "municipality",
+        "handler_name",
+        "status",
+        "ts_closed",
+        "response_text"
+      ],
+      "columns_added": [
+        "resolution_hours"
+      ],
+      "direct_identifiers_retained": {},
+      "k_anonymity": {
+        "qis": [
+          "ts_created",
+          "language",
+          "postcode",
+          "lat",
+          "lon"
+        ],
+        "n": 31653,
+        "n_classes": 1768,
+        "min_k": 5,
+        "median_k": 37.0,
+        "share_below": {
+          "k<2": 0.0,
+          "k<5": 0.0,
+          "k<10": 0.1867
+        },
+        "sample_uniqueness": 0.0
+      },
+      "k_anonymity_original": {
+        "qis": [
+          "ts_created",
+          "language",
+          "postcode",
+          "lat",
+          "lon"
+        ],
+        "n": 31653,
+        "n_classes": 31517,
+        "min_k": 1,
+        "median_k": 1.0,
+        "share_below": {
+          "k<2": 0.9914,
+          "k<5": 1.0,
+          "k<10": 1.0
+        },
+        "sample_uniqueness": 0.9914
+      },
+      "row_alignment": "row map",
+      "linkage": {
+        "public_directory": {
+          "evaluated": true,
+          "qis_used": [
+            {
+              "kind": "postcode",
+              "adversary": [
+                "postcode"
+              ],
+              "protected": [
+                "postcode"
+              ]
+            }
+          ],
+          "n_adversary_rows_tested": 3000,
+          "n_targets_in_data": 400,
+          "reidentification_rate": 0.0,
+          "claim_precision": null,
+          "n_unique_claims": 0,
+          "share_targets_in_candidate_set_le5": 0.0,
+          "median_candidate_set": 10000.0,
+          "attack": "Directory lookup of reporters.",
+          "baseline_reidentification_rate_original": 0.0
+        }
+      },
+      "free_text": {
+        "description": {
+          "evaluated": true,
+          "status": "withheld",
+          "identifying_leakage_rate": 0.0
+        },
+        "response_text": {
+          "evaluated": true,
+          "status": "withheld",
+          "identifying_leakage_rate": 0.0
+        }
+      },
+      "regex_residuals": {},
+      "risks": {
+        "direct identifiers retained": 0.0,
+        "records with k<5": 0.0,
+        "linkage re-identification": 0.0,
+        "free-text identifier leakage": 0.0
+      },
+      "seconds": 3.3
+    }
+  },
+  "extra_protected_files": [
+    "plan"
+  ],
+  "utility": [
+    {
+      "id": "PUB-U1",
+      "table": "service_requests",
+      "kind": "aggregate",
+      "description": "Request counts by area (3-digit postcode) x category x month",
+      "required": true,
+      "score": 0.38881767333900696,
+      "metric": "1 - MAPE over (3-digit postcode, category, month) cells with n>=5 / 0.5",
+      "detail": {
+        "cells": 1900,
+        "mape": 0.3056
+      }
+    },
+    {
+      "id": "PUB-U2",
+      "table": "service_requests",
+      "kind": "aggregate",
+      "description": "Median resolution time by category",
+      "required": true,
+      "score": 0.9766661870976283,
+      "metric": "1 - mean relative error of median resolution hours per category / 0.5",
+      "detail": {
+        "per_category": {
+          "building_supervision": 0.016,
+          "environmental_health": 0.004,
+          "noise_complaint": 0.004,
+          "parking": 0.002,
+          "parks": 0.01,
+          "snow_removal": 0.036,
+          "social_services_contact": 0.013,
+          "street_maintenance": 0.003,
+          "waste": 0.017
+        }
+      }
+    },
+    {
+      "id": "PUB-U3",
+      "table": "service_requests",
+      "kind": "distribution",
+      "description": "Hotspot map: top-50 1 km grid cells",
+      "required": true,
+      "score": 0.2987012987012987,
+      "metric": "Jaccard overlap of top-50 1 km grid cells by request count",
+      "detail": {
+        "overlap": 23
+      }
+    }
+  ],
+  "summary": {
+    "privacy": 1.0,
+    "utility": 0.5547,
+    "composite": 0.7327,
+    "label": "self-assessment, not the official judging score",
+    "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+  },
+  "risk_components": {
+    "service_requests: direct identifiers retained": 0.0,
+    "service_requests: records with k<5": 0.0,
+    "service_requests: linkage re-identification": 0.0,
+    "service_requests: free-text identifier leakage": 0.0
+  }
+}

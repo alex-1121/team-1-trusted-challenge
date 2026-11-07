@@ -1,0 +1,28 @@
+{
+  "order": [
+    "arrival_ts:widen_hour"
+  ],
+  "rows": 46398,
+  "at_risk_before": 0,
+  "share_at_risk_before": 0.0,
+  "steps": [
+    {
+      "step": "arrival_ts:widen_hour",
+      "column": "arrival_ts",
+      "rows_changed": 0
+    },
+    {
+      "step": "suppress",
+      "column": "arrival_ts",
+      "rows_changed": 0
+    },
+    {
+      "step": "drop_rows",
+      "column": "(row)",
+      "rows_changed": 0
+    }
+  ],
+  "rows_released": 46398,
+  "at_risk_after": 0,
+  "share_at_risk_after": 0.0
+}

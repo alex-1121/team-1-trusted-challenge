@@ -1,0 +1,28 @@
+{
+  "order": [
+    "ts:to_day"
+  ],
+  "rows": 1635120,
+  "at_risk_before": 0,
+  "share_at_risk_before": 0.0,
+  "steps": [
+    {
+      "step": "ts:to_day",
+      "column": "ts",
+      "rows_changed": 0
+    },
+    {
+      "step": "suppress",
+      "column": "ts",
+      "rows_changed": 0
+    },
+    {
+      "step": "drop_rows",
+      "column": "(row)",
+      "rows_changed": 0
+    }
+  ],
+  "rows_released": 1635120,
+  "at_risk_after": 0,
+  "share_at_risk_after": 0.0
+}

@@ -1,0 +1,19 @@
+{
+  "added_file": "old_contacts.csv",
+  "identifier_scan_totals": {
+    "EMAIL": 1
+  },
+  "scorecard_summary": {
+    "privacy": 1.0,
+    "utility": 0.971,
+    "composite": 0.9866,
+    "label": "self-assessment, not the official judging score",
+    "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
+  },
+  "extra_protected_files": [
+    "old_contacts",
+    "plan"
+  ],
+  "redteam_gate": "pass",
+  "build_copies_extra_file": "build.py lines 93-95 copies every protected CSV except plan.csv"
+}

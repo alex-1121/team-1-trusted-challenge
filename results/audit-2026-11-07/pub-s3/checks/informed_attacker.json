@@ -1,0 +1,47 @@
+{
+  "command": "python -m pets_transformer.cli checks --protected /tmp/trusted-audit-20261107/runs/pub-s3/out/public_admin --original data/proving-ground/data/public_admin --contract contracts/PUB-S3.json --truth data/proving-ground/truth --out /tmp/trusted-audit-20261107/runs/pub-s3/results/checks",
+  "protected": "/tmp/trusted-audit-20261107/runs/pub-s3/out/public_admin",
+  "original": "proving-ground/data/public_admin",
+  "table": "service_requests",
+  "truth": "proving-ground/truth",
+  "check": "informed attacker: knows the k columns and the sensitive fact of every record and looks for a unique match",
+  "attacker_knows": {
+    "ts_created": "month of the true value",
+    "postcode": "prefix of the true value",
+    "category": "keep of the true value",
+    "language": "keep of the true value",
+    "lat": "round_decimals of the true value",
+    "lon": "round_decimals of the true value"
+  },
+  "attacker_rows": "every record listed in truth/public_admin__service_requests.csv",
+  "singled_out": "exactly one released row shows exactly the attacker's facts; rows the repair coarsened are taken to be someone else (the attacker's best case, our headline)",
+  "protected_counting_generalised_rows": "same, but a coarsened row also matches when it can stand for the attacker's facts (a wider band, an hour block, other or suppressed); lower, because the 60-odd suppressed rows can stand for almost anyone",
+  "correct": "the row map of that row points at the attacker's record",
+  "original_same_facts": "same attacker against the original at the same precision, before the repair",
+  "result": {
+    "protected": {
+      "n_attacker_rows": 31653,
+      "n_singled_out": 0,
+      "n_correct": 0,
+      "singled_out_rate": 0.0,
+      "correct_among_singled_out": null,
+      "correct_rate": 0.0
+    },
+    "protected_counting_generalised_rows": {
+      "n_attacker_rows": 31653,
+      "n_singled_out": 0,
+      "n_correct": 0,
+      "singled_out_rate": 0.0,
+      "correct_among_singled_out": null,
+      "correct_rate": 0.0
+    },
+    "original_same_facts": {
+      "n_attacker_rows": 31653,
+      "n_singled_out": 16753,
+      "n_correct": 16753,
+      "singled_out_rate": 0.5293,
+      "correct_among_singled_out": 1.0,
+      "correct_rate": 0.5293
+    }
+  }
+}
