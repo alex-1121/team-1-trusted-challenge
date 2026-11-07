@@ -20,19 +20,19 @@ All 46,398 visits stay in. On the hackathon organisers' scorer, privacy rises fr
 
 [results/redteam/before-7cf541b.json]
 
-Our red team, teammates attacking our own data, broke an earlier release. Row order gave back almost every hidden date, and 10 of 220 news reports named the right patient. Now any working attack stops the build. All five fail.
+Our red team, teammates attacking our own data, broke an earlier release. Row order gave back almost every hidden date, and 10 of 220 news reports named the right patient. Now any attack that works stops the release, and all five fail.
 
 [results/detect-semantic/e2_eu_test.json]
 
-It scales. Our word lists know Finnish names; a German surname looks harmless to them. A small language model on the laptop catches those, and no data leaves it. On fake Czech tables, unseen in training, its label score rose from 0.60 to 0.77 out of 1, and no name or address passed as harmless.
+It also works beyond Finnish data. Our word lists know Finnish names, so a German surname looks harmless to them. A small language model on the laptop catches those, and no data leaves it. On fake Czech tables, unseen in training, its label score rose from 0.60 to 0.77 out of 1, and no name or address passed as harmless.
 
 [results/detect-semantic/advisor.json]
 
-Today the word lists still decide; the model flags columns for a person to check. On those tables, all 28 flags were real mistakes. It still raises false alarms; more and better training data improves it.
+Today the word lists still decide; the model flags columns for a person to check. On those tables, all 28 flags were real mistakes. It still raises false alarms, and more and better training data improves it.
 
 [results/health-s1-build/checks/informed_attacker.json]
 
-Still open: knowing a visit's diagnosis group, age range, town and hour singles out about one visit in ten, 93 percent correctly. Triage, how urgent a visit is, stays for the study, and with it 15 percent of visits stand out. These scores are our self-assessment, separate from official judging.
+What is still open: knowing a visit's diagnosis group, age range, town and hour singles out about one visit in ten, 93 percent correctly. Triage, how urgent a visit is, stays for the study, and with it 15 percent of visits stand out. These scores are our self-assessment, separate from official judging.
 
 ## Sources of the spoken numbers
 
@@ -52,4 +52,4 @@ Still open: knowing a visit's diagnosis group, age range, town and hour singles 
 
 Numbers are rounded for speech. The scorecard is our own self-assessment and is separate from the official judging score.
 
-<!-- spoken words: 326 (counted without the heading, the intro line, screen cues and this section) -->
+<!-- spoken words: 336 (counted without the heading, the intro line, screen cues and this section) -->
