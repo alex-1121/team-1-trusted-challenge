@@ -25,3 +25,8 @@ def test_choose_prefers_k_target_then_composite():
 def test_choose_fallback_lowest_k_among_best_composite():
     rows = [_r("a", 0.95001, 0.08), _r("b", 0.95004, 0.06), _r("c", 0.90, 0.07)]
     assert choose(rows, ["H-U2"])["cell"] == "b"
+
+
+def test_choose_none_task_score_fails_floor():
+    rows = [_r("a", 0.99, 0.01, u2=None), _r("b", 0.90, 0.02)]
+    assert choose(rows, ["H-U2"])["cell"] == "b"

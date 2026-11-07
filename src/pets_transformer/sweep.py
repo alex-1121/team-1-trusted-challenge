@@ -21,7 +21,8 @@ RULE = (f"Keep the cells where every required task scores at least {FLOOR}. Amon
 
 def choose(rows, required):
     """rows: dicts with cell, tasks, own_k, composite. Returns the chosen row."""
-    ok = [r for r in rows if all(r["tasks"][t] >= FLOOR for t in required)] or rows
+    # The scorer reports None for a task that errored and counts it as 0 in the composite; do the same here.
+    ok = [r for r in rows if all((r["tasks"][t] or 0) >= FLOOR for t in required)] or rows
     low = [r for r in ok if r["own_k"] <= OWN_K_TARGET]
     if low:
         return max(low, key=lambda r: r["composite"])
