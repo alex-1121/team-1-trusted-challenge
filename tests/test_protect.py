@@ -57,3 +57,10 @@ def test_unnamed_column_raises():
     df["surprise"] = "x"
     with pytest.raises(ValueError, match="surprise"):
         run(df=df)
+
+
+def test_missing_hetu_stays_missing():
+    df = frame()
+    df.loc[[0, 1], "patient_hetu"] = None
+    out, _, _ = run(df=df)
+    assert out.patient_hetu[:2].isna().all() and out.patient_hetu[2:].notna().all()

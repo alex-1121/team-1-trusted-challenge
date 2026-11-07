@@ -7,7 +7,7 @@ from pets_eval import parse
 
 def hmac_pseudonym(s: pd.Series, key: bytes) -> pd.Series:
     # The "P" prefix is required: a bare hex string starting 04... trips the pets-eval PHONE pattern, and "P-" would not help.
-    return s.map(lambda x: "P" + hmac.new(key, str(x).encode(), hashlib.sha256).hexdigest()[:16])
+    return s.map(lambda x: "P" + hmac.new(key, str(x).encode(), hashlib.sha256).hexdigest()[:16], na_action="ignore")
 
 
 def drop(df: pd.DataFrame, col: str) -> pd.DataFrame:
