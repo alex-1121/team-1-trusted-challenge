@@ -35,6 +35,7 @@ One row per top-level file and folder. Files inside `context/` and `team/` are l
 | `demo/` | `the-er-register.html`: the demo-video sequence. A printed sheet of patient records is redacted in blue halftone, shuffled, stamped, folded, addressed and sent; it ends on the HEALTH-S1 numbers. One self-contained HTML file, no build step |
 | `docs/` | Pitch deck outline, demo video script, what HEALTH-S1 guarantees and its residual risk, and the `pets_submission/` handover |
 | `attack_analysis.md` | What `pets-eval` actually measures: risk checks, utility tasks, how the score is aggregated, blind spots |
+| `LIMITATIONS.md` | What the data and the tool do not cover: scale, proxy utility tasks, linking separate releases |
 | `decisions.md` | Team decision log |
 | `AGENTS.md` | Rules for every teammate's coding agent |
 | `CLAUDE.md` | One line that imports `AGENTS.md` for Claude Code; holds no rules |
