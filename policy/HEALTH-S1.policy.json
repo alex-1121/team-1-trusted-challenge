@@ -29,7 +29,7 @@
   ],
   "attacker_assumption": "default",
   "allowed_contracts": {
-    "default": "0ca8af82841de667dfa73a89761211bcc459cffdbeea523e5c529d2e5a6f3605",
+    "default": "014d811982662ece276943cb6f6b81e46f3a11294397df9329da1739831b848e",
     "informed": "439d4d3117349907283eecf04cb54be7fc92bcf19dea636adec03ea31646d38e"
   }
 }

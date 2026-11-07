@@ -54,7 +54,7 @@
         "column": "arrival_ts",
         "clips": 220,
         "clips_with_date_and_hour": 25,
-        "singled_out": 1,
+        "singled_out": 0,
         "correct": 0,
         "share_clips_reidentified": 0.0,
         "columns_checked": [
