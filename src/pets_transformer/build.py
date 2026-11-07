@@ -1,6 +1,7 @@
 """One command: detect, search the repair order, protect, score, run the checks and the red team, and assemble
 pets_submission/ only when redteam.evaluate passes the release."""
 import json
+import os
 import shutil
 from pathlib import Path
 
@@ -98,11 +99,11 @@ def run(scenario, original=None, out=None, results=None, submission=None, pets_e
         print(line)
 
     protected = out / original.name
-    # A fresh key for every build: tokens from two releases cannot be joined. It sits beside, not inside, the
-    # protected folder (that folder is the release) and is never handed over.
+    # A fresh key for every build: tokens from two releases cannot be joined. It lives in memory only, so no key
+    # file exists to leak; any file an earlier build left behind is removed.
     out.mkdir(parents=True, exist_ok=True)
     (out / "hmac.key").unlink(missing_ok=True)
-    key = protect.load_key(out / "hmac.key")
+    key = os.urandom(32)
     order = None
     if contract.get("k_target"):
         best = repair.search(contract, original, out, results, key, labels,

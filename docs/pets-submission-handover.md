@@ -10,8 +10,9 @@ The organisers may ask, during the event, for a `pets_submission/` folder so the
 - `pets_submission/health/rowmap_ed_visits.csv` and `pets_submission/health/rowmap_lab_results.csv`: one row per protected row, giving the original record id. Not committed.
 - `pets_submission/unseen_field_labels.csv`: the detector's labels for the unseen HR export, format `column,privacy_role,subtype`. Committed.
 - `pets_submission/health_field_labels.csv`: the detector's labels for the health tables. Committed.
+- `pets_submission/release_record.json`: the signed policy the release was built under, the hash of every released file, the recipient and the recipient's duties. Not committed here; the copy in `results/` is.
 
-The HMAC key is not in the folder. A fresh key is drawn for every build and stays in `out/health-s1-build/hmac.key`; it is never handed over: with the key, anyone could recompute the token of a known visit id. Because the key changes per build, tokens from two releases cannot be joined. The rows of both tables are in a random order, and the row maps follow it.
+The HMAC key is not in the folder. A fresh key is drawn for every build and exists only in memory, so it cannot be handed over or leak. The row maps still link every token to an original id, which is why they stay private.
 
 ## Why row maps must not be published
 

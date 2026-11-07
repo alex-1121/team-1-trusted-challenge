@@ -144,7 +144,7 @@ body{margin:0;font-family:var(--serif);padding-left:max(16px,env(safe-area-inset
 
 <div class="stage" id="stage">
   <div class="sheet" id="sheet"><div class="doc" id="doc"></div><div class="scan" id="scan"></div>
-    <div class="stamp" id="stamp"><b>Released</b><span>k ≥ 5 · no direct identifiers</span><span>5 of 5 attacks failed</span></div></div>
+    <div class="stamp" id="stamp"><b>Released</b><span>k ≥ 5 · no direct identifiers</span><span>4 of 4 attacks failed</span></div></div>
   <div class="fold" id="fold">
     <div class="lift" id="lift"></div>
     <div class="fp f1"><div class="side face"><div class="clone" style="top:-100%;height:300%"></div></div></div>
@@ -265,7 +265,7 @@ function play(){
     if(r.classList.contains('rare'))at(t+900,()=>r.querySelector('.note').classList.add('on'))});
   at(S0+SCAN*.45,()=>caption('Protect · <b>removed</b> or <b>coarsened</b>, field by field'));
   at(S0+SCAN+300,()=>{scan.classList.remove('on');caption('Shuffle · <b>row order</b> gives back no dates');shuffleRows()});
-  at(S0+SCAN+1700,()=>caption('Attack · <b>5 of 5</b> attacks failed'));
+  at(S0+SCAN+1700,()=>caption('Attack · <b>4 of 4</b> attacks failed'));
   at(S0+SCAN+2100,()=>stamp.classList.add('on'));
   if(hold)return;
   const F=S0+SCAN+3600;

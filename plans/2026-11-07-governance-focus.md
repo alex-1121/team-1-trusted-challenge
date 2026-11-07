@@ -152,7 +152,7 @@ Build order, as built on branch `gate-enforce-checks`:
 4. **Tests**, one per refusal, plus a run of the gate over the committed results: HEALTH-S1 default and informed, HEALTH-S3, EDU-S2 and ENERGY-S3 pass, PUB-S3 fails on utility, and the no-flag build fails on join k.
 5. **After selector v2 lands.** Pass `TOL` and `RISK_LINE` from the policy as selector arguments, and re-sign if the contract changes. The record prints `fitness`, or "not measured" when the contract has none.
 
-No new PET, and no new dependency: OpenSSH is already on the machines we checked.
+No new PET, and no new Python dependency. `build` needs `ssh-keygen` on the path and refuses without it; checked on one Mac so far.
 
 ## 10. Questions for the team
 
