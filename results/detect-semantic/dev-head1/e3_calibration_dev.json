@@ -1,0 +1,197 @@
+{
+ "commit": "f3fad467e4a3aab7d2f30575b96ddfad2267c5aa",
+ "uncommitted_changes": true,
+ "encoder": "intfloat/multilingual-e5-small",
+ "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+ "head_created": "2026-11-07T18:44:37Z",
+ "temperature": 2.75,
+ "thresholds": {
+  "decide": {
+   "conf": 0.8,
+   "risk": 0.2
+  },
+  "combine": {
+   "agree": 0.3,
+   "conf": 0.8
+  }
+ },
+ "created": "2026-11-07T18:53:47Z",
+ "split": "dev",
+ "sets": {
+  "calib": {
+   "columns": 1800,
+   "accuracy": 0.9561,
+   "ece": 0.0154,
+   "reliability": [
+    {
+     "bin": 2,
+     "n": 2,
+     "mean_conf": 0.22645201582517507,
+     "accuracy": 0.5
+    },
+    {
+     "bin": 3,
+     "n": 11,
+     "mean_conf": 0.36247994495721264,
+     "accuracy": 0.36363636363636365
+    },
+    {
+     "bin": 4,
+     "n": 14,
+     "mean_conf": 0.45045619237388873,
+     "accuracy": 0.5
+    },
+    {
+     "bin": 5,
+     "n": 27,
+     "mean_conf": 0.5429705131367988,
+     "accuracy": 0.6296296296296297
+    },
+    {
+     "bin": 6,
+     "n": 40,
+     "mean_conf": 0.6528227039595134,
+     "accuracy": 0.7
+    },
+    {
+     "bin": 7,
+     "n": 72,
+     "mean_conf": 0.7541894156757449,
+     "accuracy": 0.9305555555555556
+    },
+    {
+     "bin": 8,
+     "n": 127,
+     "mean_conf": 0.8593580224483531,
+     "accuracy": 0.9212598425196851
+    },
+    {
+     "bin": 9,
+     "n": 1507,
+     "mean_conf": 0.9809368515864663,
+     "accuracy": 0.9820836098208361
+    }
+   ],
+   "per_type_accuracy": {
+    "PERSON_NAME": 0.9722,
+    "STREET_ADDRESS": 0.9944,
+    "MUNICIPALITY": 0.95,
+    "LOCATION_NAME": 0.6944,
+    "ORG_NAME": 0.9944,
+    "OCCUPATION": 1.0,
+    "LANGUAGE": 1.0,
+    "SEX": 0.9833,
+    "FREE_TEXT": 1.0,
+    "CATEGORY": 0.9722
+   }
+  },
+  "dev_tables": {
+   "columns": 99,
+   "accuracy": 0.9899,
+   "ece": 0.0351,
+   "reliability": [
+    {
+     "bin": 6,
+     "n": 4,
+     "mean_conf": 0.6566662917029766,
+     "accuracy": 0.75
+    },
+    {
+     "bin": 7,
+     "n": 2,
+     "mean_conf": 0.7316006315097741,
+     "accuracy": 1.0
+    },
+    {
+     "bin": 8,
+     "n": 13,
+     "mean_conf": 0.8636884570239055,
+     "accuracy": 1.0
+    },
+    {
+     "bin": 9,
+     "n": 80,
+     "mean_conf": 0.9900695019225013,
+     "accuracy": 1.0
+    }
+   ],
+   "per_type_accuracy": {
+    "PERSON_NAME": 1.0,
+    "STREET_ADDRESS": 1.0,
+    "MUNICIPALITY": 0.8889,
+    "ORG_NAME": 1.0,
+    "OCCUPATION": 1.0,
+    "SEX": 1.0,
+    "FREE_TEXT": 1.0,
+    "CATEGORY": 1.0
+   }
+  },
+  "all": {
+   "columns": 1899,
+   "accuracy": 0.9579,
+   "ece": 0.0165,
+   "reliability": [
+    {
+     "bin": 2,
+     "n": 2,
+     "mean_conf": 0.22645201582517507,
+     "accuracy": 0.5
+    },
+    {
+     "bin": 3,
+     "n": 11,
+     "mean_conf": 0.36247994495721264,
+     "accuracy": 0.36363636363636365
+    },
+    {
+     "bin": 4,
+     "n": 14,
+     "mean_conf": 0.45045619237388873,
+     "accuracy": 0.5
+    },
+    {
+     "bin": 5,
+     "n": 27,
+     "mean_conf": 0.5429705131367988,
+     "accuracy": 0.6296296296296297
+    },
+    {
+     "bin": 6,
+     "n": 44,
+     "mean_conf": 0.6531721210271009,
+     "accuracy": 0.7045454545454546
+    },
+    {
+     "bin": 7,
+     "n": 74,
+     "mean_conf": 0.7535789079955836,
+     "accuracy": 0.9324324324324325
+    },
+    {
+     "bin": 8,
+     "n": 140,
+     "mean_conf": 0.8597601342303689,
+     "accuracy": 0.9285714285714286
+    },
+    {
+     "bin": 9,
+     "n": 1587,
+     "mean_conf": 0.9813972246342816,
+     "accuracy": 0.9829867674858223
+    }
+   ],
+   "per_type_accuracy": {
+    "PERSON_NAME": 0.9758,
+    "STREET_ADDRESS": 0.9949,
+    "MUNICIPALITY": 0.9471,
+    "LOCATION_NAME": 0.6944,
+    "ORG_NAME": 0.9947,
+    "OCCUPATION": 1.0,
+    "LANGUAGE": 1.0,
+    "SEX": 0.9841,
+    "FREE_TEXT": 1.0,
+    "CATEGORY": 0.9735
+   }
+  }
+ }
+}

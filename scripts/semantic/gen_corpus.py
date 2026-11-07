@@ -81,6 +81,28 @@ def case_noise(r: random.Random):
     return lambda s: s
 
 
+CODE_STYLES = ("letters_digits", "dotted", "snake", "number_list", "abbrev", "file")
+
+
+def code_value(r: random.Random, words: list) -> str:
+    """A category written as a code: "KX-204", "T4512.003", "card_declined", "3, 14, 27", "RX2", "report.pdf"."""
+    style = r.choice(CODE_STYLES)
+    up = "ABCDEFGHJKLMNPRSTVXZ"
+    if style == "letters_digits":
+        return "".join(r.choices(up, k=r.randint(1, 3))) + r.choice(["", "-", " "]) + str(r.randint(1, 9999))
+    if style == "dotted":
+        return f"{r.choice(up)}{r.randint(100, 9999)}" + (f".{r.randint(1, 20):03d}" if r.random() < 0.6 else "")
+    ascii_words = [w for w in words if w.isascii()] or ["open", "closed", "pending", "error", "scan", "login"]
+    if style == "snake":
+        k = r.randint(1, 3)
+        return r.choice(["_", "-", "."]).join(w.lower().replace(" ", "_") for w in r.sample(ascii_words, min(k, len(ascii_words))))
+    if style == "number_list":
+        return r.choice([", ", ",", ";", " "]).join(str(n) for n in sorted(r.sample(range(1, 120), r.randint(1, 4))))
+    if style == "abbrev":
+        return "".join(r.choices(up, k=r.randint(2, 4))) + (str(r.randint(1, 9)) if r.random() < 0.4 else "")
+    return r.choice(ascii_words).lower().replace(" ", "_") + r.choice([".exe", ".log", ".pdf", ".csv", ".dll", ".sh"])
+
+
 class Column:
     """One fake column: a pool of distinct values from a type's source, drawn with Zipf-like weights."""
 
@@ -169,7 +191,9 @@ class Column:
                 cats = llm("en").get("categories") or cats  # English categories appear in every country's data
             group = cats[r.choice(sorted(cats))]
             pool = self.pick(group, r.randint(2, 12))
-            if r.random() < 0.15:
+            if r.random() < 0.35:  # categories are often codes, not words (retrain 2, results/detect-semantic/SPLIT.md)
+                pool = self.pool(lambda: code_value(r, group), r.randint(3, 40))
+            elif r.random() < 0.15:
                 pool = [f"{p} {i}" if r.random() < 0.5 else p for i, p in enumerate(pool)]
         else:
             raise ValueError(t)

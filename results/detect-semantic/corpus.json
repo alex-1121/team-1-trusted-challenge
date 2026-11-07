@@ -17,7 +17,7 @@
      "ro_RO",
      "el_GR"
     ],
-    "sha256": "c8bccca72c4ea10c1b8a89b3d8956a11da4a7237089d2fdd7b5116284ccc6654"
+    "sha256": "f43e3f86f0430f61f844600ab4ec380bdaf42bffbc63f00f26875b5f3d308ad7"
    },
    "locked": {
     "columns": 1800,
@@ -26,7 +26,7 @@
      "pt_PT",
      "hu_HU"
     ],
-    "sha256": "68ed961b91d6cd3aa8c3320ec6e57aa6ec6ae4ad4aa6d03c3a1dd426eaa060d4"
+    "sha256": "ed302026269588cd65edd9d74877e20a53109108ac0348082522f3dc7583d8a8"
    },
    "train": {
     "columns": 13800,
@@ -55,14 +55,14 @@
      "sl_SI",
      "sv_SE"
     ],
-    "sha256": "397221a591c2f9946e4059e1b2af10b191845de4c4c44467bb02e4b0e278adae"
+    "sha256": "ef986ba32c7fab0eeaac96674c3a2a00cf89201fdfe1191fc96d718b5dbf59d6"
    }
   },
   "per_type": 60,
   "seed": 1000
  },
  "generator_sha256": {
-  "scripts/semantic/gen_corpus.py": "0519a3569eb1bcd47b5f972e7b07c3efbc113513129793dea394760f0c7d4c79",
+  "scripts/semantic/gen_corpus.py": "6e4335d822da315f983be973a00725afab8dcd38df62760107a8c187918a0b0b",
   "scripts/semantic/locales.py": "fe16e7f211c22622b48dee6a75e35e6268804835bdf5aa411e0b70b79fb3c85f"
  },
  "llm_values_sha256": {
@@ -91,5 +91,6 @@
   "sk.json": "1246fcf40189cb3e3dea577491b8e4f2608fefb8049d4428acae5b8699be7995",
   "sl.json": "0dd20d226bca2b61163739f77e1f734728b06b03f1147f8883ba6a980b7586e9",
   "sv.json": "d0895f05918fcada441d875c14b870e82a61b9601bda045772a8a7c0269b03fa"
- }
+ },
+ "note": "Retrain 2 (2026-11-07): about 35% of CATEGORY columns are now written as codes (code_value in gen_corpus.py); see SPLIT.md. Head 1's corpus hashes are in dev-head1/meta.json."
 }

@@ -1,0 +1,238 @@
+{
+ "commit": "f3fad467e4a3aab7d2f30575b96ddfad2267c5aa",
+ "uncommitted_changes": true,
+ "encoder": "intfloat/multilingual-e5-small",
+ "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+ "head_created": "2026-11-07T18:44:37Z",
+ "temperature": 2.75,
+ "thresholds": {
+  "decide": {
+   "conf": 0.8,
+   "risk": 0.2
+  },
+  "combine": {
+   "agree": 0.3,
+   "conf": 0.8
+  }
+ },
+ "created": "2026-11-07T18:53:47Z",
+ "split": "dev",
+ "proving_ground": {
+  "finance": {
+   "columns": 52,
+   "model_read": 23,
+   "needs_review": 8,
+   "share": 0.1538,
+   "by_flag": {
+    "disagree": 8
+   },
+   "columns_flagged": [
+    "card_transactions.tx_id (disagree)",
+    "card_transactions.merchant_city (disagree)",
+    "card_transactions.merchant_country (disagree)",
+    "cards.card_ref_id (disagree)",
+    "cards.customer_id (disagree)",
+    "customers.customer_id (disagree)",
+    "transfers.transfer_id (disagree)",
+    "transfers.from_name (disagree)"
+   ]
+  },
+  "cyber": {
+   "columns": 126,
+   "model_read": 47,
+   "needs_review": 12,
+   "share": 0.0952,
+   "by_flag": {
+    "disagree": 10,
+    "unclear": 2
+   },
+   "columns_flagged": [
+    "dns_logs.query (unclear)",
+    "edr_alerts.file_path (disagree)",
+    "email_gateway.subject (disagree)",
+    "email_gateway.attachment_names (disagree)",
+    "geoip_ranges.country (disagree)",
+    "geoip_ranges.network_type (unclear)",
+    "identity.surname (disagree)",
+    "identity.department (disagree)",
+    "signin_logs.geo_country (disagree)",
+    "signin_logs.geo_city (disagree)",
+    "vpn_logs.geo_country (disagree)",
+    "vpn_logs.geo_city (disagree)"
+   ]
+  },
+  "education": {
+   "columns": 61,
+   "model_read": 36,
+   "needs_review": 8,
+   "share": 0.1311,
+   "by_flag": {
+    "disagree": 8
+   },
+   "columns_flagged": [
+    "absences.student_id (disagree)",
+    "counsellor_notes.student_id (disagree)",
+    "course_grades.student_id (disagree)",
+    "course_grades.course_name (disagree)",
+    "matriculation_results.student_id (disagree)",
+    "matriculation_results.subject_code (disagree)",
+    "students.student_id (disagree)",
+    "students.last_name (disagree)"
+   ]
+  },
+  "mobility": {
+   "columns": 48,
+   "model_read": 16,
+   "needs_review": 2,
+   "share": 0.0417,
+   "by_flag": {
+    "disagree": 2
+   },
+   "columns_flagged": [
+    "bike_trips.bike_id (disagree)",
+    "stops.municipality (disagree)"
+   ]
+  },
+  "energy": {
+   "columns": 33,
+   "model_read": 9,
+   "needs_review": 1,
+   "share": 0.0303,
+   "by_flag": {
+    "disagree": 1
+   },
+   "columns_flagged": [
+    "customers.customer_id (disagree)"
+   ]
+  },
+  "smart_city": {
+   "columns": 26,
+   "model_read": 8,
+   "needs_review": 1,
+   "share": 0.0385,
+   "by_flag": {
+    "unclear": 1
+   },
+   "columns_flagged": [
+    "anpr_parking.car_park (unclear)"
+   ]
+  }
+ },
+ "eu_tables": {
+  "de_DE": {
+   "columns": 22,
+   "model_read": 12,
+   "needs_review": 1,
+   "share": 0.0455,
+   "by_flag": {
+    "disagree": 1
+   },
+   "columns_flagged": [
+    "customers.full_address (disagree)"
+   ]
+  },
+  "es_ES": {
+   "columns": 22,
+   "model_read": 13,
+   "needs_review": 4,
+   "share": 0.1818,
+   "by_flag": {
+    "disagree": 4
+   },
+   "columns_flagged": [
+    "customers.street_address (disagree)",
+    "customers.full_address (disagree)",
+    "customers.occupation (disagree)",
+    "customers.employer (disagree)"
+   ]
+  },
+  "fi_FI": {
+   "columns": 22,
+   "model_read": 9,
+   "needs_review": 0,
+   "share": 0.0,
+   "by_flag": {},
+   "columns_flagged": []
+  },
+  "fr_FR": {
+   "columns": 22,
+   "model_read": 13,
+   "needs_review": 3,
+   "share": 0.1364,
+   "by_flag": {
+    "disagree": 3
+   },
+   "columns_flagged": [
+    "customers.phone (disagree)",
+    "customers.street_address (disagree)",
+    "customers.full_address (disagree)"
+   ]
+  },
+  "it_IT": {
+   "columns": 22,
+   "model_read": 13,
+   "needs_review": 3,
+   "share": 0.1364,
+   "by_flag": {
+    "disagree": 3
+   },
+   "columns_flagged": [
+    "customers.street_address (disagree)",
+    "customers.full_address (disagree)",
+    "customers.employer (disagree)"
+   ]
+  },
+  "mixed_EU": {
+   "columns": 22,
+   "model_read": 12,
+   "needs_review": 2,
+   "share": 0.0909,
+   "by_flag": {
+    "disagree": 2
+   },
+   "columns_flagged": [
+    "customers.full_address (disagree)",
+    "customers.employer (disagree)"
+   ]
+  },
+  "nl_NL": {
+   "columns": 22,
+   "model_read": 13,
+   "needs_review": 1,
+   "share": 0.0455,
+   "by_flag": {
+    "disagree": 1
+   },
+   "columns_flagged": [
+    "customers.employer (disagree)"
+   ]
+  },
+  "pl_PL": {
+   "columns": 22,
+   "model_read": 13,
+   "needs_review": 3,
+   "share": 0.1364,
+   "by_flag": {
+    "disagree": 3
+   },
+   "columns_flagged": [
+    "customers.street_address (disagree)",
+    "customers.full_address (disagree)",
+    "customers.employer (disagree)"
+   ]
+  },
+  "sv_SE": {
+   "columns": 22,
+   "model_read": 10,
+   "needs_review": 0,
+   "share": 0.0,
+   "by_flag": {},
+   "columns_flagged": []
+  }
+ },
+ "proving_ground_total": {
+  "columns": 346,
+  "needs_review": 32,
+  "share": 0.0925
+ }
+}
