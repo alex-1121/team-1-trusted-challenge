@@ -38,13 +38,13 @@ Score. Then we run the organisers' scorecard and identifier scan on the result. 
 
 [scorecard.html, before and after columns]
 
-Before, privacy is 0.17. After, it is 0.89. Utility moves from 1.0 to 0.99. Four of five tasks are perfect, and the revisit task scores 0.96. The composite rises from 0.28 to 0.93. For comparison, the organisers' k-anonymity baseline keeps utility at only 0.40 here.
+Before, privacy is 0.17. After, it is 0.95. Utility moves from 1.0 to 0.99. Four of five tasks are perfect, and the revisit task scores 0.96. The composite rises from 0.28 to 0.97. For comparison, the organisers' k-anonymity baseline keeps utility at only 0.40 here.
 
 **Honest limits (15 s)**
 
 [Residual-risk paragraph from summary.md]
 
-Eighteen percent of visits still sit in groups smaller than five. We tested only the shipped attackers, and the linkage attacker may not read our age bands, so its zero could be optimistic. Without dates, nobody can study seasons.
+Eight percent of visits still sit in groups smaller than five. We tested only the shipped attackers, and the linkage attacker may not read our age bands, so its zero could be optimistic. Without dates, nobody can study seasons.
 
 **Close (5 s)**
 
@@ -58,8 +58,8 @@ TrustED PETs Proving Ground 2026, synthetic data by Since AI ry, CC BY 4.0.
 - macro-F1 0.81 (0.8086): `results/detect/health.json`.
 - No direct identifiers left: `results/health-s1-build/check.txt`.
 - Privacy 0.17 before (0.1716), utility 1.0 before, composite 0.28 before (0.2752): `baseline-scores/health_HEALTH-S1_research-env_raw.json`.
-- Privacy 0.89 after (0.891), utility 0.99 after (0.9928), composite 0.93 after (0.9346), revisit task 0.96 (H-U6 0.9642): `results/health-s1-build/scorecard.json`.
+- Privacy 0.95 after (0.9533), utility 0.99 after (0.9928), composite 0.97 after (0.9709), revisit task 0.96 (H-U6 0.9642): `results/health-s1-build/scorecard.json`.
 - Baseline utility 0.40 (B2-k): `data/proving-ground/docs/BENCHMARK.md` (organiser file in the restored proving ground).
-- Eighteen percent (k<5 share 0.1817) and the linkage zero (0.0): `results/health-s1-build/summary.md`; why it may be optimistic: `results/health-s1-gate/GATE.md`.
+- Eight percent (k<5 share 0.0779) and the linkage zero (0.0): `results/health-s1-build/summary.md`; why it may be optimistic: `results/health-s1-gate/GATE.md`.
 
 Numbers are rounded for speech; the screen shows the full values. The scorecard is our own self-assessment and is separate from the official judging score.
