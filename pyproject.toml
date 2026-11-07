@@ -10,3 +10,6 @@ train = ["scikit-learn>=1.4", "Faker==40.44.0", "openai>=1.40", "numpy"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"pets_transformer.semantic" = ["models/head.npz", "models/meta.json"]
