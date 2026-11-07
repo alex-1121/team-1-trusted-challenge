@@ -30,19 +30,32 @@ def run_checks(contract, protected, original, results, argv):
         return {}
 
 
+def check_submission(submission, original, contract):
+    """The release list of this build. Refuses a submission folder holding anything else, naming it; deletes nothing."""
+    released = [f"{original.name}/{n}" for n in redteam.expected_files(contract)] + ["unseen_field_labels.csv", f"{original.name}_field_labels.csv"]
+    allowed = {*released, "release_record.json", original.name}
+    extra = sorted(str(p.relative_to(submission)) for p in submission.rglob("*") if str(p.relative_to(submission)) not in allowed) if submission.exists() else []
+    if extra:
+        raise SystemExit(f"submission folder {submission} holds files outside this release: {', '.join(extra)}. "
+                         "Nothing was copied or deleted; move them away and build again")
+    return released
+
+
 def run(scenario, original=None, out=None, results=None, submission=None, pets_eval=score.PETS_EVAL, contract_path=None, policy_dir=None):
     """scenario names the contract (contracts/<scenario>.json) unless contract_path is given; the organisers'
     scenario id used for scoring and for the policy is the contract's "scenario" key. Refuses unless the scenario's
     signed policy in policy_dir verifies and allows the contract."""
     cpath = Path(contract_path) if contract_path else ROOT / "contracts" / f"{scenario}.json"
     run_name = f"{scenario.lower()}-build"
+    results = Path(results or ROOT / "results" / run_name)
+    for name in ("release_record.json", "redteam.json"):  # any refusal, even an unreadable contract, leaves no earlier verdict
+        (results / name).unlink(missing_ok=True)
     raw = cpath.read_bytes() if cpath.exists() else None  # hashed and parsed from this one read
     contract = ct.parse(raw) if raw is not None else None
     scenario = contract["scenario"] if contract else scenario
     dataset = contract.get("dataset", "health") if contract else selector.pio.get_scenario(scenario, PG)["dataset"]
     original = Path(original or PG / "data" / dataset)
     out = Path(out or ROOT / "out" / run_name)
-    results = Path(results or ROOT / "results" / run_name)
     submission = Path(submission or ROOT / "pets_submission")
     unseen_dir = PG / "data" / "unseen"
     baseline = next(BASELINE_DIR.glob(f"{original.name}_{scenario}_*_raw.json"), None) or \
@@ -50,8 +63,6 @@ def run(scenario, original=None, out=None, results=None, submission=None, pets_e
     for need, ok in ((original, original.is_dir()), (unseen_dir, unseen_dir.is_dir() and any(unseen_dir.glob("*.csv"))), (BASELINE_DIR / f"{original.name}_{scenario}_*_raw.json", baseline)):
         if not ok:
             raise FileNotFoundError(f"build needs {need}")
-    for name in ("release_record.json", "redteam.json"):  # a refusal from here on must leave no earlier verdict behind
-        (results / name).unlink(missing_ok=True)
     pol, pol_sha, signature, fingerprint = policy.verify(policy_dir or policy.DEFAULT_DIR, scenario)
     if contract:
         contract_sha = policy.check_contract(pol, raw)
@@ -67,6 +78,7 @@ def run(scenario, original=None, out=None, results=None, submission=None, pets_e
         results.mkdir(parents=True, exist_ok=True)
         (results / "selection.json").write_text(json.dumps(evidence, indent=2) + "\n")
         contract = ct.parse(raw)
+    check_submission(submission, original, contract)  # before any work; the release list needs the contract, so a selection runs first
     results.mkdir(parents=True, exist_ok=True)
 
     labels = detect.detect_dataset(original, original.name)
@@ -103,12 +115,7 @@ def run(scenario, original=None, out=None, results=None, submission=None, pets_e
         raise SystemExit(f"red-team gate FAILED ({'; '.join(gate['reasons'])}): pets_submission/ not written. See {rel(results / 'redteam.json')}")
 
     health = submission / original.name
-    released = [f"{original.name}/{n}" for n in redteam.expected_files(contract)] + ["unseen_field_labels.csv", f"{original.name}_field_labels.csv"]
-    allowed = {*released, "release_record.json", original.name}
-    extra = sorted(str(p.relative_to(submission)) for p in submission.rglob("*") if str(p.relative_to(submission)) not in allowed) if submission.exists() else []
-    if extra:
-        raise SystemExit(f"submission folder {rel(submission)} holds files outside this release: {', '.join(extra)}. "
-                         "Nothing was copied or deleted; move them away and build again")
+    released = check_submission(submission, original, contract)  # again: the folder may have changed during the build
     health.mkdir(parents=True, exist_ok=True)
     for f in released:
         (submission / f).unlink(missing_ok=True)
