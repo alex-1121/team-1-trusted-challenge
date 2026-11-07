@@ -552,7 +552,7 @@ def test_a_contract_allowed_for_another_assumption_is_refused(world, keys):
 def selecting(world, monkeypatch):
     """The scenario has no contracts/<scenario>.json: the selector runs, in a repo root that is a temporary folder."""
     monkeypatch.setattr(build, "ROOT", world.root / "repo")
-    monkeypatch.setattr(build.selector, "select", lambda original, scenario, pg: (world.contract, {"scenario": scenario}))
+    monkeypatch.setattr(build.selector, "select", lambda original, scenario, pg, **kw: (world.contract, {"scenario": scenario}))
     world.text = json.dumps(world.contract, indent=2, ensure_ascii=False) + "\n"
     world.pinned = world.root / "repo" / "contracts" / "generated" / "TOY-S1.auto.json"
     return world
@@ -812,7 +812,7 @@ def test_a_submission_folder_holding_anything_else_is_refused_and_nothing_is_tou
 def test_a_dirty_submission_folder_is_refused_before_any_work(world, monkeypatch, dirt):
     def no_work(*a, **k):
         raise AssertionError("the build started work on a dirty submission folder")
-    monkeypatch.setattr(build.detect, "detect_dataset", no_work)
+    monkeypatch.setattr(build.detect, "detect_dataset_report", no_work)
     (world.submission / dirt).parent.mkdir(parents=True, exist_ok=True)
     (world.submission / dirt).write_text("x\n")
     with pytest.raises(SystemExit, match=re.escape(dirt)):
