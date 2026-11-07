@@ -31,6 +31,7 @@ How to read this:
 | 2026-11-07 | A full repository audit by Codex (GPT-6 Astra) is committed as findings for team review, not as decisions | Second-opinion check before submission | committed by NKizo (b9311b4); the file names no runner | findings only | `plans/review_by_astra.md` |
 | 2026-11-07 | The organisers' reply of 7 November (one scenario is enough, explain the trade-offs) is recorded verbatim as context | It settles the "one scenario or three" question | Arda (PR #38) | context | `context/` |
 | 2026-11-07 | Governance focus: who owns the release decision. The hospital's data steward signs the policy that sets the risk limits; `build` stays one command and refuses an unsigned or changed policy; the demo signer is a key with the role "data steward (demo)" | The official named governance as the extra mile and could not be asked again, so Arda followed a Fable review's call | Arda, Claude Fable 5.1 review | DECIDED | `decisions.md`; `plans/2026-11-07-governance-focus.md` |
+| 2026-11-07 | When a build refuses only because its random row order lets an attack through, rebuild; every gated build is logged in `results/<run>/builds.jsonl` so refusals can be shown; never script a retry | Each release is checked on its own, and a visible refusal shows the gate working | Arda | DECIDED | `decisions.md` |
 
 ## 2. AI key decisions
 

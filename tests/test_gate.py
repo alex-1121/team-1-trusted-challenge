@@ -964,3 +964,14 @@ def test_verdict_over_the_committed_results(run):
         assert v["gate"] == "pass" and v["reasons"] == []
     else:
         assert v["gate"] == "fail" and v["reasons"] and all(r.startswith(fails_on) for r in v["reasons"])
+
+
+def test_log_build_appends_one_line_per_gated_build(tmp_path):
+    import json as _json
+    from pets_transformer import build as _build
+    _build.log_build(tmp_path, "HEALTH-S1", {"gate": "fail", "reasons": ["news_linkage above threshold"]})
+    _build.log_build(tmp_path, "HEALTH-S1", {"gate": "pass", "reasons": []})
+    rows = [_json.loads(x) for x in (tmp_path / "builds.jsonl").read_text().splitlines()]
+    assert [r["gate"] for r in rows] == ["fail", "pass"]
+    assert rows[0]["reasons"] == ["news_linkage above threshold"] and rows[0]["scenario"] == "HEALTH-S1"
+    assert all(r["utc"].endswith("Z") for r in rows)

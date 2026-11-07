@@ -1,6 +1,7 @@
 """One command: detect, search the repair order, protect, score, run the checks and the red team, and assemble
 pets_submission/ only when redteam.evaluate passes the release."""
 import json
+from datetime import datetime, timezone
 import os
 import shutil
 from pathlib import Path
@@ -39,6 +40,14 @@ def check_submission(submission, original, contract):
         raise SystemExit(f"submission folder {submission} holds files outside this release: {', '.join(extra)}. "
                          "Nothing was copied or deleted; move them away and build again")
     return released
+
+
+def log_build(results, scenario, gate):
+    """Append one line per gated build to results/builds.jsonl, so refusals stay countable after a rebuild."""
+    line = {"utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "scenario": scenario,
+            "gate": gate["gate"], "reasons": gate.get("reasons", [])}
+    with open(Path(results) / "builds.jsonl", "a") as f:
+        f.write(json.dumps(line) + "\n")
 
 
 def report_review(reports: list[detect.DetectReport], results: Path) -> str:
@@ -139,6 +148,7 @@ def run(scenario, original=None, out=None, results=None, submission=None, pets_e
     csvs = sorted(str(f.relative_to(protected)) for f in protected.rglob("*.csv"))
     gate.update(redteam.evaluate(pol, contract, gate, card, check_results, card.get("scan"), csvs, required))
     redteam.write(gate, results / "redteam.json")
+    log_build(results, scenario, gate)
     if gate["gate"] != "pass":
         raise SystemExit(f"red-team gate FAILED ({'; '.join(gate['reasons'])}): pets_submission/ not written. See {rel(results / 'redteam.json')}")
 

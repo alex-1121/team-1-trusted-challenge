@@ -33,6 +33,7 @@ The lines above are measured, and since the gate change they also block the buil
 - **A required task is missing or under 0.5,** with the required list taken from the organisers' scenario definition.
 - **An identifier is found.** Any finding of the regex scan, a scan that did not run, or a direct-identifier or free-text leakage risk above zero in the scorecard.
 - **The folder holds something else.** Any CSV the contract does not name (`plan.csv` stays in the protected folder and is never copied). A table the contract withdraws loses its old CSV and row map on rebuild.
+- **Every refusal stays on record.** A refused build writes nothing to `pets_submission/`, and every gated build adds one line to `results/health-s1-build/builds.jsonl`. When a refusal comes from the random row order alone, the team builds again (Arda, 2026-11-07), and the new release is checked on its own. We have not measured how often this happens.
 
 After a passing gate the build writes `release_record.json` to the submission folder and to `results/`: the policy's sha256, the signature file name, the contract's sha256, the sha256 of every released file, the recipient, the purpose, the agreement reference, the recipient's duties, what is enforced after release, and the residual risks from the checks.
 
