@@ -1270,7 +1270,7 @@
       "role": "free_text",
       "subtype": "FREE_TEXT",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "only candidate",
       "risk_line": 0.05,
       "tried": [
         {
@@ -1289,8 +1289,7 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ],
-          "gain_over_drop": null
+          ]
         }
       ]
     },
@@ -1973,7 +1972,7 @@
       "role": "direct_identifier",
       "subtype": "NATIONAL_ID",
       "chosen": "drop",
-      "rule": "line not met",
+      "rule": "only candidate",
       "risk_line": 0.05,
       "tried": [
         {
@@ -1993,8 +1992,7 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ],
-          "gain_over_drop": null
+          ]
         }
       ]
     },
@@ -2004,7 +2002,7 @@
       "role": "direct_identifier",
       "subtype": "PERSON_NAME",
       "chosen": "drop",
-      "rule": "line not met",
+      "rule": "only candidate",
       "risk_line": 0.05,
       "tried": [
         {
@@ -2024,8 +2022,7 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ],
-          "gain_over_drop": null
+          ]
         }
       ]
     },
@@ -2035,7 +2032,7 @@
       "role": "direct_identifier",
       "subtype": "PHONE",
       "chosen": "drop",
-      "rule": "line not met",
+      "rule": "only candidate",
       "risk_line": 0.05,
       "tried": [
         {
@@ -2055,8 +2052,7 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ],
-          "gain_over_drop": null
+          ]
         }
       ]
     },
@@ -2066,7 +2062,7 @@
       "role": "direct_identifier",
       "subtype": "STREET_ADDRESS",
       "chosen": "drop",
-      "rule": "line not met",
+      "rule": "only candidate",
       "risk_line": 0.05,
       "tried": [
         {
@@ -2086,8 +2082,7 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ],
-          "gain_over_drop": null
+          ]
         }
       ]
     },
@@ -2097,7 +2092,7 @@
       "role": "direct_identifier",
       "subtype": "PERSON_NAME",
       "chosen": "drop",
-      "rule": "line not met",
+      "rule": "only candidate",
       "risk_line": 0.05,
       "tried": [
         {
@@ -2117,8 +2112,7 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ],
-          "gain_over_drop": null
+          ]
         }
       ]
     }

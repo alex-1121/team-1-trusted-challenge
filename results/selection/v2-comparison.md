@@ -6,6 +6,7 @@ Plain results of running the v2 contract and the v2 selector. Every number comes
 
 - Build (all outputs under a scratch folder, not in the repo):
   `.venv/bin/python -m pets_transformer.cli build --scenario HEALTH-S1 --contract contracts/generated/HEALTH-S1.v2.json --out <scratch>/out --results <scratch>/results --submission <scratch>/sub`
+  (that copy was later removed as a duplicate; it held the same picks as `contracts/HEALTH-S1.json`)
 - Select: `.venv/bin/python -m pets_transformer.cli select --scenario <HEALTH-S3|EDU-S2> --out <scratch>/<scenario>.v2.json --evidence <scratch>/<scenario>.evidence.json`
 
 ## HEALTH-S1 v2 build (wall time 56.4 s)
@@ -46,11 +47,11 @@ Final task scores after repair: HEALTH-S3 H-U2, H-U3, H-U5 all 1.0000; EDU-S2 ED
 
 ## EDU-S2 after MIN_GAIN
 
-Rule added 2026-11-07: a candidate other than drop competes only if it raises at least one required task by MIN_GAIN 0.01 over drop (per task). Same select command, written as `<scenario>.v3.json`. HEALTH-S1 v3 (wall time 201.1 s): 38 of 38 entries identical to the shipped contract on pet and params, k target equal, no move after repair; only the reasons changed, so `contracts/HEALTH-S1.json`, `contracts/generated/HEALTH-S1.v2.json` and `results/selection/HEALTH-S1.v2.json` were replaced by the v3 run.
+Rule added 2026-11-07: a candidate other than drop competes only if it raises at least one required task by MIN_GAIN 0.01 over drop (per task). Same select command, written as `<scenario>.v3.json`. HEALTH-S1 v3: 38 of 38 entries identical to the shipped contract on pet and params, k target equal, no move after repair; only the reasons changed, so `contracts/HEALTH-S1.json` and `results/selection/HEALTH-S1.v2.json` were replaced by the v3 run. Both were replaced again by the review-fix run (2026-11-07, drop-only columns recorded as "only candidate"; picks, table actions and k target unchanged). The EDU-S2 v3 evidence is `results/selection/EDU-S2.v3.json`, from the same review-fix run; every EDU-S2 v3 number below matches it. Wall times are not stored in any file: the v3 times below are from the review-fix run, measured with `/usr/bin/time` while HEALTH-S1 (152.6 s) and EDU-S2 ran side by side.
 
 | Item | EDU-S2 v2 | EDU-S2 v3 (MIN_GAIN) | v1 (`contracts/generated/EDU-S2.auto.json`) |
 | --- | --- | --- | --- |
-| Wall time | 92.4 s | 133.5 s | - |
+| Wall time | 92.4 s | 97.3 s (review-fix run) | - |
 | students.special_support | keep | drop (gain over drop: EDU-U2 0.0038, under 0.01) | drop |
 | students.school_code | keep | drop (gain over drop: EDU-U2 0.0025, under 0.01) | drop |
 | Differences vs v1 (pet and params, 44 column entries) | 2 | 0 | - |

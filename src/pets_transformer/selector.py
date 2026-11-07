@@ -157,12 +157,14 @@ def _fitness(frame, table, contract, labels, k=K):
 
 
 def _decide(tried):
-    """tried: dicts with candidate, scores, ok, risk, distinct. Returns (entry, why), why one of line, line not met,
-    fallback, no gain. A candidate other than drop competes only if it raises at least one required task by MIN_GAIN
+    """tried: dicts with candidate, scores, ok, risk, distinct. Returns (entry, why), why one of only candidate, line,
+    line not met, fallback, no gain. A single candidate is taken as is (only candidate). A candidate other than drop competes only if it raises at least one required task by MIN_GAIN
     over drop (per task, not the mean); each entry gets its gain_over_drop. The gain test applies only when drop is
     itself feasible: a drop that breaks a required task is no option, so the normal rule picks. Ties: lower risk, then fewer distinct
     values (so a tie never keeps a finer value), then name. Only measured numbers and the candidate name decide; the
     menu position never does."""
+    if len(tried) == 1:
+        return tried[0], "only candidate"
     drop = next((x for x in tried if x["candidate"] == "drop"), None)
     for x in tried if drop is not None else ():
         x["gain_over_drop"] = None if x is drop else max((v - drop["scores"].get(k, 0.0) for k, v in x["scores"].items()), default=0.0)

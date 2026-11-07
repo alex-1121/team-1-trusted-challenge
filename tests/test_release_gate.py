@@ -269,6 +269,13 @@ def test_min_gain_does_not_apply_when_drop_breaks_a_required_task():
     assert "drop breaks a required task, so the gain rule does not apply" in selector._chosen_text("month", pick, why, tried=tried).lower()
 
 
+def test_a_single_candidate_is_only_candidate_never_line_not_met():
+    from pets_transformer import selector
+    drop = {"candidate": "drop", "scores": {"U1": 0.9}, "ok": True, "risk": 0.5, "distinct": 0}
+    pick, why = selector._decide([drop])
+    assert pick is drop and why == "only candidate"
+
+
 def test_selector_never_reads_the_menu_order(tmp_path, monkeypatch):
     from pets_transformer import selector
     d, labels = _tiny(tmp_path)
