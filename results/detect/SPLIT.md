@@ -12,7 +12,7 @@ The lexicons in `src/pets_transformer/lexicons/` are built from these six datase
 
 health, public_admin, customer_service
 
-Their data files and their `field_catalog.csv` rows were not opened while tuning. The catalog rows are read only after the final run, to report errors. No rule is changed after the held-out run, except the two listed below.
+Their data files and their `field_catalog.csv` rows were not opened while tuning. The catalog rows are read only after the final run, to report errors. No rule is changed after the held-out run, except the two listed below and the issue #23 rules.
 
 ## Rules added after the held-out run
 
