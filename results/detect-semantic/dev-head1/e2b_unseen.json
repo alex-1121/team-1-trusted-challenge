@@ -1,0 +1,43 @@
+{
+ "commit": "f3fad467e4a3aab7d2f30575b96ddfad2267c5aa",
+ "uncommitted_changes": true,
+ "encoder": "intfloat/multilingual-e5-small",
+ "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+ "head_created": "2026-11-07T18:44:37Z",
+ "temperature": 2.75,
+ "thresholds": {
+  "decide": {
+   "conf": 0.8,
+   "risk": 0.2
+  },
+  "combine": {
+   "agree": 0.3,
+   "conf": 0.8
+  }
+ },
+ "created": "2026-11-07T18:53:47Z",
+ "split": "dev",
+ "columns": 26,
+ "changed": [
+  {
+   "table": "export_2025_q4",
+   "column": "c21",
+   "lexicon": "non_sensitive CATEGORY",
+   "hybrid": "quasi_identifier ORG_NAME",
+   "flag": null
+  }
+ ],
+ "warnings": {
+  "columns": 26,
+  "model_read": 10,
+  "needs_review": 2,
+  "share": 0.0769,
+  "by_flag": {
+   "disagree": 2
+  },
+  "columns_flagged": [
+   "export_2025_q4.c02 (disagree)",
+   "export_2025_q4.c17 (disagree)"
+  ]
+ }
+}

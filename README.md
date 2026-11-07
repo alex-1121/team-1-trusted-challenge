@@ -25,10 +25,10 @@ One row per top-level file and folder. Files inside `context/` and `team/` are l
 | `plans/` | Specs, tickets and plans (see `plans/README.md`) |
 | `data/` | The proving-ground data, gitignored; `data/README.md` says how to restore it |
 | `contracts/` | One JSON contract per scenario: recipient, purpose, role rules (by detected role), named column rules with their reasons, and the k target with its repair ladder. `HEALTH-S1.json` is the selector's output; `HEALTH-S1.handwritten.json` the hand-written start; `HEALTH-S1-noflag.json`, `HEALTH-S1-pseudonym.json` and `HEALTH-S1-informed.json` are variants for the team decisions below; `PUB-S3.json` is the selector's PUB-S3 contract after a reviewer's edit; `generated/` holds the contracts the selector wrote for HEALTH-S3, EDU-S2, ENERGY-S3 and PUB-S3 |
-| `src/pets_transformer/` | The code: `detect` (labels), `selector` (writes the contract), `pets` and `protect` (the transformations), `repair` (k and l on the rows at risk), `generalise` (what a coarsened value can stand for), `score` (the organisers' scorecard), `checks` and `redteam` (attacks the scorecard does not run), `build` (one command for all of it), `contract`, `sweep` and the command line `cli` |
-| `tests/` | pytest suite for detect, protect, score, checks, the repair sweep, the release gate (tokens, shuffle, repair, hour ranges, selector, new PETs, attacks) and the command-line wiring |
-| `scripts/` | One-off scripts; `scripts/prototypes/` holds early experiments, such as the first HEALTH-S1 arrival-time gate |
-| `results/` | Committed evidence: detector results (`detect/`), the selector's evidence (`selection/`), the red-team gate on the earlier release (`redteam/`), the repair sweep (`sweep/`), early gate runs, and one `<scenario>-build/` folder per build (scorecard, repair search, checks, red team), including the HEALTH-S1 variants |
+| `src/pets_transformer/` | The code: `detect` (labels), `selector` (writes the contract), `pets` and `protect` (the transformations), `repair` (k and l on the rows at risk), `generalise` (what a coarsened value can stand for), `score` (the organisers' scorecard), `checks` and `redteam` (attacks the scorecard does not run), `build` (one command for all of it), `contract`, `sweep` and the command line `cli`; `semantic/` is the optional column-type model (type list, decision rule, features, offline loader and the committed head in `semantic/models/`), work in progress on the fork branch `feat/semantic-types` |
+| `tests/` | pytest suite for detect (word lists and the hybrid type model), protect, score, checks, the repair sweep, the release gate (tokens, shuffle, repair, hour ranges, selector, new PETs, attacks) and the command-line wiring |
+| `scripts/` | One-off scripts; `scripts/prototypes/` holds early experiments, such as the first HEALTH-S1 arrival-time gate; `scripts/semantic/` makes the fake EU test tables and training corpus, the Featherless word lists (`llm_values/`), trains the type model (`train.py`, runbook `TRAINING.md`) and evaluates it |
+| `results/` | Committed evidence: detector results (`detect/`), the column-type model's evidence (`detect-semantic/`, indexed in its `README.md`), the selector's evidence (`selection/`), the red-team gate on the earlier release (`redteam/`), the repair sweep (`sweep/`), early gate runs, and one `<scenario>-build/` folder per build (scorecard, repair search, checks, red team), including the HEALTH-S1 variants |
 | `baseline-scores/` | "Before" scorecards: every original table scored unprotected, one HTML + JSON pair per scenario, named `<dataset>_<SCENARIO>_<recipient>_raw` |
 | `pets_submission/` | What goes to the organisers on request; only the two label files are committed |
 | `demo/` | `the-er-register.html`: the demo-video sequence. A printed sheet of patient records is redacted in blue halftone, shuffled, stamped, folded, addressed and sent; it ends on the HEALTH-S1 numbers. One self-contained HTML file, no build step |
@@ -38,8 +38,8 @@ One row per top-level file and folder. Files inside `context/` and `team/` are l
 | `AGENTS.md` | Rules for every teammate's coding agent |
 | `CLAUDE.md` | One line that imports `AGENTS.md` for Claude Code; holds no rules |
 | `README.md` | This file |
-| `pyproject.toml` | Package definition for `pets_transformer` |
-| `.gitignore` | Keeps the proving-ground data, the attack answer keys (row maps, truth, holdout), protected tables, bulky outputs and secrets out of git |
+| `pyproject.toml` | Package definition for `pets_transformer`; optional extras `semantic` (the type model at run time) and `train` (corpus and training) |
+| `.gitignore` | Keeps the proving-ground data, the attack answer keys (row maps, truth, holdout), protected tables, bulky outputs, the fake corpus and EU test tables (`data/semantic-*`) and secrets out of git |
 
 ## The demo in five items
 

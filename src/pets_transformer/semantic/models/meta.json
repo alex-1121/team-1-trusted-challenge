@@ -1,13 +1,13 @@
 {
  "C": 1.0,
- "created": "2026-11-07T18:44:37Z",
+ "created": "2026-11-07T19:05:03Z",
  "device": "cpu",
  "encoder": "intfloat/multilingual-e5-small",
  "feature_version": 1,
  "max_chars": 256,
  "n_values": 64,
  "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
- "temperature": 2.75,
+ "temperature": 2.6,
  "trained_on": {
   "headers": {
    "calib": {
@@ -116,8 +116,8 @@
    ]
   },
   "sha256": {
-   "calib": "c8bccca72c4ea10c1b8a89b3d8956a11da4a7237089d2fdd7b5116284ccc6654",
-   "train": "397221a591c2f9946e4059e1b2af10b191845de4c4c44467bb02e4b0e278adae"
+   "calib": "f43e3f86f0430f61f844600ab4ec380bdaf42bffbc63f00f26875b5f3d308ad7",
+   "train": "ef986ba32c7fab0eeaac96674c3a2a00cf89201fdfe1191fc96d718b5dbf59d6"
   }
  },
  "types": [

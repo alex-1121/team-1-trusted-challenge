@@ -57,9 +57,9 @@ v/bin/python scripts/semantic/gen_corpus.py --out data/semantic-corpus --per-typ
 
 The three printed SHA-256 hashes must equal these (also in `results/detect-semantic/corpus.json`):
 
-- train `397221a591c2f9946e4059e1b2af10b191845de4c4c44467bb02e4b0e278adae`
-- calib `c8bccca72c4ea10c1b8a89b3d8956a11da4a7237089d2fdd7b5116284ccc6654`
-- locked `68ed961b91d6cd3aa8c3320ec6e57aa6ec6ae4ad4aa6d03c3a1dd426eaa060d4`
+- train `ef986ba32c7fab0eeaac96674c3a2a00cf89201fdfe1191fc96d718b5dbf59d6`
+- calib `f43e3f86f0430f61f844600ab4ec380bdaf42bffbc63f00f26875b5f3d308ad7`
+- locked `ed302026269588cd65edd9d74877e20a53109108ac0348082522f3dc7583d8a8`
 
 On a mismatch, stop and tell zray: the Faker version (`v/bin/pip show faker` must say 40.44.0) or the word lists differ.
 
