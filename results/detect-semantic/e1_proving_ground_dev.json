@@ -1,0 +1,778 @@
+{
+ "commit": "27c8e446bd1b863755cb2bd05974a24dfbdfcee2",
+ "uncommitted_changes": false,
+ "encoder": "intfloat/multilingual-e5-small",
+ "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+ "head_created": "2026-11-07T19:05:03Z",
+ "temperature": 2.6,
+ "thresholds": {
+  "decide": {
+   "conf": 0.8,
+   "risk": 0.2
+  },
+  "combine": {
+   "agree": 0.3,
+   "conf": 0.8
+  }
+ },
+ "created": "2026-11-07T19:18:28Z",
+ "split": "dev",
+ "datasets": {
+  "finance": {
+   "lexicon": {
+    "n_fields": 52,
+    "n_predicted": 52,
+    "accuracy": 0.8846,
+    "macro_f1": 0.7406,
+    "sensitive_recall": 0.878,
+    "subtype_accuracy": 0.8077,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 11
+     },
+     "quasi_identifier": {
+      "precision": 0.9474,
+      "recall": 0.9474,
+      "f1": 0.9474,
+      "support": 19
+     },
+     "sensitive_attribute": {
+      "precision": 1.0,
+      "recall": 0.3333,
+      "f1": 0.5,
+      "support": 6
+     },
+     "technical_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 4
+     },
+     "free_text": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 4
+     },
+     "non_sensitive": {
+      "precision": 0.5833,
+      "recall": 1.0,
+      "f1": 0.7368,
+      "support": 7
+     }
+    }
+   },
+   "hybrid": {
+    "n_fields": 52,
+    "n_predicted": 52,
+    "accuracy": 0.8846,
+    "macro_f1": 0.743,
+    "sensitive_recall": 0.9024,
+    "subtype_accuracy": 0.8269,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 11
+     },
+     "quasi_identifier": {
+      "precision": 0.9,
+      "recall": 0.9474,
+      "f1": 0.9231,
+      "support": 19
+     },
+     "sensitive_attribute": {
+      "precision": 1.0,
+      "recall": 0.3333,
+      "f1": 0.5,
+      "support": 6
+     },
+     "technical_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 4
+     },
+     "free_text": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 4
+     },
+     "non_sensitive": {
+      "precision": 0.6364,
+      "recall": 1.0,
+      "f1": 0.7778,
+      "support": 7
+     }
+    }
+   },
+   "changed": [
+    {
+     "table": "card_transactions",
+     "column": "merchant_name",
+     "lexicon": "non_sensitive CATEGORY",
+     "hybrid": "quasi_identifier ORG_NAME",
+     "flag": null
+    }
+   ]
+  },
+  "cyber": {
+   "lexicon": {
+    "n_fields": 126,
+    "n_predicted": 126,
+    "accuracy": 0.9524,
+    "macro_f1": 0.8346,
+    "sensitive_recall": 0.9194,
+    "subtype_accuracy": 0.8889,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 17
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.8095,
+      "f1": 0.8947,
+      "support": 21
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+     },
+     "technical_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 17
+     },
+     "free_text": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 6
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 9
+     },
+     "non_sensitive": {
+      "precision": 0.9153,
+      "recall": 0.9818,
+      "f1": 0.9474,
+      "support": 55
+     }
+    }
+   },
+   "hybrid": {
+    "n_fields": 126,
+    "n_predicted": 126,
+    "accuracy": 0.9524,
+    "macro_f1": 0.8352,
+    "sensitive_recall": 0.9355,
+    "subtype_accuracy": 0.8968,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 17
+     },
+     "quasi_identifier": {
+      "precision": 0.9474,
+      "recall": 0.8571,
+      "f1": 0.9,
+      "support": 21
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 1
+     },
+     "technical_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 17
+     },
+     "free_text": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 6
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 9
+     },
+     "non_sensitive": {
+      "precision": 0.9298,
+      "recall": 0.9636,
+      "f1": 0.9464,
+      "support": 55
+     }
+    }
+   },
+   "changed": [
+    {
+     "table": "geoip_ranges",
+     "column": "city",
+     "lexicon": "non_sensitive CATEGORY",
+     "hybrid": "non_sensitive LOCATION_NAME",
+     "flag": null
+    },
+    {
+     "table": "identity",
+     "column": "office",
+     "lexicon": "non_sensitive CATEGORY",
+     "hybrid": "quasi_identifier ORG_NAME",
+     "flag": null
+    },
+    {
+     "table": "incident_tickets",
+     "column": "title",
+     "lexicon": "non_sensitive CATEGORY",
+     "hybrid": "quasi_identifier OCCUPATION",
+     "flag": null
+    }
+   ]
+  },
+  "education": {
+   "lexicon": {
+    "n_fields": 61,
+    "n_predicted": 61,
+    "accuracy": 0.7541,
+    "macro_f1": 0.7785,
+    "sensitive_recall": 0.7917,
+    "subtype_accuracy": 0.5246,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 11
+     },
+     "quasi_identifier": {
+      "precision": 0.9286,
+      "recall": 0.5909,
+      "f1": 0.7222,
+      "support": 22
+     },
+     "sensitive_attribute": {
+      "precision": 0.7778,
+      "recall": 0.7,
+      "f1": 0.7368,
+      "support": 10
+     },
+     "technical_identifier": {
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1": 0.8889,
+      "support": 4
+     },
+     "free_text": {
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6667,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 5
+     },
+     "non_sensitive": {
+      "precision": 0.3333,
+      "recall": 0.625,
+      "f1": 0.4348,
+      "support": 8
+     }
+    }
+   },
+   "hybrid": {
+    "n_fields": 61,
+    "n_predicted": 61,
+    "accuracy": 0.7869,
+    "macro_f1": 0.7945,
+    "sensitive_recall": 0.8542,
+    "subtype_accuracy": 0.5246,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 11
+     },
+     "quasi_identifier": {
+      "precision": 0.8824,
+      "recall": 0.6818,
+      "f1": 0.7692,
+      "support": 22
+     },
+     "sensitive_attribute": {
+      "precision": 0.7778,
+      "recall": 0.7,
+      "f1": 0.7368,
+      "support": 10
+     },
+     "technical_identifier": {
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1": 0.8889,
+      "support": 4
+     },
+     "free_text": {
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6667,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 5
+     },
+     "non_sensitive": {
+      "precision": 0.4167,
+      "recall": 0.625,
+      "f1": 0.5,
+      "support": 8
+     }
+    }
+   },
+   "changed": [
+    {
+     "table": "matriculation_results",
+     "column": "subject_name",
+     "lexicon": "non_sensitive CATEGORY",
+     "hybrid": "quasi_identifier LANGUAGE",
+     "flag": null
+    },
+    {
+     "table": "matriculation_results",
+     "column": "grade",
+     "lexicon": "non_sensitive CATEGORY",
+     "hybrid": "quasi_identifier SEX",
+     "flag": null
+    },
+    {
+     "table": "students",
+     "column": "programme",
+     "lexicon": "non_sensitive CATEGORY",
+     "hybrid": "quasi_identifier OCCUPATION",
+     "flag": null
+    }
+   ]
+  },
+  "mobility": {
+   "lexicon": {
+    "n_fields": 48,
+    "n_predicted": 48,
+    "accuracy": 0.8958,
+    "macro_f1": 0.8945,
+    "sensitive_recall": 0.9048,
+    "subtype_accuracy": 0.7292,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 4
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.8125,
+      "f1": 0.8966,
+      "support": 16
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6667,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 5
+     },
+     "non_sensitive": {
+      "precision": 0.9091,
+      "recall": 0.9091,
+      "f1": 0.9091,
+      "support": 22
+     }
+    }
+   },
+   "hybrid": {
+    "n_fields": 48,
+    "n_predicted": 48,
+    "accuracy": 0.8958,
+    "macro_f1": 0.8945,
+    "sensitive_recall": 0.9048,
+    "subtype_accuracy": 0.7292,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 4
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.8125,
+      "f1": 0.8966,
+      "support": 16
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6667,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 5
+     },
+     "non_sensitive": {
+      "precision": 0.9091,
+      "recall": 0.9091,
+      "f1": 0.9091,
+      "support": 22
+     }
+    }
+   },
+   "changed": [
+    {
+     "table": "bike_stations",
+     "column": "name",
+     "lexicon": "non_sensitive CATEGORY",
+     "hybrid": "non_sensitive MUNICIPALITY",
+     "flag": null
+    },
+    {
+     "table": "stops",
+     "column": "name",
+     "lexicon": "non_sensitive CATEGORY",
+     "hybrid": "non_sensitive MUNICIPALITY",
+     "flag": null
+    },
+    {
+     "table": "stops",
+     "column": "name_sv",
+     "lexicon": "non_sensitive CATEGORY",
+     "hybrid": "non_sensitive MUNICIPALITY",
+     "flag": null
+    }
+   ]
+  },
+  "energy": {
+   "lexicon": {
+    "n_fields": 33,
+    "n_predicted": 33,
+    "accuracy": 0.8485,
+    "macro_f1": 0.8949,
+    "sensitive_recall": 0.8182,
+    "subtype_accuracy": 0.8182,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 6
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.5556,
+      "f1": 0.7143,
+      "support": 9
+     },
+     "sensitive_attribute": {
+      "precision": 0.75,
+      "recall": 0.75,
+      "f1": 0.75,
+      "support": 4
+     },
+     "technical_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 2
+     },
+     "free_text": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 3
+     },
+     "non_sensitive": {
+      "precision": 0.6667,
+      "recall": 1.0,
+      "f1": 0.8,
+      "support": 8
+     }
+    }
+   },
+   "hybrid": {
+    "n_fields": 33,
+    "n_predicted": 33,
+    "accuracy": 0.8485,
+    "macro_f1": 0.8949,
+    "sensitive_recall": 0.8182,
+    "subtype_accuracy": 0.8182,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 6
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.5556,
+      "f1": 0.7143,
+      "support": 9
+     },
+     "sensitive_attribute": {
+      "precision": 0.75,
+      "recall": 0.75,
+      "f1": 0.75,
+      "support": 4
+     },
+     "technical_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 2
+     },
+     "free_text": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 3
+     },
+     "non_sensitive": {
+      "precision": 0.6667,
+      "recall": 1.0,
+      "f1": 0.8,
+      "support": 8
+     }
+    }
+   },
+   "changed": []
+  },
+  "smart_city": {
+   "lexicon": {
+    "n_fields": 26,
+    "n_predicted": 26,
+    "accuracy": 0.9231,
+    "macro_f1": 0.9446,
+    "sensitive_recall": 0.8,
+    "subtype_accuracy": 0.8077,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 3
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.6667,
+      "f1": 0.8,
+      "support": 6
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 4
+     },
+     "non_sensitive": {
+      "precision": 0.8571,
+      "recall": 1.0,
+      "f1": 0.9231,
+      "support": 12
+     }
+    }
+   },
+   "hybrid": {
+    "n_fields": 26,
+    "n_predicted": 26,
+    "accuracy": 0.9615,
+    "macro_f1": 0.9738,
+    "sensitive_recall": 0.9,
+    "subtype_accuracy": 0.7692,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 3
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.8333,
+      "f1": 0.9091,
+      "support": 6
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 4
+     },
+     "non_sensitive": {
+      "precision": 0.9231,
+      "recall": 1.0,
+      "f1": 0.96,
+      "support": 12
+     }
+    }
+   },
+   "changed": [
+    {
+     "table": "sensors",
+     "column": "location_name",
+     "lexicon": "non_sensitive CATEGORY",
+     "hybrid": "non_sensitive MUNICIPALITY",
+     "flag": null
+    },
+    {
+     "table": "sensors",
+     "column": "zone",
+     "lexicon": "non_sensitive CATEGORY",
+     "hybrid": "non_sensitive MUNICIPALITY",
+     "flag": null
+    },
+    {
+     "table": "wifi_probes",
+     "column": "ssid_probed",
+     "lexicon": "non_sensitive CATEGORY",
+     "hybrid": "quasi_identifier ORG_NAME",
+     "flag": null
+    }
+   ]
+  }
+ },
+ "summary": {
+  "lexicon": {
+   "finance": 0.7406,
+   "cyber": 0.8346,
+   "education": 0.7785,
+   "mobility": 0.8945,
+   "energy": 0.8949,
+   "smart_city": 0.9446
+  },
+  "hybrid": {
+   "finance": 0.743,
+   "cyber": 0.8352,
+   "education": 0.7945,
+   "mobility": 0.8945,
+   "energy": 0.8949,
+   "smart_city": 0.9738
+  }
+ }
+}
