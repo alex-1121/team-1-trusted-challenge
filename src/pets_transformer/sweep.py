@@ -1,6 +1,5 @@
 import argparse
 import copy
-import functools
 import json
 import os
 import time
@@ -8,7 +7,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from . import contract as contract_mod, pets, protect, score
+from . import contract as contract_mod, protect, score
 
 WIDTHS = (5, 10, 20)
 BLOCKS = (1, 2, 3)
@@ -40,19 +39,13 @@ def patch(c, width, block):
     return c
 
 
-def run_cell(c, width, block, original, out, results, key):
+def run_cell(c, width, block, original, out, results, key, pets_eval=score.PETS_EVAL):
     cell = f"w{width}_b{block}"
     t0 = time.time()
     prot = Path(out) / cell
-    # protect.py calls pets.hour_of_day without params, so the block is bound here for the duration of the cell.
-    real = pets.hour_of_day
-    pets.hour_of_day = functools.partial(real, block=block)
-    try:
-        protect.protect_folder(patch(c, width, block), original, prot, key)
-    finally:
-        pets.hour_of_day = real
+    protect.protect_folder(patch(c, width, block), original, prot, key)
     res = Path(results) / cell
-    card = score.run(original, prot, "HEALTH-S1", res, contract=None)
+    card = score.run(original, prot, "HEALTH-S1", res, contract=None, pets_eval=pets_eval)
     k_cols = c.get("k_columns") or score.K_COLUMNS
     own = score.own_k(pd.read_csv(prot / "ed_visits.csv", dtype=str), k_cols)[0]
     s = card["summary"]
@@ -83,11 +76,12 @@ def main(argv=None):
     ap.add_argument("--original", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--results", required=True)
+    ap.add_argument("--pets-eval", default=score.PETS_EVAL)
     a = ap.parse_args(argv)
     c = contract_mod.load(a.contract)
     key = os.urandom(32)
     t0 = time.time()
-    rows = [run_cell(c, w, b, a.original, a.out, a.results, key) for w in WIDTHS for b in BLOCKS]
+    rows = [run_cell(c, w, b, a.original, a.out, a.results, key, a.pets_eval) for w in WIDTHS for b in BLOCKS]
     chosen = choose(rows, c["required_tasks"])
     (Path(a.results) / "sweep.md").write_text(table(rows, c["required_tasks"], chosen, time.time() - t0))
     print(f"chosen {chosen['cell']}")

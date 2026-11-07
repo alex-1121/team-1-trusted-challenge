@@ -10,12 +10,23 @@ def _plan_row(table, column, role, pet, params, reason, note=""):
     return {"table": table, "column": column, "role": role, "pet": pet, "params": params and str(params) or "", "reason": reason, "note": note}
 
 
+# Roles a named rule is designed for; a pet not listed (drop, ...) is safe on any role and never notes.
+EXPECTED_ROLES = {
+    "pseudonym": {"direct_identifier"},
+    "age_band": {"quasi_identifier"},
+    "hour_of_day": {"quasi_identifier"},
+    "top_n_exact_else_other": {"quasi_identifier"},
+    "keep": {"technical_identifier", "record_key"},
+}
+
+
 def resolve(name, col, role, contract):
     """Named column rule wins; else the role rule for the detected role; else error. Returns (rule, note)."""
     named = contract["columns"].get(name, {}).get(col)
     by_role = contract.get("roles", {}).get(name, {}).get(role)
     if named:
-        disagree = by_role and by_role["pet"] != named["pet"]
+        expected = EXPECTED_ROLES.get(named["pet"])
+        disagree = role and expected and role not in expected
         return named, f"named rule wins over detected role {role}" if disagree else ""
     if by_role:
         return by_role, ""
@@ -39,7 +50,7 @@ def protect_table(name, df, contract, key, roles=None):
         elif pet == "drop":
             out = pets.drop(out, col)
         elif pet == "hour_of_day":
-            out[col] = pets.hour_of_day(df[col])
+            out[col] = pets.hour_of_day(df[col], params.get("block", 1))
         elif pet == "age_band":
             out[col] = pets.age_band(df[col], params.get("width", 10))
         elif pet == "top_n_exact_else_other":

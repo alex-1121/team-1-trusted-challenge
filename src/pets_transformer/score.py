@@ -4,8 +4,9 @@ from pathlib import Path
 
 import pandas as pd
 
-PETS_EVAL = "/Users/ardasarikaya/Desktop/Business/team-1-trusted/.venv/bin/pets-eval"
-PROVING_GROUND = "/Users/ardasarikaya/Desktop/Business/team-1-trusted/data/proving-ground"
+ROOT = Path(__file__).resolve().parents[2]
+PETS_EVAL = str(ROOT / ".venv" / "bin" / "pets-eval")
+PROVING_GROUND = str(ROOT / "data" / "proving-ground")
 K_COLUMNS = ["date_of_birth", "sex", "municipality", "arrival_ts"]
 LABEL = "self-assessment, not the official judging score"
 
@@ -83,7 +84,7 @@ def run(original, protected, scenario, out, baseline=None, contract=None, pets_e
     if sc.returncode:
         raise RuntimeError(f"pets-eval scorecard failed: {sc.stderr[-500:]}")
     ck = subprocess.run([pets_eval, "check", str(protected)], cwd=pg, capture_output=True, text=True)
-    prefixes = [Path(__file__).resolve().parents[2], pg.absolute().parents[1], pg.resolve().parents[1], Path.home()]
+    prefixes = [ROOT, pg.absolute().parents[1], pg.resolve().parents[1], Path.home()]
     texts = {"check.txt": ck.stdout + ck.stderr}
     for n in ("scorecard.json", "scorecard.html"):
         texts[n] = (out / n).read_text()

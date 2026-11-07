@@ -7,9 +7,9 @@ import pandas as pd
 from . import contract as ct
 from . import detect, protect, score
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = score.ROOT
 PG = ROOT / "data" / "proving-ground"
-BASELINE_DIR = Path(score.PROVING_GROUND).parents[1] / "baseline-scores"
+BASELINE_DIR = ROOT / "baseline-scores"
 
 
 def run(scenario, original=None, out=None, results=None, submission=None, pets_eval=score.PETS_EVAL):
@@ -21,13 +21,12 @@ def run(scenario, original=None, out=None, results=None, submission=None, pets_e
     submission = Path(submission or ROOT / "pets_submission")
     unseen_dir = PG / "data" / "unseen"
     baseline = next(BASELINE_DIR.glob(f"{original.name}_{scenario}_*_raw.json"), None)
-    for need, ok in ((original, original.is_dir()), (unseen_dir, unseen_dir.is_dir()), (BASELINE_DIR / f"{original.name}_{scenario}_*_raw.json", baseline)):
+    for need, ok in ((original, original.is_dir()), (unseen_dir, unseen_dir.is_dir() and any(unseen_dir.glob("*.csv"))), (BASELINE_DIR / f"{original.name}_{scenario}_*_raw.json", baseline)):
         if not ok:
             raise FileNotFoundError(f"build needs {need}")
     results.mkdir(parents=True, exist_ok=True)
 
     labels = detect.detect_dataset(original, original.name)
-    labels.to_csv(results / f"{original.name}_labels.csv", index=False)
     unseen = detect.detect_dataset(unseen_dir, "unseen")[["column", "privacy_role", "subtype"]]
 
     protected = out / original.name
@@ -46,4 +45,5 @@ def run(scenario, original=None, out=None, results=None, submission=None, pets_e
         if f.name != "plan.csv":
             shutil.copy(f, health / f.name)
     unseen.to_csv(submission / "unseen_field_labels.csv", index=False)
+    labels.to_csv(submission / f"{original.name}_field_labels.csv", index=False)
     return plan

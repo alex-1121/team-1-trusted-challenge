@@ -1,15 +1,15 @@
 | table | column | role | pet | params | reason | note |
 |---|---|---|---|---|---|---|
 | ed_visits | visit_id | record_key | keep |  | Record id for the row map and joins; not a person identifier. |  |
-| ed_visits | patient_hetu | direct_identifier | pseudonym |  | Direct identifier; keyed HMAC-SHA256 pseudonym keeps patients linkable for H-U6 revisit analysis while blocking dictionary attack on the national id. | named rule wins over detected role direct_identifier |
+| ed_visits | patient_hetu | direct_identifier | pseudonym |  | Direct identifier; keyed HMAC-SHA256 pseudonym keeps patients linkable for H-U6 revisit analysis while blocking dictionary attack on the national id. |  |
 | ed_visits | patient_name | direct_identifier | drop |  | Direct identifier; no required task needs it (attacker: record linkage by name, phone or address). |  |
-| ed_visits | date_of_birth | quasi_identifier | age_band | {'width': 10, 'also_as': ['age']} | Quasi-identifier; 10-year band written here so the scorer counts it in k, and copied to age for H-U6 (30-day revisit rate by age band). | named rule wins over detected role quasi_identifier |
+| ed_visits | date_of_birth | quasi_identifier | age_band | {'width': 10, 'also_as': ['age']} | Quasi-identifier; 10-year band written here so the scorer counts it in k, and copied to age for H-U6 (30-day revisit rate by age band). |  |
 | ed_visits | sex | quasi_identifier | keep |  | Kept: stratified analysis context; low-cardinality quasi-identifier counted in k. | named rule wins over detected role quasi_identifier |
 | ed_visits | phone | direct_identifier | drop |  | Direct identifier; no required task needs it (attacker: record linkage by name, phone or address). |  |
 | ed_visits | home_address | direct_identifier | drop |  | Direct identifier; no required task needs it (attacker: record linkage by name, phone or address). |  |
 | ed_visits | postcode | quasi_identifier | drop |  | Quasi-identifier finer than needed; municipality serves H-U4 (attacker: linkage to public directory). |  |
-| ed_visits | municipality | quasi_identifier | top_n_exact_else_other | {'n': 8} | Eight largest municipalities exact for H-U4 diagnosis mix, rest become other to lift k (attacker: linkage). | named rule wins over detected role quasi_identifier |
-| ed_visits | arrival_ts | quasi_identifier | hour_of_day |  | Exact timestamp is a quasi-identifier; hour of day as HH:00 serves H-U8 arrival curve, date dropped (no seasonality study possible). | named rule wins over detected role quasi_identifier |
+| ed_visits | municipality | quasi_identifier | top_n_exact_else_other | {'n': 8} | Eight largest municipalities exact for H-U4 diagnosis mix, rest become other to lift k (attacker: linkage). |  |
+| ed_visits | arrival_ts | quasi_identifier | hour_of_day |  | Exact timestamp is a quasi-identifier; hour of day as HH:00 serves H-U8 arrival curve, date dropped (no seasonality study possible). |  |
 | ed_visits | arrival_mode | non_sensitive | keep |  | Low-risk descriptive or clinical value the study uses. |  |
 | ed_visits | ambulance_unit | technical_identifier | drop |  | Device, staff or foreign-key code; no required task needs it (attacker: linkage). |  |
 | ed_visits | triage | non_sensitive | keep |  | Low-risk descriptive or clinical value the study uses. |  |
@@ -30,7 +30,7 @@
 | ed_visits | disposition | non_sensitive | keep |  | Low-risk descriptive or clinical value the study uses. |  |
 | ed_visits | readmit_30d | non_sensitive | keep |  | Low-risk descriptive or clinical value the study uses. |  |
 | lab_results | lab_id | record_key | keep |  | Record id for the row map and joins; not a person identifier. |  |
-| lab_results | visit_id | technical_identifier | keep |  | Join key to ed_visits; H-U7 needs the visit-to-lab join. | named rule wins over detected role technical_identifier |
+| lab_results | visit_id | technical_identifier | keep |  | Join key to ed_visits; H-U7 needs the visit-to-lab join. |  |
 | lab_results | test_code | non_sensitive | keep |  | Low-risk descriptive or clinical value the study uses. |  |
 | lab_results | test_name | non_sensitive | keep |  | Low-risk descriptive or clinical value the study uses. |  |
 | lab_results | value | non_sensitive | keep |  | Low-risk descriptive or clinical value the study uses. |  |

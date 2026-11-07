@@ -12,9 +12,8 @@ from pathlib import Path
 import pandas as pd
 from pets_eval import parse
 
-REPO = Path("/Users/ardasarikaya/Desktop/Business/team-1-trusted")
-PG = REPO / "data" / "proving-ground"
-SRC = PG / "data" / "health"
+REPO = Path(__file__).resolve().parents[2]
+SRC = REPO / "data" / "proving-ground" / "data" / "health"
 OUT = REPO / "out" / "health-s1-gate" / "health"
 KEYFILE = REPO / "out" / "health-s1-gate" / "hmac.key"  # out/ is gitignored
 

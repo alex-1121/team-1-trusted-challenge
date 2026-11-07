@@ -22,6 +22,7 @@ def main(argv=None):
     b.add_argument("--out", help="default: out/<scenario>-build")
     b.add_argument("--results", help="default: results/<scenario>-build")
     b.add_argument("--submission", help="default: pets_submission at the repo root")
+    b.add_argument("--pets-eval", default=score.PETS_EVAL)
     q = sub.add_parser("score", help="run the organisers' scorecard and check, write a summary")
     q.add_argument("--original", required=True)
     q.add_argument("--protected", required=True)
@@ -41,7 +42,7 @@ def main(argv=None):
         plan = protect.protect_folder(c, a.original, a.out, key, labels)
         print(f"wrote {len(plan)} plan rows to {a.out}")
     elif a.cmd == "build":
-        plan = build.run(a.scenario, a.original, a.out, a.results, a.submission)
+        plan = build.run(a.scenario, a.original, a.out, a.results, a.submission, a.pets_eval)
         print(f"built {a.scenario}: {len(plan)} plan rows, results in {a.results or 'results/' + a.scenario.lower() + '-build'}")
     else:
         score.run(a.original, a.protected, a.scenario, a.out, a.baseline, a.contract, a.pets_eval, a.proving_ground)

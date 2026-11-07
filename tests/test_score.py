@@ -28,8 +28,8 @@ def test_summary_without_baseline():
 
 
 def test_rewrite_paths():
-    t = '{"a": "/Users/bob/repo/data/x", "b": "/Users/bob/other/y"}'
-    r = sc.rewrite_paths(t, ["/Users/bob/repo", "/Users/bob"])
+    t = '{"a": "/home/bob/repo/data/x", "b": "/home/bob/other/y"}'
+    r = sc.rewrite_paths(t, ["/home/bob/repo", "/home/bob"])
     assert r == '{"a": "data/x", "b": "other/y"}'
 
 
