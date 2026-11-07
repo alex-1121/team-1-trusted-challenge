@@ -16,7 +16,7 @@ from pathlib import Path
 import pandas as pd
 
 from .semantic import requested_mode
-from .semantic.decide import combine, decide
+from .semantic.decide import combine, decide, treatment
 from .semantic.features import sample_values
 from .semantic.model import load_model
 
@@ -312,9 +312,12 @@ class DetectReport:
     mode: str
 
 
-def _label_column(s: pd.Series, model) -> tuple[tuple[str, str, str], dict | None]:
+def _label_column(s: pd.Series, model, apply: bool = True) -> tuple[tuple[str, str, str], dict | None]:
     """Word lists first; with a model, a column the pattern and number rules did not settle is also read by the
-    model, and combine decides the label. Returns the (role, subtype, kind) label and its type_probs row or None."""
+    model, and combine decides the label. Returns the (role, subtype, kind) label and its type_probs row or None.
+
+    apply=False (advisor mode): the word-list label stands whatever the model says. A model label that would change
+    the column's treatment is flagged "suggest" (unless combine already flagged it) and named in the reason."""
     role, sub, kind, rule = classify_traced(s)
     if model is None or rule in ("pre", "numeric"):
         return (role, sub, kind), None
@@ -323,10 +326,16 @@ def _label_column(s: pd.Series, model) -> tuple[tuple[str, str, str], dict | Non
         return (role, sub, kind), None
     dec = decide(probs)
     r2, s2, flag = combine(role, sub, rule, dec)
+    reason = dec.reason
+    if not apply:
+        if treatment(r2, s2) != treatment(role, sub):
+            flag = flag or "suggest"
+            reason += f"; model suggests {r2} {s2}"
+        r2, s2 = role, sub
     if (r2, s2) != (role, sub):
         kind = ""
     top = sorted(probs, key=probs.get, reverse=True)[:3]
-    row = dict(rule=rule, decision=dec.decision, flag=flag or "", reason=dec.reason)
+    row = dict(rule=rule, decision=dec.decision, flag=flag or "", reason=reason)
     for i, t in enumerate(top, 1):
         row[f"top{i}"], row[f"p{i}"] = t, round(probs[t], 3)
     return (r2, s2, kind), row
@@ -337,10 +346,13 @@ def detect_dataset(data_dir: Path, dataset: str, semantic: str | None = None) ->
 
 
 def detect_dataset_report(data_dir: Path, dataset: str, semantic: str | None = None) -> DetectReport:
-    """semantic: "lexicon" (word lists only), "hybrid" (word lists, then the model) or None (env PETS_SEMANTIC,
-    else hybrid when the model loads). A hybrid request without a model runs lexicon; load_model warns once."""
-    model = None if requested_mode(semantic) == "lexicon" else load_model()
-    mode = "lexicon" if model is None else "hybrid"
+    """semantic: "lexicon" (word lists only), "advisor" (word-list labels, the model only flags columns for review),
+    "hybrid" (word lists, then the model labels the rest) or None (env PETS_SEMANTIC, else advisor when the model
+    loads). A request without a model runs lexicon; load_model warns once."""
+    want = requested_mode(semantic) or "advisor"
+    model = None if want == "lexicon" else load_model()
+    mode = "lexicon" if model is None else want
+    apply = mode == "hybrid"
     tables = {f.stem: pd.read_csv(f, dtype=str, nrows=MAX_ROWS) for f in sorted(Path(data_dir).glob("*.csv"))}
     # The rules read the first MAX_ROWS rows (keys and order rules are tuned on file order). The first rows of a
     # time-sorted table are its first weeks, so a column judged non-sensitive there gets a second look on rows from
@@ -349,9 +361,9 @@ def detect_dataset_report(data_dir: Path, dataset: str, semantic: str | None = N
     rows, prob_rows = [], []
     for t, df in tables.items():
         for c in df.columns:
-            (role, sub, kind), prow = _label_column(df[c], model)
+            (role, sub, kind), prow = _label_column(df[c], model, apply)
             if role == "non_sensitive" and wide[t] is not None:
-                (r2, s2, k2), p2 = _label_column(wide[t][c], model)
+                (r2, s2, k2), p2 = _label_column(wide[t][c], model, apply)
                 if r2 in ESCALATE:
                     (role, sub, kind), prow = (r2, s2, k2), p2
             rows.append(dict(dataset=dataset, table=t, column=c, privacy_role=role, subtype=sub, kind=kind))
@@ -433,9 +445,10 @@ def main(argv=None) -> None:
     ap.add_argument("--dataset", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--columns-only", action="store_true", help="write column,privacy_role,subtype")
-    ap.add_argument("--semantic", choices=["lexicon", "hybrid"], default=None,
-                    help="word lists only, or word lists then the model (default: env PETS_SEMANTIC, else hybrid "
-                         "when the model is installed)")
+    ap.add_argument("--semantic", choices=["lexicon", "advisor", "hybrid"], default=None,
+                    help="word lists only (lexicon); word-list labels with the model flagging columns for review "
+                         "(advisor); or the model also labels what the word lists cannot place (hybrid). Default: env "
+                         "PETS_SEMANTIC, else advisor when the model is installed")
     a = ap.parse_args(argv)
     report = detect_dataset_report(Path(a.data), a.dataset, a.semantic)
     lab = report.labels

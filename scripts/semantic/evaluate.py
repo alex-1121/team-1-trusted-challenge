@@ -196,11 +196,60 @@ def cost() -> dict:
             "gate_at_most_3x": tot["hybrid"] <= 3 * tot["lexicon"]}
 
 
+def advisor() -> dict:
+    """Advisor mode (added after the test run, SPLIT.md): labels must equal lexicon's; each review flag is checked
+    against the answer key. A "catch" flags a column whose word-list role is wrong; a "false alarm" one whose role is
+    right. "missed" counts wrong word-list roles that got no flag. The unseen export has no answer key."""
+    pg = pd.read_csv(PG / "metadata" / "field_catalog.csv", dtype=str)
+    sets = [(PG / "data" / d, d, pg, "proving_ground_" + ("tuning" if d in TUNING else "held_out"))
+            for d in TUNING + HELD_OUT]
+    for split in ("dev", "locked"):
+        cat = pd.read_csv(EVAL / split / "catalog.csv", dtype=str)
+        sets += [(EVAL / split / loc, loc, cat, f"eu_{split}") for loc in sorted(cat.dataset.unique())]
+    sets.append((PG / "data" / "unseen", "unseen", None, "unseen"))
+    body, totals = {"datasets": {}}, {}
+    for folder, name, catalog, group in sets:
+        lex, adv = run(folder, name, "lexicon"), run(folder, name, "advisor")
+        truth = {} if catalog is None else {(r.table, r.column): r.privacy_role
+                                            for r in catalog[catalog.dataset == name].itertuples()}
+        word = {(r.table, r.column): r.privacy_role for r in lex.labels.itertuples()}
+        flags = []
+        for r in adv.needs_review.itertuples():
+            k = (r.table, r.column)
+            verdict = None if k not in truth else ("catch" if word[k] != truth[k] else "false alarm")
+            suggestion = r.reason.split("; model suggests ")[1] if "; model suggests " in r.reason else None
+            flags.append({"table": r.table, "column": r.column, "flag": r.flag, "word_lists": word[k],
+                          "model_suggests": suggestion, "truth": truth.get(k), "verdict": verdict})
+        flagged = {(f["table"], f["column"]) for f in flags}
+        wrong = [k for k in truth if k in word and word[k] != truth[k]]
+        row = {"group": group, "labels_equal_lexicon": bool(lex.labels.equals(adv.labels)), "columns": len(word),
+               "flags": flags, "catches": sum(f["verdict"] == "catch" for f in flags),
+               "false_alarms": sum(f["verdict"] == "false alarm" for f in flags),
+               "word_list_wrong": len(wrong), "missed": sum(k not in flagged for k in wrong)}
+        body["datasets"][name] = row
+        tot = totals.setdefault(group, dict.fromkeys(("columns", "flags", "catches", "false_alarms",
+                                                      "word_list_wrong", "missed"), 0))
+        for key in list(tot):
+            if key != "by_flag":
+                tot[key] += len(row["flags"]) if key == "flags" else row[key]
+        for f in flags:
+            bf = tot.setdefault("by_flag", {}).setdefault(f["flag"], {"flags": 0, "catches": 0, "false_alarms": 0})
+            bf["flags"] += 1
+            bf["catches"] += f["verdict"] == "catch"
+            bf["false_alarms"] += f["verdict"] == "false alarm"
+        print(name, f"flags {len(flags)}, catches {row['catches']}, false alarms {row['false_alarms']}, "
+                    f"missed {row['missed']} of {len(wrong)} wrong, labels equal {row['labels_equal_lexicon']}")
+    body["totals"] = totals
+    body["all_labels_equal_lexicon"] = all(r["labels_equal_lexicon"] for r in body["datasets"].values())
+    return body
+
+
 def main(argv=None) -> None:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     g = ap.add_mutually_exclusive_group(required=True)
     g.add_argument("--split", choices=["dev", "test"])
     g.add_argument("--cost", action="store_true")
+    g.add_argument("--advisor", action="store_true", help="advisor mode: flags against the answer key")
     ap.add_argument("--out", type=Path, default=ROOT / "results" / "detect-semantic")
     a = ap.parse_args(argv)
     if load_model() is None:
@@ -209,6 +258,9 @@ def main(argv=None) -> None:
     st = stamp()
     if a.cost:
         write(a.out, "e5_cost.json", cost(), st)
+        return
+    if a.advisor:
+        write(a.out, "advisor.json", advisor(), st)
         return
     if a.split == "test" and (a.out / "e1_proving_ground_test.json").exists():
         sys.exit("the test split has already been run once (SPLIT.md); not running it again")

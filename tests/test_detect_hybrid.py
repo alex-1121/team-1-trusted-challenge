@@ -148,3 +148,21 @@ def test_empty_dataset_still_gives_a_report(tmp_path):
     report = detect.detect_dataset_report(tmp_path, "nothing", "lexicon")
     assert isinstance(report, detect.DetectReport)
     assert report.labels.empty and report.type_probs.empty and report.needs_review.empty
+
+
+def test_advisor_keeps_word_list_labels_and_flags_model_suggestion(tables, stub):
+    report = detect_dataset_report(tables, "x", "advisor")
+    lexicon = detect_dataset_report(tables, "x", "lexicon")
+    assert report.mode == "advisor" and report.labels.equals(lexicon.labels)
+    assert lab(report, "de_name") == ("non_sensitive", "CATEGORY")  # the model's PERSON_NAME is only a suggestion
+    flagged = report.needs_review.set_index("column")
+    assert flagged.loc["de_name", "flag"] == "suggest"
+    assert "model suggests direct_identifier PERSON_NAME" in flagged.loc["de_name", "reason"]
+    assert flagged.loc["fi_name", "flag"] == "disagree"  # word-list hit, model says CATEGORY 0.95
+
+
+def test_default_with_model_is_advisor(tables, stub, monkeypatch):
+    monkeypatch.delenv("PETS_SEMANTIC")
+    report = detect_dataset_report(tables, "x")
+    assert report.mode == "advisor"
+    assert report.labels.equals(detect_dataset_report(tables, "x", "lexicon").labels)

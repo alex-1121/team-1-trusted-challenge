@@ -31,7 +31,7 @@ def run(scenario, original=None, out=None, results=None, submission=None, pets_e
         semantic=None):
     """scenario names the contract (contracts/<scenario>.json) unless contract_path is given; the organisers'
     scenario id used for scoring is the contract's "scenario" key, else the same name. semantic picks the detector
-    mode ("lexicon" or "hybrid"; None: env PETS_SEMANTIC, else hybrid when the model is installed)."""
+    mode ("lexicon", "advisor" or "hybrid"; None: env PETS_SEMANTIC, else advisor when the model is installed)."""
     reports = {}
 
     def detected(folder: Path, name: str) -> detect.DetectReport:
