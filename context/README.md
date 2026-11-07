@@ -32,6 +32,7 @@ One line per file. Read in this order if you are new: `what-is-expected.md`, `ch
 |---|---|---|
 | `../AGENTS.md` | Rules for coding agents | Before an agent touches the repo |
 | `../decisions.md` | Team decision log | Before reopening a choice |
+| `key-decisions.md` | Every key decision so far, split into teammate decisions and AI (model) decisions, each with who, status and source | Before reopening a choice, or to see who decided what |
 | `../plans/README.md` | How planning works | Before writing a plan |
 | `../data/README.md` | How to restore the proving-ground data | Setting up your machine |
 
