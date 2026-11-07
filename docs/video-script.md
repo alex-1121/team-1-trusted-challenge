@@ -2,6 +2,8 @@
 
 Spoken English, about two and a half minutes, read by us in first person plural. Lines in square brackets are screen cues and are not spoken.
 
+The paste-ready text for the voiceover tool is `docs/video-voiceover.txt`: the spoken lines only, one paragraph each, decimals written as words and the product name spelled Trusted so it is read as one word. Redo that file after any change to a spoken line here.
+
 [title card]
 
 A hospital wants to share emergency room records with researchers. TrustED protects the data before it leaves, picks each column's protection by measuring, and refuses a release that an attack breaks.

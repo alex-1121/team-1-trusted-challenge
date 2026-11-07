@@ -1,0 +1,17 @@
+A hospital wants to share emergency room records with researchers. Trusted protects the data before it leaves, picks each column's protection by measuring, and refuses a release that an attack breaks.
+
+It reads each column and labels it: does it name a person, or only help pick someone out? On the hospital test tables three in four labels are right.
+
+Then it tries every way to hide a column: drop it, keep only the hour or the month, swap names for codes. A way passes if the researchers' five questions still get their answers and under 5 percent of visits sit in a group of fewer than five lookalikes. It keeps the most useful way that passes. Date plus hour exposes almost every visit, so it keeps the hour.
+
+Names and phone numbers go, visit numbers become keyed codes, rows are shuffled, and the 3,746 visits still easy to pick out are coarsened until every group has at least five.
+
+All 46,398 visits stay in. On the organisers' scorer, against its own attackers, privacy rises from zero point one seven to one point zero and usefulness drops from one point zero to zero point nine seven.
+
+We attacked our own earlier release. Row order gave back almost every hidden date, and 10 of 220 news reports named the right patient. Keyed codes and shuffled rows fixed that. Now no attack works, and one that did would stop the release.
+
+The hospital's data steward signs the policy that sets the risk limits. Change one number and the build stops.
+
+Our word lists know Finnish names, so a German surname looks harmless to them. A small language model on the laptop catches those, and no data leaves it. On fake Czech tables it never saw, letting it label raised the score from zero point six to zero point seven seven. Today it only flags columns for a person to check, and on those tables all 28 flags were real mistakes. The build does not wait for that check. Both the word lists and the model come from made-up data, so a real hospital would rebuild the lists and retrain the model on its own data first.
+
+Still open: knowing a visit's diagnosis group, age range, town and hour singles out one visit in ten, 93 percent correctly. Our detector also mislabels triage, how urgent a visit is, as plain, so we count it as known, and then 15 percent of visits stand out. The signature shows which policy was used. Two releases that each pass on their own can still be combined by whoever holds both, until people stand out again. We do not test for that. Today only a secure processing room and a data-use agreement forbid it. Nobody independent has checked our work. These scores are our own, separate from official judging.
