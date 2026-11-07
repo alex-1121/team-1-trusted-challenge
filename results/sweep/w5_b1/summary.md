@@ -17,22 +17,22 @@ Every number is copied from scorecard.json or computed by `score`. self-assessme
 | Component | Before | After |
 | --- | --- | --- |
 | ed_visits: direct identifiers retained | not run | 0.0000 |
-| ed_visits: records with k<5 | not run | 0.3010 |
+| ed_visits: records with k<5 | not run | 0.1683 |
 | ed_visits: linkage re-identification | not run | 0.0000 |
 | ed_visits: free-text identifier leakage | not run | 0.0000 |
 | lab_results: direct identifiers retained | not run | 0.0000 |
 
 ## k-anonymity (smallest group of rows sharing the same attributes)
 
-- Scorer, ed_visits: columns date_of_birth, sex, municipality, arrival_ts, arrival_mode; k<5 share 0.301; median k 9.0; min k 1.
+- Scorer, ed_visits: columns date_of_birth, sex, municipality, arrival_ts; k<5 share 0.1683; median k 15.0; min k 1.
 - Our own, ed_visits: columns date_of_birth, sex, municipality, arrival_ts; k<5 share 0.1683; min k 1.
 
 ## Residual risk
 
-ed_visits, records with k<5, is 0.301: 30.1% of the records share their quasi-identifier combination with fewer than 5 rows, so an attacker who knows those attributes about a person can narrow the match to a handful of rows or one.
+ed_visits, records with k<5, is 0.1683: 16.8% of the records share their quasi-identifier combination with fewer than 5 rows, so an attacker who knows those attributes about a person can narrow the match to a handful of rows or one.
 
 Attacker model: the toolkit's shipped attackers only. Attacks run: linkage re-identification with the shipped attacker files, a dictionary attack on hashed columns, a direct-identifier pattern scan, and k over the quasi-identifiers in the field catalogue. Stronger attackers (more background knowledge, other outside data) were not tested.
 
 ## Scores
 
-- Privacy 0.8194, utility 0.9928, composite 0.8901 (self-assessment, not the official judging score).
+- Privacy 0.899, utility 0.9928, composite 0.9394 (self-assessment, not the official judging score).

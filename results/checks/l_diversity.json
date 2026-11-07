@@ -10,44 +10,19 @@
       "date_of_birth",
       "sex",
       "municipality",
-      "arrival_ts",
-      "arrival_mode"
+      "arrival_ts"
     ],
     "sensitive": "icd10_primary",
     "n_rows": 46398,
-    "n_groups": 6810,
-    "share_groups_l_below_2": 0.2787,
-    "share_groups_l_below_3": 0.4439,
-    "share_records_l_below_2": 0.0438,
-    "share_records_l_below_3": 0.0966,
+    "n_groups": 3811,
+    "share_groups_l_below_2": 0.1128,
+    "share_groups_l_below_3": 0.2359,
+    "share_records_l_below_2": 0.01,
+    "share_records_l_below_3": 0.032,
     "worst_group": {
       "rule": "fewest distinct diagnoses, then largest size",
       "size": 4,
       "distinct": 1
-    }
-  },
-  "proposed_fix": {
-    "change": "drop arrival_mode from ed_visits (named column rule in contracts/HEALTH-S1.json)",
-    "why": "no HEALTH-S1 task reads it; 20-year bands or wider hour blocks break H-U6 and H-U8 (results/sweep/sweep.md)",
-    "result_after": {
-      "columns": [
-        "date_of_birth",
-        "sex",
-        "municipality",
-        "arrival_ts"
-      ],
-      "sensitive": "icd10_primary",
-      "n_rows": 46398,
-      "n_groups": 3811,
-      "share_groups_l_below_2": 0.1128,
-      "share_groups_l_below_3": 0.2359,
-      "share_records_l_below_2": 0.01,
-      "share_records_l_below_3": 0.032,
-      "worst_group": {
-        "rule": "fewest distinct diagnoses, then largest size",
-        "size": 4,
-        "distinct": 1
-      }
     }
   }
 }

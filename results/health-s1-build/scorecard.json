@@ -38,6 +38,7 @@
         "phone",
         "home_address",
         "postcode",
+        "arrival_mode",
         "ambulance_unit",
         "chief_complaint",
         "attending_physician_id",
@@ -53,27 +54,25 @@
           "date_of_birth",
           "sex",
           "municipality",
-          "arrival_ts",
-          "arrival_mode"
+          "arrival_ts"
         ],
         "n": 46398,
-        "n_classes": 6810,
+        "n_classes": 3811,
         "min_k": 1,
-        "median_k": 15.0,
+        "median_k": 27.0,
         "share_below": {
-          "k<2": 0.0384,
-          "k<5": 0.1817,
-          "k<10": 0.3705
+          "k<2": 0.0086,
+          "k<5": 0.0779,
+          "k<10": 0.2205
         },
-        "sample_uniqueness": 0.0384
+        "sample_uniqueness": 0.0086
       },
       "k_anonymity_original": {
         "qis": [
           "date_of_birth",
           "sex",
           "municipality",
-          "arrival_ts",
-          "arrival_mode"
+          "arrival_ts"
         ],
         "n": 46398,
         "n_classes": 46397,
@@ -93,14 +92,13 @@
           "date_of_birth",
           "sex",
           "municipality",
-          "arrival_ts",
-          "arrival_mode"
+          "arrival_ts"
         ],
         "min_distinct_l": 1,
         "min_entropy_l": 1.0,
-        "share_records_l1": 0.0608,
-        "share_classes_l1": 0.3278,
-        "n_classes": 6810
+        "share_records_l1": 0.0186,
+        "share_classes_l1": 0.1564,
+        "n_classes": 3811
       },
       "row_alignment": "row map",
       "linkage": {
@@ -246,11 +244,11 @@
       "regex_residuals": {},
       "risks": {
         "direct identifiers retained": 0.0,
-        "records with k<5": 0.1817,
+        "records with k<5": 0.0779,
         "linkage re-identification": 0.0,
         "free-text identifier leakage": 0.0
       },
-      "seconds": 3.8
+      "seconds": 3.6
     },
     "lab_results": {
       "table": "lab_results",
@@ -385,15 +383,15 @@
     }
   ],
   "summary": {
-    "privacy": 0.891,
+    "privacy": 0.9533,
     "utility": 0.9928,
-    "composite": 0.9346,
+    "composite": 0.9709,
     "label": "self-assessment, not the official judging score",
     "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
   },
   "risk_components": {
     "ed_visits: direct identifiers retained": 0.0,
-    "ed_visits: records with k<5": 0.1817,
+    "ed_visits: records with k<5": 0.0779,
     "ed_visits: linkage re-identification": 0.0,
     "ed_visits: free-text identifier leakage": 0.0,
     "lab_results: direct identifiers retained": 0.0

@@ -71,7 +71,7 @@
       },
       "arrival_mode": {
         "pet": "drop",
-        "reason": "Catalogued quasi-identifier (helicopter and police arrivals are rare); no required task reads it, and dropping it cuts the share of groups with a single diagnosis from 0.2787 to 0.1128 (results/checks/l_diversity.json)."
+        "reason": "Catalogued quasi-identifier (helicopter and police arrivals are rare); no required task reads it, and dropping it cuts the share of groups with a single diagnosis from 0.2787 (results/checks/l_diversity.json at commit a7c9b76) to 0.1128 (results/checks/l_diversity.json)."
       },
       "discharge_ts": {
         "pet": "drop",

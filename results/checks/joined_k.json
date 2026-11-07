@@ -7,7 +7,6 @@
   "result": {
     "join": "ed_visits inner join lab_results on visit_id",
     "columns": [
-      "arrival_mode",
       "arrival_ts",
       "date_of_birth",
       "icd10_primary",
@@ -17,17 +16,16 @@
     ],
     "n_joined_rows": 130341,
     "n_visits": 26209,
-    "n_groups": 22407,
+    "n_groups": 20926,
     "k_unit": "distinct visits per group (one visit has several lab rows, so rows would overstate k)",
-    "share_rows_k_below_5": 0.9799,
-    "share_visits_k_below_5": 0.9794,
-    "share_rows_k_below_5_counting_rows": 0.1601,
+    "share_rows_k_below_5": 0.9525,
+    "share_visits_k_below_5": 0.9518,
+    "share_rows_k_below_5_counting_rows": 0.1438,
     "min_k": 1
   },
   "for_comparison_without_diagnoses": {
     "join": "ed_visits inner join lab_results on visit_id",
     "columns": [
-      "arrival_mode",
       "arrival_ts",
       "date_of_birth",
       "municipality",
@@ -35,11 +33,11 @@
     ],
     "n_joined_rows": 130341,
     "n_visits": 26209,
-    "n_groups": 5714,
+    "n_groups": 3423,
     "k_unit": "distinct visits per group (one visit has several lab rows, so rows would overstate k)",
-    "share_rows_k_below_5": 0.2844,
-    "share_visits_k_below_5": 0.2967,
-    "share_rows_k_below_5_counting_rows": 0.0224,
+    "share_rows_k_below_5": 0.1459,
+    "share_visits_k_below_5": 0.157,
+    "share_rows_k_below_5_counting_rows": 0.0082,
     "min_k": 1
   }
 }
