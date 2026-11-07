@@ -6,6 +6,21 @@ Instructions for every coding agent working in this repository. Humans: read `RE
 
 The team build for the TrustED PETs Transformer challenge at Since AI Hackathon 2026 (Turku, 6-8 November). Detect sensitive data types in synthetic datasets, apply a privacy-enhancing transformation per type and sharing scenario, and show with measured numbers what risk was removed and what utility remains. Read `context/README.md` before doing anything else; `context/challenge-digest.md` is the challenge in one page.
 
+## Git
+
+Goal: never lose or overwrite a teammate's work. Commit and push only when the teammate running you asks.
+
+- Before every push, in this order:
+  1. Commit your work. Do not stash it and do not leave it uncommitted.
+  2. `git pull --rebase origin main` (on `main`), or `git fetch origin` then `git rebase origin/main` (on a branch).
+  3. Resolve conflicts, if there are any (see below).
+  4. If code changed, run `pytest` and check that it passes.
+  5. `git push`.
+- If the push is rejected, someone pushed first. Go back to step 2. Never answer a rejected push with `--force`.
+- Never force-push `main`. On your own branch, after a rebase, use only `git push --force-with-lease`.
+- Conflicts: keep what both sides meant. Never settle one by taking a whole file from one side (`--ours` or `--theirs`). If you cannot tell what the other change meant, stop and ask the teammate running you.
+- Never run `git reset --hard`, `git checkout -- .`, `git clean -fd` or `git branch -D` on work you did not write.
+
 ## Data rules
 
 - `data/proving-ground/` is gitignored. Never commit a CSV, parquet or any file from it. `data/README.md` says how to restore it.
