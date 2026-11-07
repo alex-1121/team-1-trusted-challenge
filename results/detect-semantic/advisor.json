@@ -1,0 +1,1598 @@
+{
+ "commit": "cf054d6762aea9d7f42f54efe21a9a7cc44b3a82",
+ "uncommitted_changes": false,
+ "encoder": "intfloat/multilingual-e5-small",
+ "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+ "head_created": "2026-11-07T19:05:03Z",
+ "temperature": 2.6,
+ "thresholds": {
+  "decide": {
+   "conf": 0.8,
+   "risk": 0.2
+  },
+  "combine": {
+   "agree": 0.3,
+   "conf": 0.8
+  }
+ },
+ "created": "2026-11-07T20:45:03Z",
+ "datasets": {
+  "finance": {
+   "group": "proving_ground_tuning",
+   "labels_equal_lexicon": true,
+   "columns": 52,
+   "flags": [
+    {
+     "table": "card_transactions",
+     "column": "merchant_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier ORG_NAME",
+     "truth": "sensitive_attribute",
+     "verdict": "catch"
+    },
+    {
+     "table": "card_transactions",
+     "column": "merchant_country",
+     "flag": "disagree",
+     "word_lists": "quasi_identifier",
+     "model_suggests": null,
+     "truth": "quasi_identifier",
+     "verdict": "false alarm"
+    },
+    {
+     "table": "customers",
+     "column": "preferred_language",
+     "flag": "disagree",
+     "word_lists": "quasi_identifier",
+     "model_suggests": null,
+     "truth": "quasi_identifier",
+     "verdict": "false alarm"
+    },
+    {
+     "table": "transfers",
+     "column": "from_name",
+     "flag": "disagree",
+     "word_lists": "direct_identifier",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "false alarm"
+    }
+   ],
+   "catches": 1,
+   "false_alarms": 3,
+   "word_list_wrong": 6,
+   "missed": 5
+  },
+  "cyber": {
+   "group": "proving_ground_tuning",
+   "labels_equal_lexicon": true,
+   "columns": 126,
+   "flags": [
+    {
+     "table": "edr_alerts",
+     "column": "command_line",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "free_text",
+     "verdict": "false alarm"
+    },
+    {
+     "table": "edr_alerts",
+     "column": "file_path",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "free_text",
+     "verdict": "false alarm"
+    },
+    {
+     "table": "email_gateway",
+     "column": "subject",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "free_text",
+     "verdict": "false alarm"
+    },
+    {
+     "table": "email_gateway",
+     "column": "attachment_names",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "free_text",
+     "verdict": "false alarm"
+    },
+    {
+     "table": "identity",
+     "column": "surname",
+     "flag": "disagree",
+     "word_lists": "direct_identifier",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "false alarm"
+    },
+    {
+     "table": "identity",
+     "column": "department",
+     "flag": "disagree",
+     "word_lists": "quasi_identifier",
+     "model_suggests": null,
+     "truth": "quasi_identifier",
+     "verdict": "false alarm"
+    },
+    {
+     "table": "identity",
+     "column": "office",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier ORG_NAME",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "incident_tickets",
+     "column": "title",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier OCCUPATION",
+     "truth": "non_sensitive",
+     "verdict": "false alarm"
+    },
+    {
+     "table": "signin_logs",
+     "column": "geo_country",
+     "flag": "disagree",
+     "word_lists": "quasi_identifier",
+     "model_suggests": null,
+     "truth": "quasi_identifier",
+     "verdict": "false alarm"
+    },
+    {
+     "table": "vpn_logs",
+     "column": "geo_country",
+     "flag": "disagree",
+     "word_lists": "quasi_identifier",
+     "model_suggests": null,
+     "truth": "quasi_identifier",
+     "verdict": "false alarm"
+    }
+   ],
+   "catches": 1,
+   "false_alarms": 9,
+   "word_list_wrong": 6,
+   "missed": 5
+  },
+  "education": {
+   "group": "proving_ground_tuning",
+   "labels_equal_lexicon": true,
+   "columns": 61,
+   "flags": [
+    {
+     "table": "counsellor_notes",
+     "column": "language",
+     "flag": "disagree",
+     "word_lists": "quasi_identifier",
+     "model_suggests": null,
+     "truth": "quasi_identifier",
+     "verdict": "false alarm"
+    },
+    {
+     "table": "course_grades",
+     "column": "course_name",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "matriculation_results",
+     "column": "subject_code",
+     "flag": "disagree",
+     "word_lists": "quasi_identifier",
+     "model_suggests": null,
+     "truth": "quasi_identifier",
+     "verdict": "false alarm"
+    },
+    {
+     "table": "matriculation_results",
+     "column": "subject_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier LANGUAGE",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "matriculation_results",
+     "column": "grade",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier SEX",
+     "truth": "sensitive_attribute",
+     "verdict": "catch"
+    },
+    {
+     "table": "matriculation_results",
+     "column": "exam_language",
+     "flag": "disagree",
+     "word_lists": "quasi_identifier",
+     "model_suggests": null,
+     "truth": "quasi_identifier",
+     "verdict": "false alarm"
+    },
+    {
+     "table": "students",
+     "column": "last_name",
+     "flag": "disagree",
+     "word_lists": "direct_identifier",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "false alarm"
+    },
+    {
+     "table": "students",
+     "column": "programme",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier OCCUPATION",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    }
+   ],
+   "catches": 4,
+   "false_alarms": 4,
+   "word_list_wrong": 15,
+   "missed": 11
+  },
+  "mobility": {
+   "group": "proving_ground_tuning",
+   "labels_equal_lexicon": true,
+   "columns": 48,
+   "flags": [],
+   "catches": 0,
+   "false_alarms": 0,
+   "word_list_wrong": 5,
+   "missed": 5
+  },
+  "energy": {
+   "group": "proving_ground_tuning",
+   "labels_equal_lexicon": true,
+   "columns": 33,
+   "flags": [],
+   "catches": 0,
+   "false_alarms": 0,
+   "word_list_wrong": 5,
+   "missed": 5
+  },
+  "smart_city": {
+   "group": "proving_ground_tuning",
+   "labels_equal_lexicon": true,
+   "columns": 26,
+   "flags": [
+    {
+     "table": "wifi_probes",
+     "column": "ssid_probed",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier MUNICIPALITY",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    }
+   ],
+   "catches": 1,
+   "false_alarms": 0,
+   "word_list_wrong": 2,
+   "missed": 1
+  },
+  "health": {
+   "group": "proving_ground_held_out",
+   "labels_equal_lexicon": true,
+   "columns": 53,
+   "flags": [
+    {
+     "table": "clinical_notes",
+     "column": "language",
+     "flag": "disagree",
+     "word_lists": "quasi_identifier",
+     "model_suggests": null,
+     "truth": "quasi_identifier",
+     "verdict": "false alarm"
+    },
+    {
+     "table": "ed_visits",
+     "column": "triage",
+     "flag": "unclear",
+     "word_lists": "non_sensitive",
+     "model_suggests": null,
+     "truth": "sensitive_attribute",
+     "verdict": "catch"
+    },
+    {
+     "table": "ed_visits",
+     "column": "chief_complaint",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "free_text",
+     "verdict": "false alarm"
+    },
+    {
+     "table": "lab_results",
+     "column": "test_code",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier LOCATION_NAME",
+     "truth": "non_sensitive",
+     "verdict": "false alarm"
+    },
+    {
+     "table": "lab_results",
+     "column": "test_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier ORG_NAME",
+     "truth": "non_sensitive",
+     "verdict": "false alarm"
+    },
+    {
+     "table": "lab_results",
+     "column": "abnormal_flag",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier LANGUAGE",
+     "truth": "sensitive_attribute",
+     "verdict": "catch"
+    },
+    {
+     "table": "published_weekly_stats",
+     "column": "diagnosis_group",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier LANGUAGE",
+     "truth": "sensitive_attribute",
+     "verdict": "catch"
+    }
+   ],
+   "catches": 3,
+   "false_alarms": 4,
+   "word_list_wrong": 14,
+   "missed": 11
+  },
+  "public_admin": {
+   "group": "proving_ground_held_out",
+   "labels_equal_lexicon": true,
+   "columns": 37,
+   "flags": [
+    {
+     "table": "building_permits",
+     "column": "project_type",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier MUNICIPALITY",
+     "truth": "non_sensitive",
+     "verdict": "false alarm"
+    },
+    {
+     "table": "service_requests",
+     "column": "language",
+     "flag": "disagree",
+     "word_lists": "quasi_identifier",
+     "model_suggests": null,
+     "truth": "quasi_identifier",
+     "verdict": "false alarm"
+    }
+   ],
+   "catches": 0,
+   "false_alarms": 2,
+   "word_list_wrong": 7,
+   "missed": 7
+  },
+  "customer_service": {
+   "group": "proving_ground_held_out",
+   "labels_equal_lexicon": true,
+   "columns": 39,
+   "flags": [
+    {
+     "table": "customers",
+     "column": "accessibility_needs",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier SEX",
+     "truth": "sensitive_attribute",
+     "verdict": "catch"
+    },
+    {
+     "table": "turns",
+     "column": "speaker",
+     "flag": "disagree",
+     "word_lists": "quasi_identifier",
+     "model_suggests": null,
+     "truth": "non_sensitive",
+     "verdict": "catch"
+    }
+   ],
+   "catches": 2,
+   "false_alarms": 0,
+   "word_list_wrong": 9,
+   "missed": 7
+  },
+  "de_DE": {
+   "group": "eu_dev",
+   "labels_equal_lexicon": true,
+   "columns": 22,
+   "flags": [
+    {
+     "table": "customers",
+     "column": "full_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "first_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "last_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "phone",
+     "flag": "unclear",
+     "word_lists": "non_sensitive",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "street_address",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier STREET_ADDRESS",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "full_address",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "city",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier MUNICIPALITY",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "sex",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier SEX",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "occupation",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier OCCUPATION",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "employer",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier ORG_NAME",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    }
+   ],
+   "catches": 10,
+   "false_alarms": 0,
+   "word_list_wrong": 13,
+   "missed": 3
+  },
+  "es_ES": {
+   "group": "eu_dev",
+   "labels_equal_lexicon": true,
+   "columns": 22,
+   "flags": [
+    {
+     "table": "customers",
+     "column": "full_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "first_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "last_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "street_address",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "full_address",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "licence_plate",
+     "flag": "unclear",
+     "word_lists": "non_sensitive",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "city",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier LOCATION_NAME",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "sex",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier SEX",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "occupation",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "employer",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    }
+   ],
+   "catches": 10,
+   "false_alarms": 0,
+   "word_list_wrong": 13,
+   "missed": 3
+  },
+  "fi_FI": {
+   "group": "eu_dev",
+   "labels_equal_lexicon": true,
+   "columns": 22,
+   "flags": [
+    {
+     "table": "customers",
+     "column": "city",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier MUNICIPALITY",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "occupation",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier OCCUPATION",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    }
+   ],
+   "catches": 2,
+   "false_alarms": 0,
+   "word_list_wrong": 3,
+   "missed": 1
+  },
+  "fr_FR": {
+   "group": "eu_dev",
+   "labels_equal_lexicon": true,
+   "columns": 22,
+   "flags": [
+    {
+     "table": "customers",
+     "column": "full_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "first_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "last_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "phone",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "street_address",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "full_address",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "city",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "sex",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier SEX",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "occupation",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier OCCUPATION",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "employer",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier ORG_NAME",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    }
+   ],
+   "catches": 10,
+   "false_alarms": 0,
+   "word_list_wrong": 13,
+   "missed": 3
+  },
+  "it_IT": {
+   "group": "eu_dev",
+   "labels_equal_lexicon": true,
+   "columns": 22,
+   "flags": [
+    {
+     "table": "customers",
+     "column": "full_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "first_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "last_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "street_address",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "full_address",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "city",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier MUNICIPALITY",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "sex",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier SEX",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "occupation",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier OCCUPATION",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "employer",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    }
+   ],
+   "catches": 9,
+   "false_alarms": 0,
+   "word_list_wrong": 13,
+   "missed": 4
+  },
+  "mixed_EU": {
+   "group": "eu_dev",
+   "labels_equal_lexicon": true,
+   "columns": 22,
+   "flags": [
+    {
+     "table": "customers",
+     "column": "full_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "first_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "last_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "phone",
+     "flag": "unclear",
+     "word_lists": "non_sensitive",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "street_address",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier STREET_ADDRESS",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "full_address",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "city",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier MUNICIPALITY",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "sex",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier SEX",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "occupation",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier OCCUPATION",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "employer",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    }
+   ],
+   "catches": 10,
+   "false_alarms": 0,
+   "word_list_wrong": 13,
+   "missed": 3
+  },
+  "nl_NL": {
+   "group": "eu_dev",
+   "labels_equal_lexicon": true,
+   "columns": 22,
+   "flags": [
+    {
+     "table": "customers",
+     "column": "full_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "first_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "last_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "phone",
+     "flag": "unclear",
+     "word_lists": "non_sensitive",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "city",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier MUNICIPALITY",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "sex",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier SEX",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "occupation",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier OCCUPATION",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "employer",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    }
+   ],
+   "catches": 8,
+   "false_alarms": 0,
+   "word_list_wrong": 13,
+   "missed": 5
+  },
+  "pl_PL": {
+   "group": "eu_dev",
+   "labels_equal_lexicon": true,
+   "columns": 22,
+   "flags": [
+    {
+     "table": "customers",
+     "column": "full_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "first_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "last_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "street_address",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "full_address",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "city",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier MUNICIPALITY",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "sex",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier SEX",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "occupation",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier OCCUPATION",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "employer",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    }
+   ],
+   "catches": 9,
+   "false_alarms": 0,
+   "word_list_wrong": 14,
+   "missed": 5
+  },
+  "sv_SE": {
+   "group": "eu_dev",
+   "labels_equal_lexicon": true,
+   "columns": 22,
+   "flags": [
+    {
+     "table": "customers",
+     "column": "first_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "last_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "city",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier MUNICIPALITY",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "sex",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier SEX",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "occupation",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier OCCUPATION",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    }
+   ],
+   "catches": 5,
+   "false_alarms": 0,
+   "word_list_wrong": 7,
+   "missed": 2
+  },
+  "cs_CZ": {
+   "group": "eu_locked",
+   "labels_equal_lexicon": true,
+   "columns": 22,
+   "flags": [
+    {
+     "table": "customers",
+     "column": "full_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "first_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "last_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "street_address",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier STREET_ADDRESS",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "full_address",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "city",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier MUNICIPALITY",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "sex",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier SEX",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "occupation",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier OCCUPATION",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "employer",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier ORG_NAME",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    }
+   ],
+   "catches": 9,
+   "false_alarms": 0,
+   "word_list_wrong": 14,
+   "missed": 5
+  },
+  "hu_HU": {
+   "group": "eu_locked",
+   "labels_equal_lexicon": true,
+   "columns": 22,
+   "flags": [
+    {
+     "table": "customers",
+     "column": "full_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "first_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "last_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "street_address",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "full_address",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "city",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier MUNICIPALITY",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "sex",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier SEX",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "occupation",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier OCCUPATION",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "employer",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier ORG_NAME",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    }
+   ],
+   "catches": 9,
+   "false_alarms": 0,
+   "word_list_wrong": 14,
+   "missed": 5
+  },
+  "pt_PT": {
+   "group": "eu_locked",
+   "labels_equal_lexicon": true,
+   "columns": 22,
+   "flags": [
+    {
+     "table": "customers",
+     "column": "full_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "first_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "last_name",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "direct_identifier PERSON_NAME",
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "phone",
+     "flag": "unclear",
+     "word_lists": "non_sensitive",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "street_address",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "full_address",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "direct_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "city",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier MUNICIPALITY",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "sex",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier SEX",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "occupation",
+     "flag": "disagree",
+     "word_lists": "free_text",
+     "model_suggests": null,
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    },
+    {
+     "table": "customers",
+     "column": "employer",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier ORG_NAME",
+     "truth": "quasi_identifier",
+     "verdict": "catch"
+    }
+   ],
+   "catches": 10,
+   "false_alarms": 0,
+   "word_list_wrong": 14,
+   "missed": 4
+  },
+  "unseen": {
+   "group": "unseen",
+   "labels_equal_lexicon": true,
+   "columns": 26,
+   "flags": [
+    {
+     "table": "export_2025_q4",
+     "column": "c21",
+     "flag": "suggest",
+     "word_lists": "non_sensitive",
+     "model_suggests": "quasi_identifier ORG_NAME",
+     "truth": null,
+     "verdict": null
+    }
+   ],
+   "catches": 0,
+   "false_alarms": 0,
+   "word_list_wrong": 0,
+   "missed": 0
+  }
+ },
+ "totals": {
+  "proving_ground_tuning": {
+   "columns": 346,
+   "flags": 23,
+   "catches": 7,
+   "false_alarms": 16,
+   "word_list_wrong": 39,
+   "missed": 32,
+   "by_flag": {
+    "suggest": {
+     "flags": 7,
+     "catches": 6,
+     "false_alarms": 1
+    },
+    "disagree": {
+     "flags": 16,
+     "catches": 1,
+     "false_alarms": 15
+    }
+   }
+  },
+  "proving_ground_held_out": {
+   "columns": 129,
+   "flags": 11,
+   "catches": 5,
+   "false_alarms": 6,
+   "word_list_wrong": 30,
+   "missed": 25,
+   "by_flag": {
+    "disagree": {
+     "flags": 4,
+     "catches": 1,
+     "false_alarms": 3
+    },
+    "unclear": {
+     "flags": 1,
+     "catches": 1,
+     "false_alarms": 0
+    },
+    "suggest": {
+     "flags": 6,
+     "catches": 3,
+     "false_alarms": 3
+    }
+   }
+  },
+  "eu_dev": {
+   "columns": 198,
+   "flags": 73,
+   "catches": 73,
+   "false_alarms": 0,
+   "word_list_wrong": 102,
+   "missed": 29,
+   "by_flag": {
+    "suggest": {
+     "flags": 52,
+     "catches": 52,
+     "false_alarms": 0
+    },
+    "unclear": {
+     "flags": 4,
+     "catches": 4,
+     "false_alarms": 0
+    },
+    "disagree": {
+     "flags": 17,
+     "catches": 17,
+     "false_alarms": 0
+    }
+   }
+  },
+  "eu_locked": {
+   "columns": 66,
+   "flags": 28,
+   "catches": 28,
+   "false_alarms": 0,
+   "word_list_wrong": 42,
+   "missed": 14,
+   "by_flag": {
+    "suggest": {
+     "flags": 21,
+     "catches": 21,
+     "false_alarms": 0
+    },
+    "disagree": {
+     "flags": 6,
+     "catches": 6,
+     "false_alarms": 0
+    },
+    "unclear": {
+     "flags": 1,
+     "catches": 1,
+     "false_alarms": 0
+    }
+   }
+  },
+  "unseen": {
+   "columns": 26,
+   "flags": 1,
+   "catches": 0,
+   "false_alarms": 0,
+   "word_list_wrong": 0,
+   "missed": 0,
+   "by_flag": {
+    "suggest": {
+     "flags": 1,
+     "catches": 0,
+     "false_alarms": 0
+    }
+   }
+  }
+ },
+ "all_labels_equal_lexicon": true
+}

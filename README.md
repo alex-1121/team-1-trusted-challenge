@@ -6,7 +6,7 @@ Since AI Hackathon 2026, Turku, 6-8 November. TrustED challenge: protect the dat
 
 We build a working tool that detects what each column and text field of a synthetic dataset contains. It picks a privacy-enhancing transformation (PET) per data type and sharing scenario, and transforms the data. Then it shows, with measured numbers, what risk was removed and what utility remains.
 
-Status (2026-11-07): HEALTH-S1 is the scored scenario; the build detects, selects, protects, repairs, scores and red-teams in one command, and refuses a release that fails an attack or its purpose (`plans/2026-11-07-release-gate.md`). Work in progress on a fork (zraycd/team-1-trusted, branch feat/semantic-types): a multilingual model for column types the word lists cannot place; see plans/2026-11-07-eu-column-types.md. Main keeps the word-list detector until that work passes its checks.
+Status (2026-11-07): HEALTH-S1 is the scored scenario; the build detects, selects, protects, repairs, scores and red-teams in one command, and refuses a release that fails an attack or its purpose (`plans/2026-11-07-release-gate.md`). A multilingual column-type model (`plans/2026-11-07-eu-column-types.md`) runs in advisor mode: the word lists still set every label, the model only flags columns for a person to review (`results/detect-semantic/advisor.json`).
 
 ## Start here
 
@@ -25,10 +25,10 @@ One row per top-level file and folder. Files inside `context/` and `team/` are l
 | `plans/` | Specs, tickets and plans (see `plans/README.md`) |
 | `data/` | The proving-ground data, gitignored; `data/README.md` says how to restore it |
 | `contracts/` | One JSON contract per scenario: recipient, purpose, role rules (by detected role), named column rules with their reasons, and the k target with its repair ladder. `HEALTH-S1.json` is the selector v2 output; `HEALTH-S1.handwritten.json` the hand-written start; `HEALTH-S1-noflag.json`, `HEALTH-S1-pseudonym.json` and `HEALTH-S1-informed.json` are variants for the team decisions below; `PUB-S3.json` is the selector's PUB-S3 contract after a reviewer's edit; `generated/` holds the contracts the selector wrote for HEALTH-S3, EDU-S2, ENERGY-S3 and PUB-S3 |
-| `src/pets_transformer/` | The code: `detect` (labels), `selector` (writes the contract), `pets` and `protect` (the transformations), `repair` (k and l on the rows at risk), `generalise` (what a coarsened value can stand for), `score` (the organisers' scorecard), `checks` and `redteam` (attacks the scorecard does not run), `build` (one command for all of it), `contract`, `sweep` and the command line `cli` |
-| `tests/` | pytest suite for detect, protect, score, checks, the repair sweep, the release gate (tokens, shuffle, repair, hour ranges, selector, new PETs, attacks) and the command-line wiring |
-| `scripts/` | One-off scripts; `scripts/prototypes/` holds early experiments, such as the first HEALTH-S1 arrival-time gate |
-| `results/` | Committed evidence: detector results (`detect/`), the selector's evidence (`selection/`), the red-team gate on the earlier release (`redteam/`), the repair sweep (`sweep/`), early gate runs, and one `<scenario>-build/` folder per build (scorecard, repair search, checks, red team), including the HEALTH-S1 variants |
+| `src/pets_transformer/` | The code: `detect` (labels), `selector` (writes the contract), `pets` and `protect` (the transformations), `repair` (k and l on the rows at risk), `generalise` (what a coarsened value can stand for), `score` (the organisers' scorecard), `checks` and `redteam` (attacks the scorecard does not run), `build` (one command for all of it), `contract`, `sweep` and the command line `cli`; `semantic/` is the optional column-type model (type list, decision rule, features, offline loader and the committed head in `semantic/models/`); by default it only flags columns for review (advisor mode) |
+| `tests/` | pytest suite for detect (word lists and the hybrid type model), protect, score, checks, the repair sweep, the release gate (tokens, shuffle, repair, hour ranges, selector, new PETs, attacks) and the command-line wiring |
+| `scripts/` | One-off scripts; `scripts/prototypes/` holds early experiments, such as the first HEALTH-S1 arrival-time gate; `scripts/semantic/` makes the fake EU test tables and training corpus, the Featherless word lists (`llm_values/`), trains the type model (`train.py`, runbook `TRAINING.md`) and evaluates it |
+| `results/` | Committed evidence: detector results (`detect/`), the column-type model's evidence (`detect-semantic/`, indexed in its `README.md`), the selector's evidence (`selection/`), the red-team gate on the earlier release (`redteam/`), the repair sweep (`sweep/`), early gate runs, and one `<scenario>-build/` folder per build (scorecard, repair search, checks, red team), including the HEALTH-S1 variants |
 | `baseline-scores/` | "Before" scorecards: every original table scored unprotected, one HTML + JSON pair per scenario, named `<dataset>_<SCENARIO>_<recipient>_raw` |
 | `pets_submission/` | What goes to the organisers on request; only the two label files are committed |
 | `demo/` | `the-er-register.html`: the demo-video sequence. A printed sheet of patient records is redacted in blue halftone, shuffled, stamped, folded, addressed and sent; it ends on the HEALTH-S1 numbers. One self-contained HTML file, no build step |
@@ -38,8 +38,8 @@ One row per top-level file and folder. Files inside `context/` and `team/` are l
 | `AGENTS.md` | Rules for every teammate's coding agent |
 | `CLAUDE.md` | One line that imports `AGENTS.md` for Claude Code; holds no rules |
 | `README.md` | This file |
-| `pyproject.toml` | Package definition for `pets_transformer` |
-| `.gitignore` | Keeps the proving-ground data, the attack answer keys (row maps, truth, holdout), protected tables, bulky outputs and secrets out of git |
+| `pyproject.toml` | Package definition for `pets_transformer`; optional extras `semantic` (the type model at run time) and `train` (corpus and training) |
+| `.gitignore` | Keeps the proving-ground data, the attack answer keys (row maps, truth, holdout), protected tables, bulky outputs, the fake corpus and EU test tables (`data/semantic-*`) and secrets out of git |
 
 ## The demo in five items
 
@@ -58,6 +58,28 @@ The detector labels every column from its values alone; it never reads column na
 The target was macro-F1 above 0.65, the organisers' rule baseline B1 (`results/detect/SPLIT.md`). macro-F1 is the F1 score (a balance of missed and wrong labels) worked out per privacy role and then averaged, so rare roles count as much as common ones; 1.0 is perfect. One caveat: eight rules were added after reading public_admin's errors and the held-out label rows, so public_admin's 0.7241 and customer_service's 0.7821 are not clean held-out scores. Before those rules they were 0.5431 and 0.7462 (`results/detect/RESULTS.md`). The rules read the first 5000 rows of a table, which on a time-sorted table are its first weeks; so a column judged non-sensitive there gets a second look on 5000 rows drawn from the whole file, and can only move to a more protective label. That moved one held-out column, health `icd10_secondary`, to diagnosis code: health macro-F1 0.8086 to 0.8202. The change was narrowed after seeing held-out results, so this health score is not a clean held-out score either (`results/detect/RESULTS.md`).
 
 The same detector labelled the organisers' unlabelled HR export: 26 columns in `results/detect/unseen_field_labels.csv`, format `column,privacy_role,subtype`. The organisers hold the answers, so we have no score for it.
+
+**A multilingual model that flags the columns the word lists may have missed** (`plans/2026-11-07-eu-column-types.md`). The word lists know Finnish names and towns; a German surname or a Polish occupation falls through to "category", which is treated as harmless. A small multilingual sentence encoder (`intfloat/multilingual-e5-small`, MIT licence, runs offline on CPU) plus a classifier head trained only on fake data gives such columns one of ten types with calibrated probabilities. We tested two ways to use it. In hybrid mode a word-list match stands and the model labels the fall-through columns. Results, development data first and a test split run once (`results/detect-semantic/SPLIT.md`):
+
+| Check (test split) | Word lists only | Word lists + model |
+|---|---|---|
+| Fake tables from countries never trained on, macro-F1 | cs 0.5963, pt 0.5553, hu 0.5053 | cs 0.7709, pt 0.6976, hu 0.6806 (`results/detect-semantic/e2_eu_test.json`) |
+| Name, address, town, occupation and similar columns labelled harmless there | - | 0 in each country (`results/detect-semantic/e2_eu_test.json`) |
+| Calibration error (gap between stated and actual confidence) | - | 0.0218 (`results/detect-semantic/e3_calibration_test.json`) |
+| Proving-ground held-out macro-F1: health, public_admin, customer_service | 0.8202, 0.7241, 0.7821 | 0.7879, 0.7084, 0.7786 (`results/detect-semantic/e1_proving_ground_test.json`) |
+| Detect time, all nine datasets, laptop CPU | 22.4 s | 54.8 s (`results/detect-semantic/e5_cost.json`) |
+
+The test split was run once, on commit `68aa116` (tag `evidence/68aa116`), before the review fixes to hybrid (the second look at rows from the whole file now runs before the model, so hybrid can no longer end less protective than the word lists). Those numbers were not rerun, so the test-split rows describe hybrid as it was then. The detect-time row is from the rerun after the fixes, on commit `cf054d6` (tag `evidence/cf054d6`). Details in `results/detect-semantic/SPLIT.md`.
+
+The proving-ground row is a miss: the model read lab test codes and a permit type as place or organisation names, confidently, so no warning was raised. So the default is advisor mode, decided after the test run (`results/detect-semantic/SPLIT.md`): the word lists set every label, exactly as before, and the model only adds a review flag when it would treat a column differently. Labels and proving-ground scores are therefore unchanged. Its flags (`results/detect-semantic/advisor.json`; "right" means the word-list label really was wrong):
+
+| Data | Columns | Word-list label wrong | Flagged | Flag right | False alarm |
+|---|---|---|---|---|---|
+| Fake EU tables, countries never trained on (cs, pt, hu) | 66 | 42 | 28 | 28 | 0 |
+| Proving ground, held out (health, public_admin, customer_service) | 129 | 30 | 11 | 5 | 6 |
+| Proving ground, tuning datasets | 346 | 39 | 23 | 7 | 16 |
+
+On foreign data every flag points at a real mistake. On the Finnish proving ground about half the flags on held-out data are false alarms, most of them the model doubting a correct word-list match. A flag says "look at this column", not what the right label is. Next step: add types for codes, medical and education terms and number formats, and train on real tables from EU open-data portals (no personal data in them), with names and addresses kept fake. Limitations: the model is trained on fake data only (Faker and word lists from an open model on Featherless; no real or proving-ground value left the laptop); a word-list match is trusted without question; number formats (phone, national ID, licence plate) are not among its types; warnings do not stop a build.
 
 ### 2. PET per type, selected by the tool
 
@@ -148,6 +170,8 @@ Source for this release: `results/health-s1-build/redteam.json`. The gate runs i
 ## How to run
 
 Install once, from the repo root: create `.venv` at the repo root, install the organisers' `pets-eval` into it (`uv pip install --python .venv/bin/python -e data/proving-ground/toolkit`, see `context/pets-eval-howto.md`), then install this package into it with `uv pip install --python .venv/bin/python -e .`. The proving-ground data must be in place (`data/README.md`).
+
+Optional, the column-type model: `uv pip install --python .venv/bin/python -e ".[semantic]"`, then download the encoder once (471 MB, the only network call): `.venv/bin/python -m pets_transformer.semantic.model --download`. With it installed, `detect` and `build` take `--semantic advisor` (the default when the model is present: word-list labels, model flags), `--semantic hybrid` (the model also labels what the word lists cannot place) or `--semantic lexicon` (word lists only; also set by `PETS_SEMANTIC=lexicon`). Without it, the default runs on the word lists and prints one warning; `--semantic advisor` or `hybrid` (or the same in `PETS_SEMANTIC`) stops with an error (`ModelUnavailable`) instead, and `build` records the mode that ran in `results/detect_mode.json`. Training and evaluation: `scripts/semantic/TRAINING.md` and `scripts/semantic/evaluate.py`.
 
 One command does everything for the health scenario:
 

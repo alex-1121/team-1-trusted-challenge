@@ -15,15 +15,42 @@ BASELINE_DIR = ROOT / "baseline-scores"
 UTILITY_FLOOR = 0.5
 
 
-def run(scenario, original=None, out=None, results=None, submission=None, pets_eval=score.PETS_EVAL, contract_path=None):
+def report_review(reports: list[detect.DetectReport], results: Path) -> str:
+    """Write detect_mode.json (the detector mode that actually ran, per dataset), type_probs.csv and needs_review.csv
+    (names, types and probabilities, no values) to results and return the warning line, or "" when no column is
+    flagged. A flag never stops the build."""
+    results = Path(results)
+    results.mkdir(parents=True, exist_ok=True)
+    modes = {r.labels.dataset.iloc[0] if len(r.labels) else str(i): r.mode for i, r in enumerate(reports)}
+    (results / "detect_mode.json").write_text(json.dumps({"modes": modes}, indent=1) + "\n")
+    print("detector mode: " + ", ".join(f"{d} {m}" for d, m in modes.items()))
+    probs = pd.concat([r.type_probs for r in reports], ignore_index=True)
+    review = pd.concat([r.needs_review for r in reports], ignore_index=True)
+    probs.to_csv(results / "type_probs.csv", index=False)
+    review.to_csv(results / "needs_review.csv", index=False)
+    return detect.review_warning(review, with_dataset=True)
+
+
+def run(scenario, original=None, out=None, results=None, submission=None, pets_eval=score.PETS_EVAL, contract_path=None,
+        semantic=None):
     """scenario names the contract (contracts/<scenario>.json) unless contract_path is given; the organisers'
-    scenario id used for scoring is the contract's "scenario" key, else the same name."""
+    scenario id used for scoring is the contract's "scenario" key, else the same name. semantic picks the detector
+    mode ("lexicon", "advisor" or "hybrid"; None: env PETS_SEMANTIC, else advisor when the model is installed)."""
+    reports = {}
+
+    def detected(folder: Path, name: str) -> detect.DetectReport:
+        # one detection per folder, so the selector, the protector and the submission labels all agree
+        if folder not in reports:
+            reports[folder] = detect.detect_dataset_report(folder, name, semantic)
+        return reports[folder]
+
     cpath = Path(contract_path) if contract_path else ROOT / "contracts" / f"{scenario}.json"
     run_name = f"{scenario.lower()}-build"
     if not cpath.exists():
         # no reviewed contract yet: the selector writes one from the detected labels and the scenario's tasks
         sel_original = Path(original or PG / "data" / selector.pio.get_scenario(scenario, PG)["dataset"])
-        c, evidence = selector.select(sel_original, scenario, PG)
+        c, evidence = selector.select(sel_original, scenario, PG,
+                                      labels=detected(sel_original, sel_original.name).labels)
         cpath = ROOT / "contracts" / "generated" / f"{scenario}.auto.json"
         cpath.parent.mkdir(parents=True, exist_ok=True)
         cpath.write_text(json.dumps(c, indent=2, ensure_ascii=False) + "\n")
@@ -44,8 +71,10 @@ def run(scenario, original=None, out=None, results=None, submission=None, pets_e
             raise FileNotFoundError(f"build needs {need}")
     results.mkdir(parents=True, exist_ok=True)
 
-    labels = detect.detect_dataset(original, original.name)
-    unseen = detect.detect_dataset(unseen_dir, "unseen")[["column", "privacy_role", "subtype"]]
+    labels = detected(original, original.name).labels
+    unseen = detected(unseen_dir, "unseen").labels[["column", "privacy_role", "subtype"]]
+    if line := report_review([detected(original, original.name), detected(unseen_dir, "unseen")], results):
+        print(line)
 
     protected = out / original.name
     # A fresh key for every build: tokens from two releases cannot be joined. It sits beside, not inside, the
