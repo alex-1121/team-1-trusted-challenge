@@ -64,3 +64,66 @@ def test_record_key_and_reference_table(tmp_path):
     assert lab.at["a", "privacy_role"] == "record_key"
     # no person in the table, so the date is not a quasi-identifier
     assert lab.at["c", "privacy_role"] == "non_sensitive"
+
+
+def test_sequential_prefixed_id_is_record_key_even_when_not_first(tmp_path):
+    pd.DataFrame({"a": [f"{40000000 + i * 7919 % 9999991}" for i in range(N)],
+                  "b": [f"SR-2024-{i + 1:06d}" for i in range(N)]}).to_csv(tmp_path / "t.csv", index=False)
+    lab = detect_dataset(tmp_path, "synthetic").set_index("column")
+    assert lab.at["b", "privacy_role"] == "record_key"
+    assert lab.at["a", "privacy_role"] == "technical_identifier"
+
+
+def test_repeating_short_prefix_number_is_employee_id(tmp_path):
+    ids = [f"KC-{1000 + i % 300}" for i in range(1200)]
+    pd.DataFrame({"emp": ids}).to_csv(tmp_path / "t.csv", index=False)
+    lab = detect_dataset(tmp_path, "synthetic").set_index("column")
+    assert tuple(lab.loc["emp", ["privacy_role", "subtype"]]) == ("direct_identifier", "EMPLOYEE_ID")
+
+
+def test_hash_paired_one_to_one_with_person_id_is_technical(tmp_path):
+    import hashlib
+    ids = [f"KC-{1000 + i % 300}" for i in range(1200)]
+    pd.DataFrame({"emp": ids, "h": [hashlib.sha256(x.encode()).hexdigest() for x in ids],
+                  "f": [hashlib.sha256(str(i).encode()).hexdigest() for i in range(1200)]}
+                 ).to_csv(tmp_path / "t.csv", index=False)
+    lab = detect_dataset(tmp_path, "synthetic").set_index("column")
+    assert lab.at["h", "privacy_role"] == "technical_identifier"
+    # a hash with no person id behind it stays non_sensitive
+    assert lab.at["f", "privacy_role"] == "non_sensitive"
+
+
+def test_code_blank_where_amount_is_zero_is_sensitive(tmp_path):
+    code = ["", "AY-A", "AY-B", "AY-C"]
+    pd.DataFrame({"emp": [f"KC-{1000 + i % 300}" for i in range(1200)],
+                  "union": [code[i % 4] for i in range(1200)],
+                  "fee": ["0.00" if i % 4 == 0 else f"{20 + i % 30}.{i % 100:02d}" for i in range(1200)]}
+                 ).to_csv(tmp_path / "t.csv", index=False)
+    lab = detect_dataset(tmp_path, "synthetic").set_index("column")
+    assert lab.at["union", "privacy_role"] == "sensitive_attribute"
+    assert tuple(lab.loc["fee", ["privacy_role", "subtype"]]) == ("sensitive_attribute", "FINANCIAL_DATA")
+
+
+def test_monthly_pay_is_sensitive_financial():
+    assert label([f"{2 + i % 3} {i * 7 % 1000:03d},{i % 100:02d}" for i in range(N)]) == ("sensitive_attribute",
+                                                                                         "FINANCIAL_DATA")
+    # small purchase amounts stay quasi-identifiers
+    assert label([f"{1 + i * 0.37:.2f}" for i in range(N)]) == ("quasi_identifier", "FINANCIAL_DATA")
+
+
+def test_finnish_care_titles_are_occupation():
+    assert label(["lähihoitaja", "sairaanhoitaja", "osastonhoitaja", "erikoislääkäri"]) == ("quasi_identifier",
+                                                                                              "OCCUPATION")
+
+
+def test_eight_digit_code_starting_with_zero_is_not_phone():
+    assert label([f"0{i * 7919 % 10000000:07d}" for i in range(N)])[1] != "PHONE"
+    assert label([f"040{i * 7919 % 10000000:07d}" for i in range(N)]) == ("direct_identifier", "PHONE")
+
+
+def test_hetu_with_text_prefix():
+    check = "0123456789ABCDEFHJKLMNPRSTUVWXY"
+    bases = [(f"{d:02d}{m:02d}{y:02d}", f"{i:03d}") for d, m, y, i in
+             zip(range(1, 29), [1 + k % 12 for k in range(28)], range(50, 78), range(2, 900, 31))]
+    hetus = [f"{b}-{n}{check[int(b + n) % 31]}" for b, n in bases]
+    assert label([("HETU " if k % 3 else "") + h for k, h in enumerate(hetus)]) == ("direct_identifier", "NATIONAL_ID")
