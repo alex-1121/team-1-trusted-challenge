@@ -39,3 +39,35 @@ def test_table_missing_from_contract_is_listed(tmp_path):
     assert row.pet == "not released" and row.reason == "not in contract, not released"
     assert not (tmp_path / "out" / "extra.csv").exists()
     assert plan[plan.column == "hetu"].iloc[0].note.startswith("named rule wins")
+
+
+def test_every_taxonomy_role_resolves_in_health_contract():
+    from pathlib import Path
+    from pets_transformer import contract as ct
+    c = ct.load(Path(__file__).parent.parent / "contracts" / "HEALTH-S1.json")
+    roles = ["direct_identifier", "quasi_identifier", "sensitive_attribute", "technical_identifier",
+             "free_text", "record_key", "non_sensitive"]
+    for t, spec in c["tables"].items():
+        if spec["action"] == "release":
+            for r in roles:
+                pr.resolve(t, "unnamed_col", r, c)
+    assert pr.resolve("ed_visits", "unnamed_col", "quasi_identifier", c)[0]["pet"] == "drop"
+
+
+def test_build_refuses_missing_unseen_folder(tmp_path, monkeypatch):
+    from pets_transformer import build
+    (tmp_path / "data" / "health").mkdir(parents=True)
+    monkeypatch.setattr(build, "PG", tmp_path)
+    with pytest.raises(FileNotFoundError, match="unseen"):
+        build.run("HEALTH-S1", out=tmp_path / "o", results=tmp_path / "r", submission=tmp_path / "s")
+    assert not (tmp_path / "s").exists()
+
+
+def test_build_refuses_missing_baseline(tmp_path, monkeypatch):
+    from pets_transformer import build
+    for d in ("health", "unseen"):
+        (tmp_path / "data" / d).mkdir(parents=True)
+    monkeypatch.setattr(build, "PG", tmp_path)
+    monkeypatch.setattr(build, "BASELINE_DIR", tmp_path / "nobase")
+    with pytest.raises(FileNotFoundError, match="raw.json"):
+        build.run("HEALTH-S1", out=tmp_path / "o", results=tmp_path / "r", submission=tmp_path / "s")

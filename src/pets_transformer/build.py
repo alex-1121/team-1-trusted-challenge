@@ -19,11 +19,16 @@ def run(scenario, original=None, out=None, results=None, submission=None, pets_e
     out = Path(out or ROOT / "out" / run_name)
     results = Path(results or ROOT / "results" / run_name)
     submission = Path(submission or ROOT / "pets_submission")
+    unseen_dir = PG / "data" / "unseen"
+    baseline = next(BASELINE_DIR.glob(f"{original.name}_{scenario}_*_raw.json"), None)
+    for need, ok in ((original, original.is_dir()), (unseen_dir, unseen_dir.is_dir()), (BASELINE_DIR / f"{original.name}_{scenario}_*_raw.json", baseline)):
+        if not ok:
+            raise FileNotFoundError(f"build needs {need}")
     results.mkdir(parents=True, exist_ok=True)
 
     labels = detect.detect_dataset(original, original.name)
     labels.to_csv(results / f"{original.name}_labels.csv", index=False)
-    unseen = detect.detect_dataset(PG / "data" / "unseen", "unseen")[["column", "privacy_role", "subtype"]]
+    unseen = detect.detect_dataset(unseen_dir, "unseen")[["column", "privacy_role", "subtype"]]
 
     protected = out / original.name
     # The key sits beside, not inside, the protected folder: that folder is the release.
@@ -31,7 +36,6 @@ def run(scenario, original=None, out=None, results=None, submission=None, pets_e
     plan = protect.protect_folder(contract, original, protected, key, labels)
     shutil.copy(protected / "plan.md", results / "plan.md")
 
-    baseline = next(BASELINE_DIR.glob(f"{original.name}_{scenario}_*_raw.json"))
     score.run(original, protected, scenario, results, baseline, ROOT / "contracts" / f"{scenario}.json", pets_eval)
 
     health = submission / original.name
