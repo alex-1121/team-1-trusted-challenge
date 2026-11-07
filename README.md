@@ -90,7 +90,7 @@ What we guarantee and what we do not: `docs/guarantee-and-residual-risk.md`.
 
 ## How to run
 
-Install once, from the repo root: create `.venv` at the repo root, install the organisers' `pets-eval` into it (`uv pip install --python .venv/bin/python -e data/proving-ground/toolkit`, see `context/pets-eval-howto.md`), then install this package into it with `pip install -e .`. The proving-ground data must be in place (`data/README.md`).
+Install once, from the repo root: create `.venv` at the repo root, install the organisers' `pets-eval` into it (`uv pip install --python .venv/bin/python -e data/proving-ground/toolkit`, see `context/pets-eval-howto.md`), then install this package into it with `uv pip install --python .venv/bin/python -e .`. The proving-ground data must be in place (`data/README.md`).
 
 One command does everything for the health scenario:
 
