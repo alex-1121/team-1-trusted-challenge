@@ -4,5 +4,9 @@ version = "0.1.0"
 requires-python = ">=3.10"
 dependencies = ["pandas"]
 
+[project.optional-dependencies]
+semantic = ["numpy", "sentence-transformers>=3.0"]
+train = ["scikit-learn>=1.4", "Faker==40.44.0", "openai>=1.40", "numpy"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
