@@ -127,3 +127,17 @@ def test_hetu_with_text_prefix():
              zip(range(1, 29), [1 + k % 12 for k in range(28)], range(50, 78), range(2, 900, 31))]
     hetus = [f"{b}-{n}{check[int(b + n) % 31]}" for b, n in bases]
     assert label([("HETU " if k % 3 else "") + h for k, h in enumerate(hetus)]) == ("direct_identifier", "NATIONAL_ID")
+
+
+def test_long_prefixed_number_does_not_crash(tmp_path):
+    pd.DataFrame({"id": [f"TXN{10**21 + i}" for i in range(300)]}).to_csv(tmp_path / "t.csv", index=False)
+    assert len(detect_dataset(tmp_path, "synthetic")) == 1
+
+
+def test_code_blank_where_amount_is_never_zero_is_not_paired(tmp_path):
+    pd.DataFrame({"emp": [f"KC-{1000 + i % 300}" for i in range(1200)],
+                  "union": ["" if i % 20 == 0 else "ABC"[i % 3] for i in range(1200)],
+                  "fee": [f"{20 + i % 30}.{i % 100:02d}" for i in range(1200)]}
+                 ).to_csv(tmp_path / "t.csv", index=False)
+    lab = detect_dataset(tmp_path, "synthetic").set_index("column")
+    assert lab.at["union", "privacy_role"] != "sensitive_attribute"

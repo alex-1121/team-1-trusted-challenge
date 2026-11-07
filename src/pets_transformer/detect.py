@@ -60,7 +60,7 @@ RX = {k: re.compile(v) for k, v in {
     "id": r"[A-Z]{1,5}[-_]?\d{3,}[A-Z]?|[A-Z]{1,4}\d{2,}[A-Z]?|[A-Z]+\d+-\d+[A-Z]?",
     "filename": r"[\w.-]+\.[A-Za-z0-9]{2,4}",
     "postcode": r"\d{5}",
-    "record_id": r"([A-Za-z]{1,5})[-_]?(?:\d+[-_])?(\d{3,})",
+    "record_id": r"([A-Za-z]{1,5})[-_]?(?:\d+[-_])?(\d{3,18})",  # 18 digits still fit an int64
 }.items()}
 ORG = re.compile(r"\b(?:oy|oyj|ab|tmi|ky|ry|ltd|inc|gmbh|school|college|centre|center|hospital|clinic|isp|"
                  r"ravintola|kiinteistöt|säätiö|yhdistys)\b", re.I)
@@ -272,7 +272,7 @@ def _union_pairs(df: pd.DataFrame, lab: pd.DataFrame, t: str) -> None:
             if j == i or not len(v) or v.str.fullmatch(r"-?\d[\d\s ]*[.,]\d{2}").mean() < 0.9:
                 continue
             zero = _numbers(df[lab.at[j, "column"]].fillna("").astype(str)).eq(0)
-            if (zero == blank).mean() >= 0.95:
+            if (zero == blank).mean() >= 0.95 and zero[blank].mean() >= 0.95:
                 lab.loc[i, ["privacy_role", "subtype"]] = ["sensitive_attribute", "CATEGORY"]
                 lab.loc[j, ["privacy_role", "subtype"]] = ["sensitive_attribute", "FINANCIAL_DATA"]
 
