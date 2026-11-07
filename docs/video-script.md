@@ -8,7 +8,7 @@ English narration, first person plural, about 260 spoken words. Screen cues are 
 
 [Title card: TrustED PETs Transformer, then `demo/the-er-register.html`: the raw sheet of patient records]
 
-Hospitals hold data researchers need. Hand it over as it is and you expose patients. Blank everything and the research dies.
+Hospitals hold data that researchers need. Hand it over as it is and you expose patients. Blank everything and the research stops.
 
 **The twist: the official score was wrong (25 s)**
 
@@ -20,7 +20,7 @@ Our first release scored 0.97 on the organisers' scorecard, with linkage risk ze
 
 [Terminal: python -m pets_transformer.cli build --scenario HEALTH-S1]
 
-So now the tool picks its own protection and attacks its own output before anything ships. One command.
+So now the tool picks its own protection and attacks its own output before anything ships, with one command.
 
 [Detector labels]
 
@@ -38,19 +38,19 @@ Protect and repair. Visit numbers become keyed tokens, rows are shuffled. Then o
 
 [results/health-s1-build/redteam.json: gate pass]
 
-Attack. Five attacks run again. Dates rebuilt: zero. Patients named: zero. Only then is the release written. Keep a patient key, as the organisers suggest, and the gate refuses: a third of patients are unique by their visit pattern.
+Attack. The five attacks run again. They rebuild no dates and name no patients, and only then does the tool write the release. Keep a patient key, as the organisers suggest, and the gate refuses, because a third of patients are unique by their visit pattern.
 
 **Before and after (20 s)**
 
 [scorecard.html]
 
-Privacy goes from 0.17 raw to 1.0. The composite rises from 0.28 to 0.99, above our earlier 0.97, and now the number holds up. The same command protects the data for an AI vendor and an education vendor without a single hand-written rule.
+Privacy goes from 0.17 on the raw data to 1.0. The composite rises from 0.28 to 0.99, above our earlier 0.97, and this time the number holds up. The same command protects the data for an AI vendor and for an education vendor, with no hand-written rule.
 
 **Honest limits (10 s)**
 
 [docs/guarantee-and-residual-risk.md]
 
-Someone who already knows a patient's diagnosis can still find one visit in ten. This release is for a trusted research environment, not for the public.
+Someone who already knows a patient's diagnosis can still find one visit in ten. This release is meant for a trusted research environment and must stay out of public hands.
 
 **Close (5 s)**
 
