@@ -36,7 +36,8 @@ def run(scenario, original=None, out=None, results=None, submission=None, pets_e
     signed policy in policy_dir verifies and allows the contract."""
     cpath = Path(contract_path) if contract_path else ROOT / "contracts" / f"{scenario}.json"
     run_name = f"{scenario.lower()}-build"
-    contract = ct.load(cpath) if cpath.exists() else None
+    raw = cpath.read_bytes() if cpath.exists() else None  # hashed and parsed from this one read
+    contract = ct.parse(raw) if raw is not None else None
     scenario = contract["scenario"] if contract else scenario
     dataset = contract.get("dataset", "health") if contract else selector.pio.get_scenario(scenario, PG)["dataset"]
     original = Path(original or PG / "data" / dataset)
@@ -49,23 +50,24 @@ def run(scenario, original=None, out=None, results=None, submission=None, pets_e
     for need, ok in ((original, original.is_dir()), (unseen_dir, unseen_dir.is_dir() and any(unseen_dir.glob("*.csv"))), (BASELINE_DIR / f"{original.name}_{scenario}_*_raw.json", baseline)):
         if not ok:
             raise FileNotFoundError(f"build needs {need}")
-    pol, pol_sha, signature = policy.verify(policy_dir or policy.DEFAULT_DIR, scenario)
+    for name in ("release_record.json", "redteam.json"):  # a refusal from here on must leave no earlier verdict behind
+        (results / name).unlink(missing_ok=True)
+    pol, pol_sha, signature, fingerprint = policy.verify(policy_dir or policy.DEFAULT_DIR, scenario)
     if contract:
-        contract_sha = policy.check_contract(pol, cpath.read_bytes())
+        contract_sha = policy.check_contract(pol, raw)
     else:
         # no reviewed contract yet: the selector writes one from the detected labels and the scenario's tasks, and it
         # has to come out as the contract the steward signed for; a refused one must not replace that file
         c, evidence = selector.select(original, scenario, PG)
-        text = json.dumps(c, indent=2, ensure_ascii=False) + "\n"
-        contract_sha = policy.check_contract(pol, text.encode())
+        raw = (json.dumps(c, indent=2, ensure_ascii=False) + "\n").encode()
+        contract_sha = policy.check_contract(pol, raw)
         cpath = ROOT / "contracts" / "generated" / f"{scenario}.auto.json"
         cpath.parent.mkdir(parents=True, exist_ok=True)
-        cpath.write_text(text)
+        cpath.write_bytes(raw)
         results.mkdir(parents=True, exist_ok=True)
         (results / "selection.json").write_text(json.dumps(evidence, indent=2) + "\n")
-        contract = ct.load(cpath)
+        contract = ct.parse(raw)
     results.mkdir(parents=True, exist_ok=True)
-    (results / "release_record.json").unlink(missing_ok=True)  # a refused rebuild must not leave an earlier record behind
 
     labels = detect.detect_dataset(original, original.name)
     unseen = detect.detect_dataset(unseen_dir, "unseen")[["column", "privacy_role", "subtype"]]
@@ -101,15 +103,20 @@ def run(scenario, original=None, out=None, results=None, submission=None, pets_e
         raise SystemExit(f"red-team gate FAILED ({'; '.join(gate['reasons'])}): pets_submission/ not written. See {rel(results / 'redteam.json')}")
 
     health = submission / original.name
+    released = [f"{original.name}/{n}" for n in redteam.expected_files(contract)] + ["unseen_field_labels.csv", f"{original.name}_field_labels.csv"]
+    allowed = {*released, "release_record.json", original.name}
+    extra = sorted(str(p.relative_to(submission)) for p in submission.rglob("*") if str(p.relative_to(submission)) not in allowed) if submission.exists() else []
+    if extra:
+        raise SystemExit(f"submission folder {rel(submission)} holds files outside this release: {', '.join(extra)}. "
+                         "Nothing was copied or deleted; move them away and build again")
     health.mkdir(parents=True, exist_ok=True)
-    for f in health.glob("*.csv"):
-        f.unlink()
+    for f in released:
+        (submission / f).unlink(missing_ok=True)
     for name in redteam.expected_files(contract):
         shutil.copy(protected / name, health / name)
     unseen.to_csv(submission / "unseen_field_labels.csv", index=False)
     labels.to_csv(submission / f"{original.name}_field_labels.csv", index=False)
-    released = [f"{original.name}/{n}" for n in redteam.expected_files(contract)] + ["unseen_field_labels.csv", f"{original.name}_field_labels.csv"]
-    rec = policy.record(pol, pol_sha, signature, contract_sha, {f: policy.sha256((submission / f).read_bytes()) for f in released}, check_results, gate)
+    rec = policy.record(pol, pol_sha, signature, fingerprint, contract_sha, {f: policy.sha256((submission / f).read_bytes()) for f in released}, check_results, gate)
     for folder in (submission, results):
         (folder / "release_record.json").write_text(json.dumps(rec, indent=2) + "\n")
     return plan

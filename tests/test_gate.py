@@ -1,5 +1,6 @@
 """The release gate and the signed policy: one test per way a release must be refused, and the verdict over the
 committed results. Keys are throwaway ones generated at test time."""
+import inspect
 import json
 import re
 import subprocess
@@ -162,6 +163,7 @@ def test_attack_with_nothing_to_work_on_is_not_applicable_with_a_reason(name, at
 @pytest.mark.parametrize("name, attack, why", [
     ("order_attack", {"value": 0.0, "detail": {"applicable": False, "why": "original time column has no dates"}}, "no dates"),
     ("order_attack", {"value": None, "detail": {}}, "did not run"),
+    ("order_attack", {"value": 0.0002, "detail": {"columns_checked": [{"applicable": None}, {"applicable": False, "why": "no dates"}]}}, "no dates"),
     ("order_attack", {"value": 0.06, "detail": {}}, "over the threshold"),
     ("news_linkage", {"value": None, "detail": None}, "could not run"),
     ("news_linkage", {"value": 0.0, "detail": {"clips": 0, "clips_with_date_and_hour": 0}}, "could not run"),
@@ -375,7 +377,10 @@ def world(tmp_path, monkeypatch, keys):
     pdir.mkdir()
     pfile = pdir / "TOY-S1.policy.json"
     pfile.write_text(json.dumps(toy_policy(cpath.read_bytes()), indent=2))
-    (pdir / "allowed_signers").write_text(f'{policy.PRINCIPAL} namespaces="{policy.NAMESPACE}" {(keys / "steward.pub").read_text()}')
+    signers = tmp_path / "trusted" / "allowed_signers"  # stands in for the repo's fixed policy/allowed_signers
+    signers.parent.mkdir()
+    signers.write_text(f'{policy.PRINCIPAL} namespaces="{policy.NAMESPACE}" {(keys / "steward.pub").read_text()}')
+    monkeypatch.setattr(policy, "ALLOWED_SIGNERS", signers)
     sign(pfile, keys / "steward")
 
     def scorecard(original, protected, scenario, out, baseline=None, contract=None, pets_eval=None):
@@ -388,14 +393,16 @@ def world(tmp_path, monkeypatch, keys):
 
     def go(contract_path=cpath):
         return build.run("TOY-S1", out=out, results=results, submission=submission, contract_path=contract_path, policy_dir=pdir)
-    return SimpleNamespace(go=go, out=out, results=results, submission=submission, pdir=pdir, pfile=pfile, cpath=cpath, contract=contract, root=tmp_path)
+    return SimpleNamespace(go=go, out=out, results=results, submission=submission, pdir=pdir, pfile=pfile, cpath=cpath, contract=contract,
+                           root=tmp_path, signers=signers)
 
 
 def test_build_copies_only_the_contract_files(world):
     (world.submission / "toy").mkdir(parents=True)
-    (world.submission / "toy" / "earlier.csv").write_text("x\n1\n")
+    (world.submission / "toy" / "t.csv").write_text("an earlier build\n")
     world.go()
     assert sorted(f.name for f in (world.submission / "toy").iterdir()) == ["rowmap_t.csv", "t.csv"]
+    assert (world.submission / "toy" / "t.csv").read_text() != "an earlier build\n"
     assert (world.results / "checks" / "not_run.txt").exists()  # no k target: legitimate, and it does not fail the gate
     assert json.loads((world.results / "redteam.json").read_text())["gate"] == "pass"
 
@@ -485,7 +492,7 @@ def test_unsigned_policy_is_refused(world):
 
 
 def test_missing_allowed_signers_is_refused(world):
-    (world.pdir / "allowed_signers").unlink()
+    world.signers.unlink()
     assert_refused(world, "allowed_signers is missing")
 
 
@@ -507,7 +514,7 @@ def test_wrong_signer_is_refused(world, keys):
 
 
 def test_a_trusted_key_under_another_principal_is_refused(world, keys):
-    (world.pdir / "allowed_signers").write_text(f'teammate namespaces="{policy.NAMESPACE}" {(keys / "steward.pub").read_text()}')
+    world.signers.write_text(f'teammate namespaces="{policy.NAMESPACE}" {(keys / "steward.pub").read_text()}')
     assert_refused(world, "does not verify")
 
 
@@ -591,7 +598,7 @@ def test_record_carries_the_results_of_the_checks():
     ev = clean()
     ev["check_results"]["informed_attacker.json"] = {"result": {"protected": {"correct_rate": 0.09}}}
     ev["report"] = {"gate": "pass", "attacks": {"person_fingerprint": {"status": "not_applicable", "reason": "no person key"}, "plain_hash": {"status": "pass"}}}
-    r = policy.record(ev["policy"], "p", "s", "c", {}, ev["check_results"], ev["report"])["residual_risks"]
+    r = policy.record(ev["policy"], "p", "s", "f", "c", {}, ev["check_results"], ev["report"])["residual_risks"]
     assert r["checks"]["informed_attacker"]["protected"]["correct_rate"] == 0.09
     assert r["checks"]["joined_k"]["labs"]["result"]["min_k"] == 1 and r["checks"]["l_diversity"]["worst_group"]["distinct"] == 2
     assert r["attacks_not_applicable"] == {"person_fingerprint": "no person key"}
@@ -619,7 +626,14 @@ def test_a_signed_policy_of_another_scenario_is_refused():
     ({"k_min": None}, "no_k_target"),
     ({"k_min": None, "l_min": None, "no_k_target": ""}, "no_k_target"),
     ({"no_k_target": "says both"}, "no_k_target"),
-    ({"l_min": None}, "integers"),
+    ({"l_min": None}, "an integer of at least"),
+    ({"k_min": 0}, "an integer of at least"),
+    ({"k_min": 1}, "an integer of at least"),
+    ({"k_min": True}, "an integer of at least"),
+    ({"k_min": 5.0}, "an integer of at least"),
+    ({"l_min": 0}, "an integer of at least"),
+    ({"l_min": True}, "an integer of at least"),
+    ({"utility_floor": True}, "utility_floor"),
     ({"attacker_assumption": "other"}, "allowed_contracts"),
 ])
 def test_a_policy_without_a_usable_limit_is_refused_even_when_signed(changes, match):
@@ -706,6 +720,174 @@ def test_repair_search_uses_the_higher_of_its_floor_and_the_policys(tmp_path, po
         return {"utility": [{"id": "U1", "score": 1.0}], "summary": {"privacy": 1.0, "utility": 1.0, "composite": 1.0}}
     repair.search(c, original, tmp_path / "o", tmp_path / "r", b"k" * 32, labels, card, policy_floor=policy_floor)
     assert json.loads((tmp_path / "r" / "repair_search.json").read_text())["floor"] == used
+
+
+def test_a_policy_folder_cannot_bring_its_own_allowed_signers(world, keys, tmp_path):
+    evil = tmp_path / "evil"
+    evil.mkdir()
+    (evil / "allowed_signers").write_text(f'{policy.PRINCIPAL} namespaces="{policy.NAMESPACE}" {(keys / "intruder.pub").read_text()}')
+    (evil / "TOY-S1.policy.json").write_text(json.dumps(toy_policy(world.cpath.read_bytes(), utility_floor=0.0)))
+    sign(evil / "TOY-S1.policy.json", keys / "intruder")
+    with pytest.raises(SystemExit, match="does not verify"):
+        build.run("TOY-S1", out=world.out, results=world.results, submission=world.submission, contract_path=world.cpath, policy_dir=evil)
+    assert not world.submission.exists()
+
+
+def test_no_argument_or_flag_can_move_allowed_signers(capsys):
+    assert policy.ALLOWED_SIGNERS == ROOT / "policy" / "allowed_signers"
+    assert not [n for n in inspect.signature(build.run).parameters if "signer" in n]
+    assert not [n for n in inspect.signature(policy.verify).parameters if "signer" in n]
+    for cmd in ("build", "redteam"):
+        with pytest.raises(SystemExit):
+            cli.main([cmd, "--help"])
+        assert "--allowed" not in capsys.readouterr().out
+
+
+def test_record_names_the_signing_keys_fingerprint(world, keys):
+    world.go()
+    reported = subprocess.run(["ssh-keygen", "-lf", str(keys / "steward.pub")], capture_output=True, text=True, check=True).stdout.split()[1]
+    rec = json.loads((world.submission / "release_record.json").read_text())
+    assert reported.startswith("SHA256:") and rec["signing_key_fingerprint"] == reported
+
+
+def test_the_contract_is_hashed_and_parsed_from_one_read(world, monkeypatch):
+    signed_bytes = world.cpath.read_bytes()
+    real = policy.verify
+
+    def swap_after_the_read(*a):
+        got = real(*a)
+        world.cpath.write_text(json.dumps({**world.contract, "columns": {"t": {**world.contract["columns"]["t"], "colour": {"pet": "drop", "reason": "r"}}}}))
+        return got
+    monkeypatch.setattr(build.policy, "verify", swap_after_the_read)
+    world.go()
+    assert json.loads((world.results / "release_record.json").read_text())["contract_sha256"] == policy.sha256(signed_bytes)
+    assert "colour" in (world.submission / "toy" / "t.csv").read_text().splitlines()[0]
+
+
+def test_the_policy_is_parsed_from_the_bytes_that_verified(world, monkeypatch):
+    real = subprocess.run
+
+    def swap_after_verifying(*a, **k):
+        r = real(*a, **k)
+        world.pfile.write_text(json.dumps(toy_policy(world.cpath.read_bytes(), utility_floor=0.0)))
+        return r
+    monkeypatch.setattr(policy.subprocess, "run", swap_after_verifying)
+    assert policy.verify(world.pdir, "TOY-S1")[0]["utility_floor"] == 0.5
+
+
+def test_a_refusal_at_signature_time_removes_the_earlier_verdict(world):
+    world.results.mkdir()
+    for name in ("release_record.json", "redteam.json"):
+        (world.results / name).write_text('{"gate": "pass"}')
+    (world.pdir / "TOY-S1.policy.json.sig").unlink()
+    with pytest.raises(SystemExit, match="sig is missing"):
+        world.go()
+    assert sorted(world.results.iterdir()) == []
+
+
+def test_a_refusal_at_contract_time_removes_the_earlier_verdict(world):
+    world.results.mkdir()
+    (world.results / "redteam.json").write_text('{"gate": "pass"}')
+    world.cpath.write_bytes(world.cpath.read_bytes() + b" ")
+    with pytest.raises(SystemExit, match="is not the one allowed"):
+        world.go()
+    assert not (world.results / "redteam.json").exists()
+
+
+def test_a_submission_folder_holding_anything_else_is_refused_and_nothing_is_touched(world):
+    world.go()
+    for extra in ("notes.txt", "education/students.csv", "toy/sub/deep.csv", "toy/old_contacts.csv"):
+        (world.submission / extra).parent.mkdir(parents=True, exist_ok=True)
+        (world.submission / extra).write_text("x\n")
+    (world.submission / "toy" / "t.csv").write_text("the earlier release\n")
+    with pytest.raises(SystemExit) as e:
+        world.go()
+    for named in ("notes.txt", "education", "education/students.csv", "toy/sub", "toy/sub/deep.csv", "toy/old_contacts.csv"):
+        assert named in str(e.value)
+    assert (world.submission / "toy" / "t.csv").read_text() == "the earlier release\n"
+    assert all((world.submission / x).exists() for x in ("notes.txt", "education/students.csv", "toy/sub/deep.csv", "toy/old_contacts.csv"))
+
+
+def test_a_rebuild_into_its_own_submission_folder_passes(world):
+    world.go()
+    world.go()
+    assert sorted(str(f.relative_to(world.submission)) for f in world.submission.rglob("*") if f.is_file()) == [
+        "release_record.json", "toy/rowmap_t.csv", "toy/t.csv", "toy_field_labels.csv", "unseen_field_labels.csv"]
+
+
+def test_a_repeating_id_released_as_it_is_is_a_person_key(tmp_path):
+    original = tmp_path / "toy"
+    original.mkdir()
+    n = 40
+    pd.DataFrame({"rec": [f"R-{i:03d}" for i in range(n)], "pid": [f"P-{i % 10}" for i in range(n)],
+                  "municipality": [["Turku", "Oulu", "Espoo", "Vantaa"][(i % 10) % 4] for i in range(n)]}).to_csv(original / "t.csv", index=False)
+    c = {"scenario": "TOY-S1", "tables": {"t": {"action": "release", "record_id": "rec", "reason": "r"}},
+         "columns": {"t": {"rec": {"pet": "token", "params": {"prefix": "T"}, "reason": "r"}, "municipality": {"pet": "keep", "reason": "r"}}},
+         "roles": {"t": {"technical_identifier": {"pet": "keep", "reason": "kept as it is"}}}}
+    specs = tmp_path / "specs.json"
+    specs.write_text(json.dumps({"attacks": []}))
+
+    def fingerprint(role):
+        labels = pd.DataFrame({"table": ["t"] * 3, "column": ["rec", "pid", "municipality"], "privacy_role": ["record_key", role, "quasi_identifier"]})
+        c["roles"]["t"] = {role: {"pet": "keep", "reason": "kept as it is"}}
+        prot = tmp_path / role
+        protect.protect_folder(c, original, prot, b"k" * 32, labels, seed=1)
+        return redteam.run(prot, original, c, tmp_path, T, tmp_path, tmp_path, specs_path=specs)["attacks"]["person_fingerprint"]
+    kept = fingerprint("technical_identifier")
+    assert kept["status"] != "not_applicable" and kept["detail"]["person_column"] == "pid" and kept["detail"]["applicable"] is True
+    assert fingerprint("non_sensitive")["status"] == "not_applicable"
+
+
+def _two_hours(tmp_path, second_table_action):
+    original = tmp_path / "health"
+    original.mkdir()
+    n = 40
+    ts = [f"2025-01-{1 + i // 8:02d} {3 * (i % 8):02d}:15:00" for i in range(n)]
+    pd.DataFrame({"rec": [f"R-{i:03d}" for i in range(n)], "ts": ts}).to_csv(original / "a.csv", index=False)
+    pd.DataFrame({"lab": [f"L-{i:03d}" for i in range(n)], "sampled": ts}).to_csv(original / "b.csv", index=False)
+    c = {"scenario": "TOY-S1", "tables": {"a": {"action": "release", "record_id": "rec", "reason": "r"},
+                                          "b": {"action": second_table_action, "record_id": "lab", "reason": "r"}},
+         "columns": {"a": {"rec": {"pet": "token", "params": {"prefix": "T"}, "reason": "r"}, "ts": {"pet": "hour_of_day", "reason": "r"}},
+                     "b": {"lab": {"pet": "token", "params": {"prefix": "L"}, "reason": "r"}, "sampled": {"pet": "hour_of_day", "reason": "r"}}}}
+    labels = pd.DataFrame({"table": ["a", "a", "b", "b"], "column": ["rec", "ts", "lab", "sampled"],
+                           "privacy_role": ["record_key", "quasi_identifier", "record_key", "quasi_identifier"]})
+    protect.protect_folder(c, original, tmp_path / "out", b"k" * 32, labels, seed=1)
+    return redteam.run(tmp_path / "out", original, c, tmp_path, T)
+
+
+def test_every_hour_column_of_a_released_table_is_attacked(tmp_path):
+    rep = _two_hours(tmp_path, "release")
+    checked = rep["attacks"]["order_attack"]["detail"]["columns_checked"]
+    assert [(x["table"], x["column"]) for x in checked] == [("a", "ts"), ("b", "sampled")] and rep["time_columns"] == [["a", "ts"], ["b", "sampled"]]
+
+
+def test_an_hour_column_of_a_withheld_table_is_not_attacked(tmp_path):
+    rep = _two_hours(tmp_path, "withhold")
+    assert rep["time_columns"] == [["a", "ts"]] and len(rep["attacks"]["order_attack"]["detail"]["columns_checked"]) == 1
+    assert redteam._time_columns({"tables": {"w": {"action": "withhold"}}, "columns": {"w": {"h": {"pet": "hour_of_day"}}}}) == []
+
+
+def _fake_ssh_keygen(tmp_path, monkeypatch, body):
+    """A decoy ssh-keygen first on PATH; it records that it ran."""
+    d = tmp_path / "decoy"
+    d.mkdir()
+    (d / "ssh-keygen").write_text(f"#!/bin/sh\n/usr/bin/touch {d}/ran\n{body}\n")
+    (d / "ssh-keygen").chmod(0o755)
+    monkeypatch.setenv("PATH", str(d))
+    return d
+
+
+def test_ssh_keygen_that_hangs_is_refused(world, monkeypatch, tmp_path):
+    d = _fake_ssh_keygen(tmp_path, monkeypatch, "exec /bin/sleep 5")
+    monkeypatch.setattr(policy, "VERIFY_TIMEOUT", 0.5)
+    assert_refused(world, "did not answer within 0.5 seconds")
+    assert (d / "ran").exists()
+
+
+def test_a_verification_without_a_key_fingerprint_is_refused(world, monkeypatch, tmp_path):
+    d = _fake_ssh_keygen(tmp_path, monkeypatch, "exit 0")
+    assert_refused(world, "reported no key fingerprint")
+    assert (d / "ran").exists()
 
 
 SCENARIOS = {"HEALTH-S1": {"default": "HEALTH-S1.json", "informed": "HEALTH-S1-informed.json"}, "HEALTH-S3": {"default": "generated/HEALTH-S3.auto.json"},

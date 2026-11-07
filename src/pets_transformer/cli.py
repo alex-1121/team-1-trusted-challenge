@@ -25,7 +25,7 @@ def main(argv=None):
     b.add_argument("--submission", help="default: pets_submission at the repo root")
     b.add_argument("--pets-eval", default=score.PETS_EVAL)
     b.add_argument("--contract", help="contract JSON (default: contracts/<scenario>.json)")
-    b.add_argument("--policy-dir", default=policy.DEFAULT_DIR, help="folder with <scenario>.policy.json, its .sig and allowed_signers (default: policy/)")
+    b.add_argument("--policy-dir", default=policy.DEFAULT_DIR, help="folder with <scenario>.policy.json and its .sig (default: policy/); allowed_signers is always policy/allowed_signers")
     q = sub.add_parser("score", help="run the organisers' scorecard and check, write a summary")
     q.add_argument("--original", required=True)
     q.add_argument("--protected", required=True)
