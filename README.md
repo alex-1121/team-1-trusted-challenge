@@ -69,6 +69,8 @@ The same detector labelled the organisers' unlabelled HR export: 26 columns in `
 | Proving-ground held-out macro-F1: health, public_admin, customer_service | 0.8202, 0.7241, 0.7821 | 0.7879, 0.7084, 0.7786 (`results/detect-semantic/e1_proving_ground_test.json`) |
 | Detect time, all nine datasets, laptop CPU | 22.4 s | 54.8 s (`results/detect-semantic/e5_cost.json`) |
 
+The test split was run once, on commit `68aa116` (tag `evidence/68aa116`), before the review fixes to hybrid (the second look at rows from the whole file now runs before the model, so hybrid can no longer end less protective than the word lists). Those numbers were not rerun, so the test-split rows describe hybrid as it was then. The detect-time row is from the rerun after the fixes, on commit `cf054d6` (tag `evidence/cf054d6`). Details in `results/detect-semantic/SPLIT.md`.
+
 The proving-ground row is a miss: the model read lab test codes and a permit type as place or organisation names, confidently, so no warning was raised. So the default is advisor mode, decided after the test run (`results/detect-semantic/SPLIT.md`): the word lists set every label, exactly as before, and the model only adds a review flag when it would treat a column differently. Labels and proving-ground scores are therefore unchanged. Its flags (`results/detect-semantic/advisor.json`; "right" means the word-list label really was wrong):
 
 | Data | Columns | Word-list label wrong | Flagged | Flag right | False alarm |
