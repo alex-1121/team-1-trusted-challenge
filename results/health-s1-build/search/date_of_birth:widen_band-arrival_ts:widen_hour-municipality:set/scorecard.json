@@ -246,7 +246,7 @@
         "linkage re-identification": 0.0,
         "free-text identifier leakage": 0.0
       },
-      "seconds": 11.8
+      "seconds": 4.6
     },
     "lab_results": {
       "table": "lab_results",
@@ -274,7 +274,7 @@
       "risks": {
         "direct identifiers retained": 0.0
       },
-      "seconds": 0.3
+      "seconds": 0.1
     },
     "published_weekly_stats": {
       "table": "published_weekly_stats",

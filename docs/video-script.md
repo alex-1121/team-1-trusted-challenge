@@ -26,13 +26,17 @@ All 46,398 visits stay in. On the organisers' scorer, against its own attackers,
 
 We attacked our own earlier release. Row order gave back almost every hidden date, and 10 of 220 news reports named the right patient. Keyed codes and shuffled rows fixed that. Now no attack works, and one that did would stop the release.
 
+[policy/HEALTH-S1.policy.json and its signature, then the build refusing after one threshold is changed]
+
+The hospital's data steward signs the policy that sets the risk limits. Change one number and the build stops.
+
 [results/detect-semantic/e2_eu_test.json]
 
-Our word lists know Finnish names, so a German surname looks harmless to them. A small language model on the laptop catches those, and no data leaves it. On fake Czech tables it never saw, letting it label raised the score from 0.60 to 0.77. Today it only flags columns for a person to check, and all 28 flags there were real mistakes. More and better training data improves it.
+Our word lists know Finnish names, so a German surname looks harmless to them. A small language model on the laptop catches those, and no data leaves it. On fake Czech tables it never saw, letting it label raised the score from 0.60 to 0.77. Today it only flags columns for a person to check, and on those tables all 28 flags were real mistakes. We expect more training data to help.
 
 [results/health-s1-build/checks/informed_attacker.json]
 
-Still open: knowing a visit's diagnosis group, age range, town and hour singles out one visit in ten, 93 percent correctly. Our detector also mislabels triage, how urgent a visit is, as plain, so we count it as known, and then 15 percent of visits stand out. These scores are our own, separate from official judging.
+Still open: knowing a visit's diagnosis group, age range, town and hour singles out one visit in ten, 93 percent correctly. Our detector also mislabels triage, how urgent a visit is, as plain, so we count it as known, and then 15 percent of visits stand out. The signature shows which policy was used. Nobody independent has checked our work, and nothing controls the data after it leaves. These scores are our own, separate from official judging.
 
 [attribution card: TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0)]
 
@@ -49,13 +53,14 @@ Still open: knowing a visit's diagnosis group, age range, town and hour singles 
 - Privacy 0.17 raw (0.1716), usefulness 1.0 raw: `baseline-scores/health_HEALTH-S1_research-env_raw.json`.
 - Privacy 1.0, usefulness 0.97 (0.971), against the scorer's own attackers only: `results/health-s1-build/scorecard.json`, `results/health-s1-build/summary.md` ("the toolkit's shipped attackers only").
 - Almost every hidden date returns from row order (file order 0.9975; 1.0 sorted by visit_id), 10 of 220 reports name the right patient: `results/redteam/before-7cf541b.json`.
-- No attack works (all five pass, gate pass; dates rebuilt 0.0002, reports 0.0): `results/health-s1-build/redteam.json`.
-- Label score 0.60 to 0.77 on Czech tables, word lists alone then word lists plus model labelling (hybrid mode, test split run once on commit 68aa116): `results/detect-semantic/e2_eu_test.json`, `results/detect-semantic/SPLIT.md`.
-- 28 flags, all real mistakes (fake EU tables, advisor mode): `results/detect-semantic/advisor.json`, `README.md` (flag table).
+- No attack works (all five pass, gate pass; dates rebuilt 0.0003, reports 0.0): `results/health-s1-build/redteam.json`.
+- Signed policy sets the risk limits, build stops when a threshold changes: `policy/HEALTH-S1.policy.json` and its signature, `plans/2026-11-07-release-gate.md`.
+- Label score 0.60 to 0.77 on Czech tables is macro-F1 (0.5963 to 0.7709), word lists alone then word lists plus model labelling (hybrid mode, test split run once on commit 68aa116); the detector line above uses accuracy, so the two are not comparable: `results/detect-semantic/e2_eu_test.json`, `results/detect-semantic/SPLIT.md`.
+- 28 flags, all real mistakes, on the locked fake EU tables only (advisor mode, `eu_locked`): `results/detect-semantic/advisor.json`. On the hospital tables the same advisor raised 7 flags, 3 real and 4 false alarms; over the three held-out proving-ground datasets 11 flags, 5 real (`datasets.health`, `datasets.public_admin`, `datasets.customer_service` in the same file).
 - One visit in ten (0.0971), 93 percent of them correctly (0.9294): `results/health-s1-build/checks/informed_attacker.json`.
 - Triage a detector error (catalogue sensitive_attribute, predicted non_sensitive): `results/detect/health.json` (errors). 15 percent after the repair (0.1547, line not met): `contracts/HEALTH-S1.json` (triage and arrival_ts reasons).
 - Attribution wording: `AGENTS.md`.
 
 Numbers are rounded for speech. The scorecard is our own self-assessment and is separate from the official judging score. The 0.60 to 0.77 score is from the model labelling on its own (hybrid mode); the shipped default is advisor mode, where it only flags.
 
-<!-- spoken words: 355 (counted without the heading, the intro line, screen cues and the sources section) -->
+<!-- spoken words: 397 (counted without the heading, the intro line, screen cues and the sources section) -->

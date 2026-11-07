@@ -1,0 +1,32 @@
+{
+  "scenario": "PUB-S3",
+  "owner_role": "city administration data steward",
+  "recipient": "University research group",
+  "purpose": "Do response times differ between areas and languages?",
+  "agreement_ref": "none: PUB-S3 is a synthetic proving-ground scenario, no real agreement exists",
+  "recipient_duties": [
+    "No re-identification of any person in the release.",
+    "No linkage with public data, including neighbourhood_forum_posts and the public building permits."
+  ],
+  "enforced_after_release": "none",
+  "attack_thresholds": {
+    "order_attack": 0.05,
+    "news_linkage": 0.0,
+    "person_fingerprint": 0.05,
+    "scorer_linkage_band_aware": 0.01,
+    "plain_hash": 0.0
+  },
+  "utility_floor": 0.5,
+  "k_min": 5,
+  "l_min": 1,
+  "no_k_target": null,
+  "required_tasks": [
+    "PUB-U1",
+    "PUB-U2",
+    "PUB-U3"
+  ],
+  "attacker_assumption": "default",
+  "allowed_contracts": {
+    "default": "24abd7e2432bb176416aab064471a47f269864a57da90d2f9ed9325129bd9997"
+  }
+}
