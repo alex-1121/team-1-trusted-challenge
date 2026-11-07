@@ -23,6 +23,19 @@ Each line is a method with its parameters, applied from `contracts/HEALTH-S1.jso
 - **The organisers' own attacker, made band-aware, finds nothing.** Rerun with the age read from the band and the hour-only time left out (it cannot be placed on a date): re-identification 0.0 for the news clips, social posts and public directory (`results/health-s1-build/redteam.json`).
 - **No plain hash and no identifier pattern.** No released value equals the MD5, SHA-1 or SHA-256 of an original value (`results/health-s1-build/redteam.json`). The organisers' regex scan found no residual direct identifiers in the 7 files of the output (`results/health-s1-build/check.txt`).
 
+## What the gate enforces
+
+The lines above are measured, and since the gate change they also block the build. `evaluate` in `src/pets_transformer/redteam.py` decides before any file is copied, and it refuses when:
+
+- **An attack fails or could not run.** Thresholds as in `GATE` (order attack 0.05, news linkage 0.0, person fingerprint 0.05, band-aware linkage 0.01, plain hash 0.0). An attack that had inputs to work on but no result is a failure, for example a release with an hour column and a missing adversary file. Not applicable needs a stated reason: on HEALTH-S1 the fingerprint attack is not applicable because the only repeating key is the visit token in `lab_results`, a table with no quasi-identifier.
+- **k or l misses the contract's target.** The scorer's min k on `ed_visits` under 5, the joined min k on the k columns under 5, or fewer than 2 distinct diagnoses in a group.
+- **A check did not run.** With a k target, the informed attacker must run, l-diversity when the contract names a sensitive column or l above 1, joined k when it names join flags. Only files this run produced count.
+- **A required task is missing or under 0.5,** with the required list taken from the organisers' scenario definition.
+- **An identifier is found.** Any finding of the regex scan, a scan that did not run, or a direct-identifier or free-text leakage risk above zero in the scorecard.
+- **The folder holds something else.** Any CSV the contract does not name (`plan.csv` stays in the protected folder and is never copied). A table the contract withdraws loses its old CSV and row map on rebuild.
+
+The gate does not enforce the informed attacker's result or the exact-code join k below: both are reported, neither blocks the build.
+
 ## What we do not guarantee
 
 - **An attacker who already knows the diagnosis (unless the team switches it off).** One who knows a visit's diagnosis group, age band, municipality and arrival hour at the release's precision singles out exactly one row for 0.0971 of the 46398 visits, 0.9294 of those correctly, counting every coarsened row as someone else (the attacker's best case); against the original at the same precision it is 0.1282 (`results/health-s1-build/checks/informed_attacker.json`). The attacker then sees that visit's length of stay, temperature and lab values. The contract `contracts/HEALTH-S1-informed.json` closes it: the repair also coarsens every row that is unique once the diagnosis group is known, and the informed attacker singles out 0.0; see the open decision below for its cost.

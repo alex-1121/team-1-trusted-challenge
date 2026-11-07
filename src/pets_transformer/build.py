@@ -1,5 +1,5 @@
 """One command: detect, search the repair order, protect, score, run the checks and the red team, and assemble
-pets_submission/ only when the red-team gate passes."""
+pets_submission/ only when redteam.evaluate passes the release."""
 import json
 import shutil
 from pathlib import Path
@@ -13,6 +13,21 @@ ROOT = score.ROOT
 PG = ROOT / "data" / "proving-ground"
 BASELINE_DIR = ROOT / "baseline-scores"
 UTILITY_FLOOR = 0.5
+CHECK_FILES = ("l_diversity.json", "informed_attacker.json", "joined_k.json", "not_run.txt")
+
+
+def run_checks(contract, protected, original, results, argv):
+    """What this run's checks produced, file name -> object. results/ is reused, so the gate gets this and never
+    reads the folder, and the leftovers of an earlier run go first."""
+    out = results / "checks"
+    out.mkdir(parents=True, exist_ok=True)
+    for name in CHECK_FILES:
+        (out / name).unlink(missing_ok=True)
+    try:  # the three extra checks read the contract's k target
+        return checks.run(protected, original, out, PG / "truth", argv, contract)
+    except KeyError as e:
+        (out / "not_run.txt").write_text(f"Checks not run: {e.args[0]}.\n")
+        return {}
 
 
 def report_review(reports: list[detect.DetectReport], results: Path) -> str:
@@ -94,34 +109,24 @@ def run(scenario, original=None, out=None, results=None, submission=None, pets_e
 
     card = score.run(original, protected, scenario, results, baseline, cpath, pets_eval)
     rel = lambda p: str(p.relative_to(ROOT)) if p.is_relative_to(ROOT) else str(p)  # noqa: E731
-    try:  # the three extra checks read the contract's k target
-        checks.run(protected, original, results / "checks", PG / "truth", ["checks", "--protected", rel(protected),
-                   "--original", "data/proving-ground/data/" + original.name, "--contract", rel(cpath), "--truth", "data/proving-ground/truth",
-                   "--out", rel(results / "checks")], contract)
-    except KeyError as e:
-        (results / "checks").mkdir(parents=True, exist_ok=True)
-        (results / "checks" / "not_run.txt").write_text(f"Checks not run: {e.args[0]}.\n")
+    check_results = run_checks(contract, protected, original, results, ["checks", "--protected", rel(protected),
+                               "--original", "data/proving-ground/data/" + original.name, "--contract", rel(cpath), "--truth", "data/proving-ground/truth",
+                               "--out", rel(results / "checks")])
     gate = redteam.run(protected, original, contract, results, PG / "truth", PG / "adversary", label=f"{run_name} ({rel(cpath)})",
                        specs_path=PG / "metadata" / "attack_specs.json")
-    # utility gate: a release that no longer serves its purpose is refused too
-    req = {u["id"]: (u["score"] or 0.0) for u in card["utility"] if u.get("required")}
-    low = {k: v for k, v in req.items() if v < UTILITY_FLOOR}
-    gate["utility_check"] = {"rule": f"every required task scores at least {UTILITY_FLOOR}", "scores": req,
-                             "pass": not low, "below_floor": low}
-    if low:
-        gate["gate"] = "fail"
+    required = (selector.pio.get_scenario(scenario, PG) or {}).get("utility_requirements")
+    csvs = sorted(str(f.relative_to(protected)) for f in protected.rglob("*.csv"))
+    gate.update(redteam.evaluate(contract, gate, card, check_results, card.get("scan"), csvs, required, UTILITY_FLOOR))
     redteam.write(gate, results / "redteam.json")
     if gate["gate"] != "pass":
-        failed = [k for k, r in gate["attacks"].items() if r["pass"] is False] + (["utility"] if low else [])
-        raise SystemExit(f"red-team gate FAILED ({', '.join(failed)}): pets_submission/ not written. See {rel(results / 'redteam.json')}")
+        raise SystemExit(f"red-team gate FAILED ({'; '.join(gate['reasons'])}): pets_submission/ not written. See {rel(results / 'redteam.json')}")
 
     health = submission / original.name
     health.mkdir(parents=True, exist_ok=True)
     for f in health.glob("*.csv"):
         f.unlink()
-    for f in protected.glob("*.csv"):
-        if f.name != "plan.csv":
-            shutil.copy(f, health / f.name)
+    for name in redteam.expected_files(contract):
+        shutil.copy(protected / name, health / name)
     unseen.to_csv(submission / "unseen_field_labels.csv", index=False)
     labels.to_csv(submission / f"{original.name}_field_labels.csv", index=False)
     return plan

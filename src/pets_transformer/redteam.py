@@ -15,9 +15,13 @@
 5. Plain hashes. Any released value that equals the MD5, SHA-1 or SHA-256 of an original value of the same table is
    reversible by a dictionary attack. Measured: worst share of a released column's values found that way.
 
+Every attack ends as pass, fail or not_applicable with a stated reason (attack_status). `evaluate` is the release
+decision: one pure function over results already loaded, which `build` calls before it copies anything.
+
 JSON output holds counts and rates only: never truth values, row-map contents or the values of a group.
 """
 import json
+import math
 import re
 from pathlib import Path
 
@@ -29,6 +33,8 @@ from .generalise import SUPPRESSED, age_ok, hours
 GATE = {"order_attack": 0.05, "news_linkage": 0.0, "person_fingerprint": 0.05, "scorer_linkage_band_aware": 0.01,
         "plain_hash": 0.0}
 HOUR = re.compile(r"^\d\d:00")  # an exact hour or the start of a repair block "03:00 to 05:59"
+NO_QI = "no QI of this attacker survives in the release"
+LEAK_RISKS = ("direct identifiers retained", "free-text identifier leakage")
 
 
 def _read(p):
@@ -168,7 +174,8 @@ def scorer_linkage_band_aware(rel, rowmap, original, main, rid, truth, specs_pat
         return {"specs": [], "worst_reidentification_rate": 0.0}
     hour_only = {c for c in rel.columns if rel[c].astype(str).str.fullmatch(r"\d\d:00|\d\d:00 to \d\d:59|suppressed").mean() > 0.9}
     age_col = "age" if "age" in rel.columns else None
-    identity = _read(Path(truth) / f"{original.name}__{main}.csv")
+    identity_file = Path(truth) / f"{original.name}__{main}.csv"
+    identity = _read(identity_file) if identity_file.exists() else None
     orig = _read(original / f"{main}.csv")
     rm = rowmap.assign(protected_row=rowmap.protected_row.astype(int))
     out = []
@@ -182,14 +189,17 @@ def scorer_linkage_band_aware(rel, rowmap, original, main, rid, truth, specs_pat
                 continue
             qis.append(q)
         q_p = attacks.qis_from_spec(qis, rel.columns)
-        adv = _read(Path(adversary) / f"{sp['adversary']}.csv")
-        adv_truth = _read(Path(truth) / f"adversary__{sp['adversary']}.csv")
         if not q_p:
-            out.append({"adversary": sp["adversary"], "evaluated": False, "reason": "no QI of this attacker survives in the release"})
+            out.append({"adversary": sp["adversary"], "evaluated": False, "reason": NO_QI})
             continue
-        r = attacks.linkage_attack(adv, adv_truth, rel, rm, identity, qis=q_p, original=orig, record_key=rid,
+        adv_file, adv_truth_file = Path(adversary) / f"{sp['adversary']}.csv", Path(truth) / f"adversary__{sp['adversary']}.csv"
+        gone = [f.name for f in (adv_file, adv_truth_file, identity_file) if not f.exists()]
+        if gone:
+            out.append({"adversary": sp["adversary"], "evaluated": False, "reason": "input files missing: " + ", ".join(gone)})
+            continue
+        r = attacks.linkage_attack(_read(adv_file), _read(adv_truth_file), rel, rm, identity, qis=q_p, original=orig, record_key=rid,
                                    sensitive=sp.get("sensitive") if sp.get("sensitive") in rel.columns else None)
-        keep = ("reidentification_rate", "claim_precision", "n_unique_claims", "n_targets_in_data",
+        keep = ("evaluated", "reason", "reidentification_rate", "claim_precision", "n_unique_claims", "n_targets_in_data",
                 "share_targets_in_candidate_set_le5", "median_candidate_set", "attribute_inference")
         out.append({"adversary": sp["adversary"], "qis_used": [{"kind": q.kind, "protected": list(q.prot)} for q in q_p],
                     **{k: r.get(k) for k in keep if k in r}})
@@ -219,6 +229,130 @@ def plain_hash(protected, original, max_values=20000):
     return {"hash_like_columns": found, "worst_share_reversed": round(worst, 4)}
 
 
+def _number(v):
+    return isinstance(v, (int, float)) and math.isfinite(v)
+
+
+def attack_status(name, attack, time_col):
+    """(status, reason) from an attack's stored fields, so a committed report without a status reads the same way.
+    not_applicable only when the release gives the attack nothing to work on; an attack that should have run and
+    could not is a fail, whatever value it left behind."""
+    value, d = attack.get("value"), attack.get("detail") or {}
+    if name in ("order_attack", "news_linkage") and not time_col:
+        return "not_applicable", "no hour-only column in the release"
+    if name == "order_attack" and d.get("applicable") is False:
+        return "fail", f"could not run: {d.get('why')}"
+    if name == "news_linkage":
+        if d.get("applicable") is False:
+            return "not_applicable", d.get("why")
+        if not d.get("clips_with_date_and_hour"):
+            return "fail", "could not run: the release has an hour column, but the news clips or their truth files are missing or hold no clip with a date and an hour"
+    if name == "person_fingerprint" and not any(t.get("applicable") for t in d.get("tables_checked", [])):
+        return ("not_applicable", d["why"]) if d.get("why") else ("fail", "did not run")
+    if name == "scorer_linkage_band_aware":
+        if d.get("specs") is None:
+            return "fail", "could not run: attack specs, truth or adversary folder not available"
+        specs = d["specs"]
+        broken = [s for s in specs if s.get("reason") != NO_QI and not _number(s.get("reidentification_rate"))]
+        if broken:
+            return "fail", "could not run: " + "; ".join(f"{s.get('adversary')}: {s.get('reason', 'no rate measured')}" for s in broken)
+        if not any(_number(s.get("reidentification_rate")) for s in specs):
+            return "not_applicable", NO_QI if specs else "no attack spec targets a released table"
+    if not _number(value):
+        return "fail", "did not run"
+    return ("pass", None) if value <= GATE[name] else ("fail", f"{value} over the threshold {GATE[name]}")
+
+
+def attack_failures(attacks, time_col):
+    """One reason per attack that failed; an attack missing from the report is a failure."""
+    out = []
+    for name in GATE:
+        status, why = attack_status(name, attacks[name], time_col) if name in attacks else ("fail", "did not run")
+        if status == "fail":
+            out.append(f"attack {name}: {why}")
+    return out
+
+
+def shown(attack):
+    """An attack's result for human eyes: a measurement of nothing never reads as 0.0."""
+    if attack["status"] == "not_applicable":
+        return "not applicable"
+    return "did not run" if attack["value"] is None else attack["value"]
+
+
+def expected_files(contract):
+    """The release, from the contract and never from a folder listing: each released table and its row map."""
+    return sorted(f for t, s in contract["tables"].items() if s["action"] == "release" for f in (f"{t}.csv", f"rowmap_{t}.csv"))
+
+
+def _at(d, *path):
+    for p in path:
+        d = d.get(p) if isinstance(d, dict) else None
+    return d
+
+
+def _under(what, value, floor):
+    """The reason value fails a floor, or None when it clears it; a null or NaN is not a measurement."""
+    if not _number(value):
+        return f"{what} not measured"
+    return f"{what} {value} under {floor}" if value < floor else None
+
+
+def evaluate(contract, report, card, check_results, scan, csv_files, required_tasks, utility_floor):
+    """The release decision. Pure: it sees only what this run produced, already loaded.
+    report: redteam.run's output. card: the scorecard. check_results: file name -> object from this run's checks.
+    scan: the structured identifier scan, None if it did not run. csv_files: every CSV under the protected folder,
+    relative to it. required_tasks: the scenario definition's list. Returns gate, reasons and utility_check."""
+    reasons = attack_failures(report.get("attacks") or {}, report.get("time_column"))
+    for t, spec in contract["tables"].items():
+        if spec["action"] == "release" and _at(card, "tables", t, "status") != "released":
+            reasons.append(f"scorecard: table {t} has status {_at(card, 'tables', t, 'status')}")
+
+    kt = contract.get("k_target")
+    if kt:
+        k, l = kt["k"], kt.get("l", 1)
+        need = ["informed_attacker.json"]
+        need += ["l_diversity.json"] if kt.get("sensitive") or l > 1 else []
+        need += ["joined_k.json"] if kt.get("join_flags") else []
+        reasons += [f"check did not run: {n}" for n in need if n not in check_results]
+        reasons.append(_under(f"k: scorer min k of {kt['table']}", _at(card, "tables", kt["table"], "k_anonymity", "min_k"), k))
+        jk = check_results.get("joined_k.json")
+        if jk:  # the top-level result counts the exact diagnosis code; per_join is the only place every join appears
+            for t, j in (jk.get("per_join") or {"the joined tables": jk}).items():
+                reasons.append(_under(f"joined k: min k with {t}", _at(j, "for_comparison_k_columns_only", "min_k"), k))
+        if l > 1 and "l_diversity.json" in check_results:
+            reasons.append(_under("l: fewest distinct values in a group", _at(check_results["l_diversity.json"], "result", "worst_group", "distinct"), l))
+
+    scores = {u.get("id"): u.get("score") for u in card.get("utility") or []}
+    tasks = {t: scores.get(t) for t in required_tasks or []}
+    short = {t: _under(f"required task {t}", v, utility_floor) for t, v in tasks.items()}
+    short = {t: why for t, why in short.items() if why}
+    reasons += [f"utility: {why}" for why in short.values()]
+    if not tasks:
+        reasons.append("utility: the scenario definition names no required task")
+
+    if not isinstance(_at(scan, "totals"), dict) or not _at(scan, "n_files_scanned"):
+        reasons.append("identifier scan: did not run")
+    elif scan["totals"]:
+        reasons.append("identifier scan: found " + ", ".join(f"{k} {v}" for k, v in sorted(scan["totals"].items())))
+    for name, v in (card.get("risk_components") or {}).items():
+        if name.endswith(LEAK_RISKS) and not (_number(v) and v <= 0):
+            reasons.append(f"scorer risk: {name} is {v}")
+
+    expected = set(expected_files(contract))
+    stray = sorted(set(csv_files) - expected - {"plan.csv"})  # plan.csv is protect's own record, never copied
+    reasons += [f"files: unexpected CSV {f}" for f in stray]
+    reasons += [f"files: expected CSV missing {f}" for f in sorted(expected - set(csv_files))]
+
+    reasons = [r for r in reasons if r]
+    return {"gate": "fail" if reasons else "pass", "reasons": reasons,
+            "rule": "every attack at or below its threshold or not applicable with a reason; k, joined k and l at the contract's target; "
+                    "every check the contract needs has run; every required task at the floor; no identifier found; "
+                    "only the contract's files in the release; thresholds are our choice, stated here",
+            "utility_check": {"rule": f"every required task scores at least {utility_floor}", "scores": tasks,
+                              "pass": bool(tasks) and not short, "below_floor": {t: tasks[t] for t in short}}}
+
+
 def run(protected, original, contract, out, truth=None, adversary=None, label="", specs_path=None):
     protected, original, out = Path(protected), Path(original), Path(out)
     main, time_col = _time_column(contract)
@@ -238,10 +372,13 @@ def run(protected, original, contract, out, truth=None, adversary=None, label=""
         oa, rebuilt = {"applicable": False, "why": "no hour-only column in the release", "share_rows_date_rebuilt": 0.0}, None
 
     news = None
-    if time_col and adversary and truth and (Path(adversary) / "news_clips_health.csv").exists():
-        news = news_linkage(rel, rebuilt, rec_ids, _read(Path(adversary) / "news_clips_health.csv"),
-                            _read(Path(truth) / "adversary__news_clips_health.csv"),
-                            _read(Path(truth) / f"{original.name}__{main}.csv"), time_col)
+    if time_col and original.name != "health":
+        news = {"applicable": False, "why": "the news clips describe health visits, and this release holds other data"}
+    elif time_col and adversary and truth:
+        need = [Path(adversary) / "news_clips_health.csv", Path(truth) / "adversary__news_clips_health.csv",
+                Path(truth) / f"{original.name}__{main}.csv"]
+        if all(f.exists() for f in need):
+            news = news_linkage(rel, rebuilt, rec_ids, *map(_read, need), time_col)
     # a person key: a pseudonym, or a token that repeats within a table (one subject, several rows)
     kcols = (contract.get("k_target") or {}).get("columns") or [c for c in ["date_of_birth", "sex", "municipality", time_col] if c]
     pf_all = []
@@ -277,18 +414,20 @@ def run(protected, original, contract, out, truth=None, adversary=None, label=""
 
     results = {
         "order_attack": {"metric": "share_rows_date_rebuilt", "value": oa["share_rows_date_rebuilt"], "detail": oa},
-        "news_linkage": {"metric": "share_clips_reidentified", "value": news["share_clips_reidentified"] if news else None, "detail": news},
+        "news_linkage": {"metric": "share_clips_reidentified", "value": (news or {}).get("share_clips_reidentified"), "detail": news},
         "person_fingerprint": {"metric": "share_persons_unique", "value": pf["share_persons_unique"], "detail": pf},
         "scorer_linkage_band_aware": {"metric": "worst_reidentification_rate", "value": sl["worst_reidentification_rate"] if sl else None, "detail": sl},
         "plain_hash": {"metric": "worst_share_reversed", "value": ph["worst_share_reversed"], "detail": ph},
     }
     for k, r in results.items():
         r["threshold"] = GATE[k]
-        r["pass"] = None if r["value"] is None else bool(r["value"] <= GATE[k])
-    passed = all(r["pass"] is not False for r in results.values())
+        r["status"], r["reason"] = attack_status(k, r, time_col)
+        r["pass"] = {"pass": True, "fail": False}.get(r["status"])
+        if r["status"] == "not_applicable":
+            r["value"] = None  # the 0.0 an idle attack returns is not a measurement
     report = {"release": label or str(protected.name), "table": main, "time_column": time_col,
-              "gate": "pass" if passed else "fail",
-              "rule": "every attack at or below its threshold; thresholds are our choice, stated here",
+              "gate": "fail" if attack_failures(results, time_col) else "pass",
+              "rule": "every attack at or below its threshold or not applicable with a reason; thresholds are our choice, stated here",
               "attacks": results}
     out.mkdir(parents=True, exist_ok=True)
     return report

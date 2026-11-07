@@ -86,12 +86,18 @@ def run(original, protected, scenario, out, baseline=None, contract=None, pets_e
     sc = subprocess.run([pets_eval, "scorecard", "--original", str(original), "--protected", str(protected), "--scenario", scenario, "--out", str(out)], cwd=pg, capture_output=True, text=True)
     if sc.returncode:
         raise RuntimeError(f"pets-eval scorecard failed: {sc.stderr[-500:]}")
-    ck = subprocess.run([pets_eval, "check", str(protected)], cwd=pg, capture_output=True, text=True)
+    scan_file = out / "check.json"
+    scan_file.unlink(missing_ok=True)  # a scan that dies must leave no earlier run's result to read
+    ck = subprocess.run([pets_eval, "check", str(protected), "--out", str(scan_file)], cwd=pg, capture_output=True, text=True)
     prefixes = [ROOT, pg.absolute().parents[1], pg.resolve().parents[1], Path.home()]
     texts = {"check.txt": ck.stdout + ck.stderr}
     for n in ("scorecard.json", "scorecard.html"):
         texts[n] = (out / n).read_text()
     card = json.loads(texts["scorecard.json"])
+    card["scan"] = None
+    if ck.returncode == 0 and scan_file.exists():  # pets-eval check exits 0 on findings too: the JSON is the result
+        texts["check.json"] = scan_file.read_text()
+        card["scan"] = json.loads(texts["check.json"])
     base = json.loads(Path(baseline).read_text()) if baseline else None
     c = json.loads(Path(contract).read_text()) if contract else {}
     k_cols = c.get("k_columns") or K_COLUMNS
