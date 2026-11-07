@@ -4,14 +4,14 @@ The organisers may ask, during the event, for a `pets_submission/` folder so the
 
 ## What the folder holds
 
-`python -m pets_transformer.cli build --scenario HEALTH-S1` fills it (`README.md`, "How to run"):
+`python -m pets_transformer.cli build --scenario HEALTH-S1` fills it (`README.md`, "How to run"), and only when the red-team gate and the utility check pass (`results/health-s1-build/redteam.json`):
 
 - `pets_submission/health/ed_visits.csv` and `pets_submission/health/lab_results.csv`: the protected tables. Not committed.
 - `pets_submission/health/rowmap_ed_visits.csv` and `pets_submission/health/rowmap_lab_results.csv`: one row per protected row, giving the original record id. Not committed.
 - `pets_submission/unseen_field_labels.csv`: the detector's labels for the unseen HR export, format `column,privacy_role,subtype`. Committed.
 - `pets_submission/health_field_labels.csv`: the detector's labels for the health tables. Committed.
 
-The HMAC key is not in the folder. It stays in `out/health-s1-build/hmac.key` and is never handed over: with the key, anyone could recompute the pseudonym of a known national id.
+The HMAC key is not in the folder. A fresh key is drawn for every build and stays in `out/health-s1-build/hmac.key`; it is never handed over: with the key, anyone could recompute the token of a known visit id. Because the key changes per build, tokens from two releases cannot be joined. The rows of both tables are in a random order, and the row maps follow it.
 
 ## Why row maps must not be published
 

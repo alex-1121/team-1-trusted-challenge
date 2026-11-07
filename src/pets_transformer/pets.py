@@ -41,3 +41,31 @@ def copy_to(df: pd.DataFrame, src: str, dst: str) -> pd.DataFrame:
 
 def withhold(columns) -> list:
     return list(columns)
+
+
+def month(s: pd.Series) -> pd.Series:
+    """Calendar month only, YYYY-MM."""
+    return parse.to_datetime(s).dt.strftime("%Y-%m").where(lambda x: x.notna(), s.where(s.isna()))
+
+
+def week(s: pd.Series) -> pd.Series:
+    """ISO week only, YYYY-Www."""
+    d = parse.to_datetime(s)
+    iso = d.dt.isocalendar()
+    return (iso.year.astype("Int64").astype(str) + "-W" + iso.week.astype("Int64").astype(str).str.zfill(2)).where(d.notna())
+
+
+def day(s: pd.Series) -> pd.Series:
+    """Date only, YYYY-MM-DD (time of day dropped)."""
+    return parse.to_datetime(s).dt.strftime("%Y-%m-%d").where(lambda x: x.notna())
+
+
+def round_decimals(s: pd.Series, decimals: int) -> pd.Series:
+    """Coordinates snapped to a grid: 2 decimals of latitude is about 1.1 km, 3 decimals about 110 m."""
+    v = pd.to_numeric(s, errors="coerce")
+    return v.round(decimals).map(lambda x: f"{x:.{decimals}f}" if x == x else x)
+
+
+def prefix(s: pd.Series, n: int) -> pd.Series:
+    """First n characters only (postcode area)."""
+    return s.str[:n]

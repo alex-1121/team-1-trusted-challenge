@@ -22,6 +22,8 @@ EXPECTED_ROLES = {
     "top_n_exact_else_other": {"quasi_identifier"},
     "keep": {"technical_identifier", "record_key"},
     "token": {"technical_identifier", "record_key"},
+    "month": {"quasi_identifier"}, "week": {"quasi_identifier"}, "day": {"quasi_identifier"},
+    "round_decimals": {"quasi_identifier"}, "prefix": {"quasi_identifier"},
 }
 
 
@@ -60,6 +62,12 @@ def protect_table(name, df, contract, key, roles=None):
             out[col] = pets.hour_of_day(df[col], params.get("block", 1))
         elif pet == "age_band":
             out[col] = pets.age_band(df[col], params.get("width", 10))
+        elif pet in ("month", "week", "day"):
+            out[col] = getattr(pets, pet)(df[col])
+        elif pet == "round_decimals":
+            out[col] = pets.round_decimals(df[col], params["decimals"])
+        elif pet == "prefix":
+            out[col] = pets.prefix(df[col], params["n"])
         elif pet == "top_n_exact_else_other":
             out[col] = pets.top_n_exact_else_other(df[col], params["n"])
         for dst in params.get("also_as", []):
@@ -104,7 +112,17 @@ def protect_folder(contract, original, out, key, labels=None, repair_order=None,
         prot, rowmap, rows = protect_table(name, df, contract, key, roles)
         target = contract.get("k_target")
         if repair_order is not None and target and target["table"] == name:
+            # join flags: "this row has rows in table X" is something an attacker of the joined tables knows,
+            # so it joins the group key for the repair and is removed again before writing
+            flags = []
+            for jf in target.get("join_flags", []):
+                other = pd.read_csv(original / f"{jf['table']}.csv", dtype=str, usecols=[jf["on"]])
+                col = f"_has_{jf['table']}"
+                prot[col] = df[jf["on"]].isin(set(other[jf["on"]].dropna())).map({True: "1", False: "0"}).values
+                flags.append(col)
+            target = {**target, "columns": target["columns"] + flags, "fixed": flags}
             prot, keep, report = repair.apply(prot, target, repair_order)
+            prot = prot.drop(columns=flags)
             rowmap = rowmap[keep.values].reset_index(drop=True)
             prot = prot.reset_index(drop=True)
             rows += repair.plan_rows(name, target, report)

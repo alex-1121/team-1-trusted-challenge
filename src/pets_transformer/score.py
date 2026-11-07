@@ -55,8 +55,11 @@ def build_summary(card, baseline, k_own, k_cols, scenario):
         k = tab.get("k_anonymity")
         if k and "qis" in k:
             out.append(f"- Scorer, {t}: columns {', '.join(k['qis'])}; k<5 share {k['share_below']['k<5']}; median k {k['median_k']}; min k {k['min_k']}.")
-    share, mn = k_own
-    out.append(f"- Our own, ed_visits: columns {', '.join(k_cols)}; k<5 share {share:.4f}; min k {mn}.")
+    if k_own:
+        share, mn = k_own
+        out.append(f"- Our own: columns {', '.join(k_cols)}; k<5 share {share:.4f}; min k {mn}.")
+    else:
+        out.append("- Our own: no quasi-identifier is released, so there is no group to count.")
     out += ["", "## Residual risk", ""]
     sentences = []
     for name, v in card["risk_components"].items():
@@ -92,8 +95,11 @@ def run(original, protected, scenario, out, baseline=None, contract=None, pets_e
     base = json.loads(Path(baseline).read_text()) if baseline else None
     c = json.loads(Path(contract).read_text()) if contract else {}
     k_cols = c.get("k_columns") or K_COLUMNS
-    main = (c.get("k_target") or {}).get("table", "ed_visits")
-    k_own = own_k(pd.read_csv(protected / f"{main}.csv", dtype=str), k_cols)
+    released = [t for t, s in c.get("tables", {}).items() if s.get("action") == "release"]
+    main = (c.get("k_target") or {}).get("table") or (released[0] if released else "ed_visits")
+    rel = pd.read_csv(protected / f"{main}.csv", dtype=str)
+    k_cols = [c for c in k_cols if c in rel.columns]
+    k_own = own_k(rel, k_cols) if k_cols else None
     texts["summary.md"] = build_summary(card, base, k_own, k_cols, scenario)
     for n, t in texts.items():
         (out / n).write_text(rewrite_paths(t, prefixes) if n != "summary.md" else t)

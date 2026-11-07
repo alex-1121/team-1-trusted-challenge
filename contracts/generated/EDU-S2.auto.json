@@ -1,0 +1,335 @@
+{
+  "scenario": "EDU-S2",
+  "dataset": "education",
+  "generated_by": "pets_transformer.selector",
+  "tolerance": 0.05,
+  "recipient": "External ed-tech company under a data processing agreement",
+  "purpose": "Train a model that predicts drop-out risk from grades and absences.",
+  "trust_level": "contractual",
+  "threat_model": "Vendor staff with classmate-level knowledge (private adversary) and public lists.",
+  "required_tasks": [
+    "EDU-U2",
+    "EDU-U4"
+  ],
+  "tables": {
+    "absences": {
+      "action": "release",
+      "record_id": "absence_id",
+      "reason": "Released: without it EDU-U2 0.7160, EDU-U4 0.0000."
+    },
+    "counsellor_notes": {
+      "action": "withhold",
+      "record_id": "note_id",
+      "reason": "Withheld: without it every required task stays within 0.05 of the reference (EDU-U2 1.0000, EDU-U4 1.0000)."
+    },
+    "course_grades": {
+      "action": "release",
+      "record_id": "grade_id",
+      "reason": "Released: without it EDU-U4 0.0000."
+    },
+    "matriculation_results": {
+      "action": "withhold",
+      "record_id": "exam_result_id",
+      "reason": "Withheld: without it every required task stays within 0.05 of the reference (EDU-U2 1.0000, EDU-U4 1.0000)."
+    },
+    "students": {
+      "action": "release",
+      "record_id": "student_id",
+      "reason": "Released: without it EDU-U2 0.0000."
+    }
+  },
+  "columns": {
+    "absences": {
+      "absence_id": {
+        "pet": "drop",
+        "reason": "Detected record_key (RECORD_ID). Candidates tried, most private first: drop: within 0.05 (EDU-U2 0.9926, EDU-U4 1.0000). Chosen: drop."
+      },
+      "student_id": {
+        "pet": "token",
+        "params": {
+          "prefix": "T"
+        },
+        "reason": "Detected technical_identifier (RECORD_ID). Candidates tried, most private first: drop: outside 0.05 (EDU-U2 0.6261, EDU-U4 0.0000); keyed token: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: keyed token. A keyed HMAC-SHA256 token keeps joins and carries no order, which a sequential id would give back."
+      },
+      "academic_year": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      },
+      "term": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      },
+      "excused_hours": {
+        "pet": "drop",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      },
+      "unexcused_hours": {
+        "pet": "keep",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: outside 0.05 (EDU-U2 0.6300, EDU-U4 0.0000); kept: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: kept."
+      },
+      "late_arrivals": {
+        "pet": "keep",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: outside 0.05 (EDU-U2 0.7518, EDU-U4 1.0000); kept: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: kept."
+      },
+      "school_code": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      }
+    },
+    "course_grades": {
+      "grade_id": {
+        "pet": "drop",
+        "reason": "Detected record_key (RECORD_ID). Candidates tried, most private first: drop: within 0.05 (EDU-U2 0.9926, EDU-U4 1.0000). Chosen: drop."
+      },
+      "student_id": {
+        "pet": "token",
+        "params": {
+          "prefix": "T"
+        },
+        "reason": "Detected technical_identifier (RECORD_ID). Candidates tried, most private first: drop: outside 0.05 (EDU-U2 0.9860, EDU-U4 0.0000); keyed token: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: keyed token. A keyed HMAC-SHA256 token keeps joins and carries no order, which a sequential id would give back."
+      },
+      "school_code": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      },
+      "academic_year": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      },
+      "period": {
+        "pet": "drop",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      },
+      "course_code": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      },
+      "course_name": {
+        "pet": "drop",
+        "reason": "Detected free_text (FREE_TEXT). The only candidate for this type is drop."
+      },
+      "credits": {
+        "pet": "drop",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      },
+      "grade": {
+        "pet": "keep",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: outside 0.05 (EDU-U2 0.9834, EDU-U4 0.0000); kept: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: kept."
+      },
+      "grade_scale": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: outside 0.05 (EDU-U2 1.0000, EDU-U4 0.5322); kept: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: kept."
+      },
+      "assessed_date": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (DATE). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      },
+      "teacher_name": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (PERSON_NAME). The only candidate for this type is drop."
+      }
+    },
+    "students": {
+      "student_id": {
+        "pet": "token",
+        "params": {
+          "prefix": "T"
+        },
+        "reason": "Detected record_key (RECORD_ID). Candidates tried, most private first: drop: outside 0.05 (EDU-U2 0.0000, EDU-U4 1.0000); keyed token: within 0.05 (EDU-U2 0.9926, EDU-U4 1.0000). Chosen: keyed token. A keyed HMAC-SHA256 token keeps joins and carries no order, which a sequential id would give back."
+      },
+      "learner_id": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (STUDENT_ID). The only candidate for this type is drop."
+      },
+      "hetu": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (NATIONAL_ID). The only candidate for this type is drop."
+      },
+      "first_names": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (PERSON_NAME). The only candidate for this type is drop."
+      },
+      "last_name": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (PERSON_NAME). The only candidate for this type is drop."
+      },
+      "birth_date": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (BIRTH_DATE). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      },
+      "sex": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (SEX). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      },
+      "home_language": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (LANGUAGE). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      },
+      "street_address": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (STREET_ADDRESS). The only candidate for this type is drop."
+      },
+      "postcode": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (POSTCODE). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      },
+      "municipality": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (MUNICIPALITY). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      },
+      "guardian1_name": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (PERSON_NAME). The only candidate for this type is drop."
+      },
+      "guardian1_phone": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (PHONE). The only candidate for this type is drop."
+      },
+      "guardian2_name": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (PERSON_NAME). The only candidate for this type is drop."
+      },
+      "guardian2_phone": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (PHONE). The only candidate for this type is drop."
+      },
+      "school_code": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (EDU-U2 0.9975, EDU-U4 1.0000). Chosen: drop."
+      },
+      "school_name": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (ORG_NAME). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      },
+      "programme": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (EDU-U2 0.9964, EDU-U4 1.0000). Chosen: drop."
+      },
+      "class_group": {
+        "pet": "drop",
+        "reason": "Detected technical_identifier (RECORD_ID). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      },
+      "start_date": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (DATE). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      },
+      "special_support": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (EDU-U2 0.9926, EDU-U4 1.0000). Chosen: drop."
+      },
+      "finnish_as_second_language": {
+        "pet": "drop",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      },
+      "status": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: outside 0.05 (EDU-U2 0.0000, EDU-U4 1.0000); kept: within 0.05 (EDU-U2 0.9926, EDU-U4 1.0000). Chosen: kept."
+      },
+      "end_date": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (DATE). Candidates tried, most private first: drop: within 0.05 (EDU-U2 1.0000, EDU-U4 1.0000). Chosen: drop."
+      }
+    }
+  },
+  "roles": {
+    "absences": {
+      "quasi_identifier": {
+        "pet": "drop",
+        "reason": "default for a quasi identifier the contract does not name"
+      },
+      "technical_identifier": {
+        "pet": "drop",
+        "reason": "default for a technical identifier the contract does not name"
+      },
+      "sensitive_attribute": {
+        "pet": "keep",
+        "reason": "default for a sensitive attribute the contract does not name"
+      },
+      "free_text": {
+        "pet": "drop",
+        "reason": "default for a free text the contract does not name"
+      },
+      "non_sensitive": {
+        "pet": "keep",
+        "reason": "default for a non sensitive the contract does not name"
+      },
+      "record_key": {
+        "pet": "token",
+        "params": {
+          "prefix": "T"
+        },
+        "reason": "default for a record key the contract does not name"
+      },
+      "direct_identifier": {
+        "pet": "drop",
+        "reason": "default for a direct identifier the contract does not name"
+      }
+    },
+    "course_grades": {
+      "quasi_identifier": {
+        "pet": "drop",
+        "reason": "default for a quasi identifier the contract does not name"
+      },
+      "technical_identifier": {
+        "pet": "drop",
+        "reason": "default for a technical identifier the contract does not name"
+      },
+      "sensitive_attribute": {
+        "pet": "keep",
+        "reason": "default for a sensitive attribute the contract does not name"
+      },
+      "free_text": {
+        "pet": "drop",
+        "reason": "default for a free text the contract does not name"
+      },
+      "non_sensitive": {
+        "pet": "keep",
+        "reason": "default for a non sensitive the contract does not name"
+      },
+      "record_key": {
+        "pet": "token",
+        "params": {
+          "prefix": "T"
+        },
+        "reason": "default for a record key the contract does not name"
+      },
+      "direct_identifier": {
+        "pet": "drop",
+        "reason": "default for a direct identifier the contract does not name"
+      }
+    },
+    "students": {
+      "quasi_identifier": {
+        "pet": "drop",
+        "reason": "default for a quasi identifier the contract does not name"
+      },
+      "technical_identifier": {
+        "pet": "drop",
+        "reason": "default for a technical identifier the contract does not name"
+      },
+      "sensitive_attribute": {
+        "pet": "keep",
+        "reason": "default for a sensitive attribute the contract does not name"
+      },
+      "free_text": {
+        "pet": "drop",
+        "reason": "default for a free text the contract does not name"
+      },
+      "non_sensitive": {
+        "pet": "keep",
+        "reason": "default for a non sensitive the contract does not name"
+      },
+      "record_key": {
+        "pet": "token",
+        "params": {
+          "prefix": "T"
+        },
+        "reason": "default for a record key the contract does not name"
+      },
+      "direct_identifier": {
+        "pet": "drop",
+        "reason": "default for a direct identifier the contract does not name"
+      }
+    }
+  }
+}

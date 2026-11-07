@@ -1,0 +1,1 @@
+The three extra checks are written for the health ED tables (ed_visits, lab_results); not run on this release (FileNotFoundError).

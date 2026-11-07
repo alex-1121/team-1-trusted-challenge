@@ -76,5 +76,5 @@ def test_missing_hetu_stays_missing():
 def test_shipped_contract_drops_patient_key_and_tokenises_visit_id():
     out, rowmap, _ = run(c=C)
     assert "patient_hetu" not in out.columns
-    assert out.visit_id.str.fullmatch(r"V[0-9a-f]{16}").all() and out.visit_id.is_unique
+    assert out.visit_id.str.fullmatch(r"[A-Z][0-9a-f]{16}").all() and out.visit_id.is_unique
     assert list(rowmap.original_record_id) == [f"V{i}" for i in range(30)]

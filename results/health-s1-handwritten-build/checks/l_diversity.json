@@ -1,0 +1,28 @@
+{
+  "command": "python -m pets_transformer.cli checks --protected out/health-s1-handwritten-build/health --original data/proving-ground/data/health --truth data/proving-ground/truth --out results/health-s1-handwritten-build/checks",
+  "protected": "out/health-s1-handwritten-build/health",
+  "original": "proving-ground/data/health",
+  "check": "l-diversity of icd10_primary within groups sharing the scorer's quasi-identifier values",
+  "threshold": "a finding when more than 5% of groups have fewer than 2 distinct diagnoses",
+  "finding": false,
+  "result": {
+    "columns": [
+      "date_of_birth",
+      "sex",
+      "municipality",
+      "arrival_ts"
+    ],
+    "sensitive": "icd10_primary",
+    "n_rows": 46398,
+    "n_groups": 2681,
+    "share_groups_l_below_2": 0.0,
+    "share_groups_l_below_3": 0.0015,
+    "share_records_l_below_2": 0.0,
+    "share_records_l_below_3": 0.0005,
+    "worst_group": {
+      "rule": "fewest distinct diagnoses, then largest size",
+      "size": 6,
+      "distinct": 2
+    }
+  }
+}

@@ -36,15 +36,24 @@
       "columns_dropped": [
         "patient_hetu",
         "patient_name",
+        "sex",
         "phone",
         "home_address",
         "postcode",
         "arrival_mode",
         "ambulance_unit",
         "chief_complaint",
+        "icd10_secondary",
+        "systolic_bp",
+        "diastolic_bp",
+        "heart_rate",
+        "resp_rate",
+        "spo2",
+        "pain_nrs",
         "attending_physician_id",
         "attending_physician_name",
-        "discharge_ts"
+        "discharge_ts",
+        "disposition"
       ],
       "columns_added": [
         "age"
@@ -53,25 +62,23 @@
       "k_anonymity": {
         "qis": [
           "date_of_birth",
-          "sex",
           "municipality",
           "arrival_ts"
         ],
         "n": 46398,
-        "n_classes": 2681,
+        "n_classes": 1691,
         "min_k": 5,
-        "median_k": 28.0,
+        "median_k": 55.0,
         "share_below": {
           "k<2": 0.0,
           "k<5": 0.0,
-          "k<10": 0.1762
+          "k<10": 0.0757
         },
         "sample_uniqueness": 0.0
       },
       "k_anonymity_original": {
         "qis": [
           "date_of_birth",
-          "sex",
           "municipality",
           "arrival_ts"
         ],
@@ -91,15 +98,14 @@
         "sensitive": "triage",
         "qis": [
           "date_of_birth",
-          "sex",
           "municipality",
           "arrival_ts"
         ],
         "min_distinct_l": 1,
         "min_entropy_l": 1.0,
-        "share_records_l1": 0.0005,
-        "share_classes_l1": 0.0015,
-        "n_classes": 2681
+        "share_records_l1": 0.0017,
+        "share_classes_l1": 0.0083,
+        "n_classes": 1691
       },
       "row_alignment": "row map",
       "linkage": {
@@ -133,15 +139,6 @@
               "protected": [
                 "date_of_birth",
                 "age"
-              ]
-            },
-            {
-              "kind": "sex",
-              "adversary": [
-                "sex_mentioned"
-              ],
-              "protected": [
-                "sex"
               ]
             }
           ],
@@ -222,7 +219,7 @@
           "claim_precision": null,
           "n_unique_claims": 0,
           "share_targets_in_candidate_set_le5": 0.0,
-          "median_candidate_set": 4753.0,
+          "median_candidate_set": 4839.0,
           "attribute_inference": {
             "sensitive": "icd10_primary",
             "inferred": 0,
@@ -249,7 +246,7 @@
         "linkage re-identification": 0.0,
         "free-text identifier leakage": 0.0
       },
-      "seconds": 4.7
+      "seconds": 8.1
     },
     "lab_results": {
       "table": "lab_results",
@@ -257,6 +254,11 @@
       "rows_original": 130341,
       "rows_protected": 130341,
       "columns_dropped": [
+        "lab_id",
+        "test_name",
+        "unit",
+        "ref_range",
+        "abnormal_flag",
         "sampled_ts"
       ],
       "columns_added": [],
@@ -272,7 +274,7 @@
       "risks": {
         "direct identifiers retained": 0.0
       },
-      "seconds": 0.3
+      "seconds": 0.2
     },
     "published_weekly_stats": {
       "table": "published_weekly_stats",
@@ -290,10 +292,10 @@
       "kind": "aggregate",
       "description": "Median length of stay by triage level",
       "required": true,
-      "score": 1.0,
+      "score": 0.9978835978835979,
       "metric": "mean relative error of median LOS by triage",
       "detail": {
-        "rel_error": 0.0,
+        "rel_error": 0.0006,
         "orig": {
           "A": 302.0,
           "B": 348.0,
@@ -304,7 +306,7 @@
         "prot": {
           "A": 302.0,
           "B": 348.0,
-          "C": 315.0,
+          "C": 314.0,
           "D": 221.0,
           "E": 157.0
         }
@@ -316,10 +318,10 @@
       "kind": "distribution",
       "description": "Diagnosis-group mix in the eight largest municipalities",
       "required": true,
-      "score": 0.8744085633885061,
+      "score": 0.9611008273587289,
       "metric": "1 - mean TVD/0.15 of diagnosis-group mix in top-8 municipalities",
       "detail": {
-        "mean_tvd": 0.0188
+        "mean_tvd": 0.0058
       }
     },
     {
@@ -328,10 +330,10 @@
       "kind": "relationship",
       "description": "30-day revisit rate by age band (needs readmit_30d or a consistent patient pseudonym)",
       "required": true,
-      "score": 0.9641009930884665,
+      "score": 0.957945651760686,
       "metric": "mean |revisit rate diff| by age band / overall rate",
       "detail": {
-        "rel_error": 0.0179,
+        "rel_error": 0.021,
         "orig": {
           "0-9": 0.2408,
           "10-19": 0.0877,
@@ -344,14 +346,14 @@
           "80+": 0.2934
         },
         "prot": {
-          "0-9": 0.2316,
-          "10-19": 0.0868,
-          "20-29": 0.0977,
-          "30-39": 0.0795,
-          "40-49": 0.0886,
-          "50-59": 0.0861,
-          "60-69": 0.1585,
-          "70-79": 0.1852,
+          "0-9": 0.2321,
+          "10-19": 0.0865,
+          "20-29": 0.0991,
+          "30-39": 0.0773,
+          "40-49": 0.0895,
+          "50-59": 0.084,
+          "60-69": 0.1578,
+          "70-79": 0.1855,
           "80+": 0.2951
         }
       }
@@ -376,17 +378,17 @@
       "kind": "distribution",
       "description": "Hour-of-day arrival curve",
       "required": true,
-      "score": 0.9945320392350445,
+      "score": 0.8769059466441341,
       "metric": "TVD of hour-of-day arrival distribution",
       "detail": {
-        "tvd": 0.0016
+        "tvd": 0.0369
       }
     }
   ],
   "summary": {
     "privacy": 1.0,
-    "utility": 0.9666,
-    "composite": 0.9845,
+    "utility": 0.9588,
+    "composite": 0.9808,
     "label": "self-assessment, not the official judging score",
     "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
   },

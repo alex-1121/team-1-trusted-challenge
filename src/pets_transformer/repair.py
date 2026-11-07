@@ -52,6 +52,13 @@ def _op(series, step):
         return series.map(lambda v: _widen_hour(v, step["block"]))
     if op == "set":
         return pd.Series(step["value"], index=series.index)
+    if op == "round":
+        v = pd.to_numeric(series, errors="coerce")
+        return v.round(step["decimals"]).map(lambda x: f"{x:.{step['decimals']}f}" if x == x else SUPPRESSED)
+    if op == "prefix":
+        return series.astype(str).str[:step["n"]]
+    if op == "to_month":
+        return series.map(lambda v: v[:7] if isinstance(v, str) and len(v) >= 7 and v[:4].isdigit() and v[4] == "-" and v[5:7].isdigit() else v)
     raise ValueError(f"unknown repair op {op!r}")
 
 
@@ -74,11 +81,12 @@ def apply(df, target, order):
             df.loc[m, dst] = df.loc[m, col]
         report["steps"].append({"step": name, "column": col, "rows_changed": int(m.sum())})
     m = at_risk(df, target)
-    for col in target["columns"]:
+    fixed = set(target.get("fixed", []))  # facts the attacker knows from elsewhere (join flags): never suppressed
+    for col in [c for c in target["columns"] if c not in fixed]:
         df.loc[m, col] = SUPPRESSED
         for dst in linked.get(col, []):
             df.loc[m, dst] = SUPPRESSED
-    report["steps"].append({"step": "suppress", "column": ", ".join(target["columns"]), "rows_changed": int(m.sum())})
+    report["steps"].append({"step": "suppress", "column": ", ".join(c for c in target["columns"] if c not in fixed), "rows_changed": int(m.sum())})
     m = at_risk(df, target)
     keep = ~m
     report["steps"].append({"step": "drop_rows", "column": "(row)", "rows_changed": int(m.sum())})
@@ -100,8 +108,13 @@ def plan_rows(table, target, report):
     return rows
 
 
-def orders(target):
-    return [list(p) for p in itertools.permutations(target["ladder"])]
+def orders(target, max_full=4):
+    """Every order of the ladder steps when there are at most max_full of them (24 orders); beyond that the
+    rotations of the contract's order, so the search stays at one scorecard per step."""
+    steps = list(target["ladder"])
+    if len(steps) <= max_full:
+        return [list(p) for p in itertools.permutations(steps)]
+    return [steps[i:] + steps[:i] for i in range(len(steps))]
 
 
 def choose(rows, required, floor):

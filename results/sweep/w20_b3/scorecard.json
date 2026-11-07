@@ -34,16 +34,26 @@
       "rows_original": 46398,
       "rows_protected": 46398,
       "columns_dropped": [
+        "patient_hetu",
         "patient_name",
+        "sex",
         "phone",
         "home_address",
         "postcode",
         "arrival_mode",
         "ambulance_unit",
         "chief_complaint",
+        "icd10_secondary",
+        "systolic_bp",
+        "diastolic_bp",
+        "heart_rate",
+        "resp_rate",
+        "spo2",
+        "pain_nrs",
         "attending_physician_id",
         "attending_physician_name",
-        "discharge_ts"
+        "discharge_ts",
+        "disposition"
       ],
       "columns_added": [
         "age"
@@ -52,25 +62,23 @@
       "k_anonymity": {
         "qis": [
           "date_of_birth",
-          "sex",
           "municipality",
           "arrival_ts"
         ],
         "n": 46398,
-        "n_classes": 810,
+        "n_classes": 417,
         "min_k": 1,
-        "median_k": 147.0,
+        "median_k": 293.0,
         "share_below": {
-          "k<2": 0.0008,
-          "k<5": 0.0033,
-          "k<10": 0.0142
+          "k<2": 0.0004,
+          "k<5": 0.002,
+          "k<10": 0.0031
         },
-        "sample_uniqueness": 0.0008
+        "sample_uniqueness": 0.0004
       },
       "k_anonymity_original": {
         "qis": [
           "date_of_birth",
-          "sex",
           "municipality",
           "arrival_ts"
         ],
@@ -90,15 +98,14 @@
         "sensitive": "triage",
         "qis": [
           "date_of_birth",
-          "sex",
           "municipality",
           "arrival_ts"
         ],
         "min_distinct_l": 1,
         "min_entropy_l": 1.0,
-        "share_records_l1": 0.001,
-        "share_classes_l1": 0.0531,
-        "n_classes": 810
+        "share_records_l1": 0.0006,
+        "share_classes_l1": 0.0528,
+        "n_classes": 417
       },
       "row_alignment": "row map",
       "linkage": {
@@ -132,15 +139,6 @@
               "protected": [
                 "date_of_birth",
                 "age"
-              ]
-            },
-            {
-              "kind": "sex",
-              "adversary": [
-                "sex_mentioned"
-              ],
-              "protected": [
-                "sex"
               ]
             }
           ],
@@ -244,11 +242,11 @@
       "regex_residuals": {},
       "risks": {
         "direct identifiers retained": 0.0,
-        "records with k<5": 0.0033,
+        "records with k<5": 0.002,
         "linkage re-identification": 0.0,
         "free-text identifier leakage": 0.0
       },
-      "seconds": 3.7
+      "seconds": 8.0
     },
     "lab_results": {
       "table": "lab_results",
@@ -256,6 +254,11 @@
       "rows_original": 130341,
       "rows_protected": 130341,
       "columns_dropped": [
+        "lab_id",
+        "test_name",
+        "unit",
+        "ref_range",
+        "abnormal_flag",
         "sampled_ts"
       ],
       "columns_added": [],
@@ -289,10 +292,10 @@
       "kind": "aggregate",
       "description": "Median length of stay by triage level",
       "required": true,
-      "score": 1.0,
+      "score": 0.9978835978835979,
       "metric": "mean relative error of median LOS by triage",
       "detail": {
-        "rel_error": 0.0,
+        "rel_error": 0.0006,
         "orig": {
           "A": 302.0,
           "B": 348.0,
@@ -303,7 +306,7 @@
         "prot": {
           "A": 302.0,
           "B": 348.0,
-          "C": 315.0,
+          "C": 314.0,
           "D": 221.0,
           "E": 157.0
         }
@@ -379,15 +382,15 @@
     }
   ],
   "summary": {
-    "privacy": 0.998,
-    "utility": 0.6054,
+    "privacy": 0.9988,
+    "utility": 0.605,
     "composite": 0.7708,
     "label": "self-assessment, not the official judging score",
     "method": "privacy = 1 - (0.5*worst + 0.5*mean risk); utility = mean task score (required unanswerable = 0); composite = weighted harmonic mean (privacy 30, utility 25)"
   },
   "risk_components": {
     "ed_visits: direct identifiers retained": 0.0,
-    "ed_visits: records with k<5": 0.0033,
+    "ed_visits: records with k<5": 0.002,
     "ed_visits: linkage re-identification": 0.0,
     "ed_visits: free-text identifier leakage": 0.0,
     "lab_results: direct identifiers retained": 0.0

@@ -1,0 +1,52 @@
+{
+  "order": [
+    "ts_created:to_month",
+    "postcode:prefix",
+    "lat:round",
+    "lon:round",
+    "ts_closed:to_month"
+  ],
+  "rows": 31653,
+  "at_risk_before": 31653,
+  "share_at_risk_before": 1.0,
+  "steps": [
+    {
+      "step": "ts_created:to_month",
+      "column": "ts_created",
+      "rows_changed": 31653
+    },
+    {
+      "step": "postcode:prefix",
+      "column": "postcode",
+      "rows_changed": 31643
+    },
+    {
+      "step": "lat:round",
+      "column": "lat",
+      "rows_changed": 31643
+    },
+    {
+      "step": "lon:round",
+      "column": "lon",
+      "rows_changed": 31622
+    },
+    {
+      "step": "ts_closed:to_month",
+      "column": "ts_closed",
+      "rows_changed": 30775
+    },
+    {
+      "step": "suppress",
+      "column": "ts_created, postcode, lat, lon, ts_closed",
+      "rows_changed": 16515
+    },
+    {
+      "step": "drop_rows",
+      "column": "(row)",
+      "rows_changed": 0
+    }
+  ],
+  "rows_released": 31653,
+  "at_risk_after": 0,
+  "share_at_risk_after": 0.0
+}

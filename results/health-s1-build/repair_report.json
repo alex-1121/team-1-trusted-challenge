@@ -1,32 +1,32 @@
 {
   "order": [
-    "age20",
-    "town_other",
-    "hour3"
+    "date_of_birth:widen_band",
+    "arrival_ts:widen_hour",
+    "municipality:set"
   ],
   "rows": 46398,
-  "at_risk_before": 3613,
-  "share_at_risk_before": 0.0779,
+  "at_risk_before": 3746,
+  "share_at_risk_before": 0.0807,
   "steps": [
     {
-      "step": "age20",
+      "step": "date_of_birth:widen_band",
       "column": "date_of_birth",
-      "rows_changed": 3613
+      "rows_changed": 3746
     },
     {
-      "step": "town_other",
-      "column": "municipality",
-      "rows_changed": 2458
-    },
-    {
-      "step": "hour3",
+      "step": "arrival_ts:widen_hour",
       "column": "arrival_ts",
-      "rows_changed": 125
+      "rows_changed": 2584
+    },
+    {
+      "step": "municipality:set",
+      "column": "municipality",
+      "rows_changed": 589
     },
     {
       "step": "suppress",
-      "column": "date_of_birth, sex, municipality, arrival_ts",
-      "rows_changed": 28
+      "column": "date_of_birth, municipality, arrival_ts",
+      "rows_changed": 60
     },
     {
       "step": "drop_rows",

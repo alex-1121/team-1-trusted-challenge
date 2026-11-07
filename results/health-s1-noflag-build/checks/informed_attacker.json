@@ -1,0 +1,43 @@
+{
+  "command": "python -m pets_transformer.cli checks --protected out/health-s1-noflag-build/health --original data/proving-ground/data/health --truth data/proving-ground/truth --out results/health-s1-noflag-build/checks",
+  "protected": "out/health-s1-noflag-build/health",
+  "original": "proving-ground/data/health",
+  "truth": "proving-ground/truth",
+  "check": "informed attacker: knows four facts about every visit and looks for a unique match",
+  "attacker_knows": {
+    "diagnosis_group": "group of icd10_primary as pets_eval.utility.health.diagnosis_group defines it",
+    "age_band": "10-year band of date_of_birth (the release's own method)",
+    "municipality": "home municipality, mapped to other when the release does not show it",
+    "arrival_hour": "hour of arrival_ts"
+  },
+  "attacker_rows": "every visit listed in truth/health__ed_visits.csv",
+  "singled_out": "exactly one released row has the attacker's facts",
+  "correct": "the row map of that row points at the attacker's visit",
+  "original_exact_values": "same attacker on the original with exact icd10_primary, date_of_birth, municipality and arrival_ts",
+  "result": {
+    "protected": {
+      "n_attacker_rows": 46398,
+      "n_singled_out": 5116,
+      "n_correct": 5116,
+      "singled_out_rate": 0.1103,
+      "correct_among_singled_out": 1.0,
+      "correct_rate": 0.1103
+    },
+    "original_same_facts": {
+      "n_attacker_rows": 46398,
+      "n_singled_out": 11605,
+      "n_correct": 11605,
+      "singled_out_rate": 0.2501,
+      "correct_among_singled_out": 1.0,
+      "correct_rate": 0.2501
+    },
+    "original_exact_values": {
+      "n_attacker_rows": 46398,
+      "n_singled_out": 46398,
+      "n_correct": 46398,
+      "singled_out_rate": 1.0,
+      "correct_among_singled_out": 1.0,
+      "correct_rate": 1.0
+    }
+  }
+}

@@ -1,0 +1,330 @@
+{
+  "scenario": "HEALTH-S1",
+  "dataset": "health",
+  "generated_by": "pets_transformer.selector",
+  "tolerance": 0.05,
+  "recipient": "University research group studying ED crowding and revisits",
+  "purpose": "Analyse length of stay, revisits and diagnosis patterns",
+  "trust_level": "controlled_research",
+  "threat_model": "Researcher with access to public_directory, news_clips_health and social_posts_health; may try record linkage on QIs (age, sex, municipality, arrival time).",
+  "required_tasks": [
+    "H-U2",
+    "H-U4",
+    "H-U6",
+    "H-U7",
+    "H-U8"
+  ],
+  "tables": {
+    "clinical_notes": {
+      "action": "withhold",
+      "record_id": "note_id",
+      "reason": "Withheld: without it every required task stays within 0.05 of the reference (H-U2 1.0000, H-U4 1.0000, H-U6 1.0000, H-U7 1.0000, H-U8 1.0000)."
+    },
+    "ed_visits": {
+      "action": "release",
+      "record_id": "visit_id",
+      "reason": "Released: without it H-U2 0.0000, H-U4 0.0000, H-U6 0.0000, H-U7 0.0000, H-U8 0.0000."
+    },
+    "lab_results": {
+      "action": "release",
+      "record_id": "lab_id",
+      "reason": "Released: without it H-U7 0.0000."
+    },
+    "published_weekly_stats": {
+      "action": "withhold",
+      "record_id": "stat_id",
+      "reason": "Withheld: without it every required task stays within 0.05 of the reference (H-U2 1.0000, H-U4 1.0000, H-U6 1.0000, H-U7 1.0000, H-U8 1.0000)."
+    }
+  },
+  "columns": {
+    "ed_visits": {
+      "visit_id": {
+        "pet": "token",
+        "params": {
+          "prefix": "T"
+        },
+        "reason": "Detected record_key (RECORD_ID). Candidates tried, most private first: drop: outside 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 0.9985); keyed token: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: keyed token. A keyed HMAC-SHA256 token keeps joins and carries no order, which a sequential id would give back."
+      },
+      "patient_hetu": {
+        "pet": "pseudonym",
+        "reason": "Variant: keyed HMAC-SHA256 patient pseudonym, as the organisers' suggested target asks; revisits link per patient."
+      },
+      "patient_name": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (PERSON_NAME). The only candidate for this type is drop."
+      },
+      "date_of_birth": {
+        "pet": "age_band",
+        "params": {
+          "width": 10,
+          "also_as": [
+            "age"
+          ]
+        },
+        "reason": "Detected quasi_identifier (BIRTH_DATE). Candidates tried, most private first: drop: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.0000, H-U7 1.0000, H-U8 1.0000); 20-year age band: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.0271, H-U7 1.0000, H-U8 1.0000); 10-year age band: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: 10-year age band."
+      },
+      "sex": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (SEX). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "phone": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (PHONE). The only candidate for this type is drop."
+      },
+      "home_address": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (STREET_ADDRESS). The only candidate for this type is drop."
+      },
+      "postcode": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (POSTCODE). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "municipality": {
+        "pet": "top_n_exact_else_other",
+        "params": {
+          "n": 8
+        },
+        "reason": "Detected quasi_identifier (MUNICIPALITY). Candidates tried, most private first: drop: outside 0.05 (H-U2 1.0000, H-U4 0.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000); 8 most common, rest other: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: 8 most common, rest other."
+      },
+      "arrival_ts": {
+        "pet": "hour_of_day",
+        "reason": "Detected quasi_identifier (TIMESTAMP). Candidates tried, most private first: drop: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.0000); month: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.0000); ISO week: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.0000); hour of day: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: hour of day."
+      },
+      "arrival_mode": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "ambulance_unit": {
+        "pet": "drop",
+        "reason": "Detected technical_identifier (HOSTNAME). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "triage": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: outside 0.05 (H-U2 0.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000); kept: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: kept."
+      },
+      "chief_complaint": {
+        "pet": "drop",
+        "reason": "Detected free_text (FREE_TEXT). The only candidate for this type is drop."
+      },
+      "icd10_primary": {
+        "pet": "keep",
+        "reason": "Detected sensitive_attribute (DIAGNOSIS_CODE). Candidates tried, most private first: drop: outside 0.05 (H-U2 1.0000, H-U4 0.0000, H-U6 0.9642, H-U7 0.5000, H-U8 1.0000); kept: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: kept."
+      },
+      "icd10_secondary": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "systolic_bp": {
+        "pet": "drop",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "diastolic_bp": {
+        "pet": "drop",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "heart_rate": {
+        "pet": "drop",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "resp_rate": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (AGE). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "temp_c": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (MEASUREMENT). Candidates tried, most private first: drop: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 1.0000); kept: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: kept."
+      },
+      "spo2": {
+        "pet": "drop",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "pain_nrs": {
+        "pet": "drop",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "attending_physician_id": {
+        "pet": "drop",
+        "reason": "Detected technical_identifier (RECORD_ID). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "attending_physician_name": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (PERSON_NAME). The only candidate for this type is drop."
+      },
+      "discharge_ts": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (TIMESTAMP). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "los_minutes": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (MEASUREMENT). Candidates tried, most private first: drop: outside 0.05 (H-U2 0.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000); kept: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: kept."
+      },
+      "disposition": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: drop."
+      },
+      "readmit_30d": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (MEASUREMENT). Candidates tried, most private first: drop: outside 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.0000, H-U7 1.0000, H-U8 0.9985); kept: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: kept."
+      }
+    },
+    "lab_results": {
+      "lab_id": {
+        "pet": "drop",
+        "reason": "Detected record_key (RECORD_ID). Candidates tried, most private first: drop: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: drop."
+      },
+      "visit_id": {
+        "pet": "token",
+        "params": {
+          "prefix": "T"
+        },
+        "reason": "Detected technical_identifier (RECORD_ID). Candidates tried, most private first: drop: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 1.0000); keyed token: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: keyed token. A keyed HMAC-SHA256 token keeps joins and carries no order, which a sequential id would give back."
+      },
+      "test_code": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: outside 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 0.9985); kept: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: kept."
+      },
+      "test_name": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: drop."
+      },
+      "value": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: outside 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 0.9985); kept: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: kept."
+      },
+      "unit": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: drop."
+      },
+      "ref_range": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: drop."
+      },
+      "abnormal_flag": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: drop."
+      },
+      "sampled_ts": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (TIMESTAMP). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      }
+    }
+  },
+  "roles": {
+    "ed_visits": {
+      "quasi_identifier": {
+        "pet": "drop",
+        "reason": "default for a quasi identifier the contract does not name"
+      },
+      "technical_identifier": {
+        "pet": "drop",
+        "reason": "default for a technical identifier the contract does not name"
+      },
+      "sensitive_attribute": {
+        "pet": "keep",
+        "reason": "default for a sensitive attribute the contract does not name"
+      },
+      "free_text": {
+        "pet": "drop",
+        "reason": "default for a free text the contract does not name"
+      },
+      "non_sensitive": {
+        "pet": "keep",
+        "reason": "default for a non sensitive the contract does not name"
+      },
+      "record_key": {
+        "pet": "token",
+        "params": {
+          "prefix": "T"
+        },
+        "reason": "default for a record key the contract does not name"
+      },
+      "direct_identifier": {
+        "pet": "drop",
+        "reason": "default for a direct identifier the contract does not name"
+      }
+    },
+    "lab_results": {
+      "quasi_identifier": {
+        "pet": "drop",
+        "reason": "default for a quasi identifier the contract does not name"
+      },
+      "technical_identifier": {
+        "pet": "drop",
+        "reason": "default for a technical identifier the contract does not name"
+      },
+      "sensitive_attribute": {
+        "pet": "keep",
+        "reason": "default for a sensitive attribute the contract does not name"
+      },
+      "free_text": {
+        "pet": "drop",
+        "reason": "default for a free text the contract does not name"
+      },
+      "non_sensitive": {
+        "pet": "keep",
+        "reason": "default for a non sensitive the contract does not name"
+      },
+      "record_key": {
+        "pet": "token",
+        "params": {
+          "prefix": "T"
+        },
+        "reason": "default for a record key the contract does not name"
+      },
+      "direct_identifier": {
+        "pet": "drop",
+        "reason": "default for a direct identifier the contract does not name"
+      }
+    }
+  },
+  "k_target": {
+    "table": "ed_visits",
+    "join_flags": [
+      {
+        "table": "lab_results",
+        "on": "visit_id"
+      }
+    ],
+    "k": 5,
+    "l": 2,
+    "sensitive": "icd10_primary",
+    "columns": [
+      "date_of_birth",
+      "municipality",
+      "arrival_ts"
+    ],
+    "linked": {
+      "date_of_birth": [
+        "age"
+      ]
+    },
+    "ladder": {
+      "date_of_birth:widen_band": {
+        "column": "date_of_birth",
+        "op": "widen_band",
+        "width": 20,
+        "reason": "At-risk rows only: age band widened to 20 years."
+      },
+      "municipality:set": {
+        "column": "municipality",
+        "op": "set",
+        "value": "other",
+        "reason": "At-risk rows only: place becomes other."
+      },
+      "arrival_ts:widen_hour": {
+        "column": "arrival_ts",
+        "op": "widen_hour",
+        "block": 3,
+        "reason": "At-risk rows only: hour widened to a 3-hour block."
+      }
+    },
+    "reason": "Every released ed_visits row shares its kept quasi-identifiers (date_of_birth, municipality, arrival_ts) with at least 4 other rows, and every such group holds at least 2 distinct icd10_primary values; only the rows that miss the target are coarsened, and rows still at risk get those columns suppressed."
+  },
+  "k_columns": [
+    "date_of_birth",
+    "municipality",
+    "arrival_ts"
+  ],
+  "variant_of": "HEALTH-S1",
+  "variant_note": "The organisers' suggested targets for HEALTH-S1 ask for a consistent pseudonymous patient key (metadata/scenarios.json). This variant keeps one so the red team can measure the person fingerprint it creates. Same contract otherwise."
+}

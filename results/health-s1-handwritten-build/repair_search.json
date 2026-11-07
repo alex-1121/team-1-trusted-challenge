@@ -1,0 +1,327 @@
+{
+  "target": {
+    "table": "ed_visits",
+    "k": 5,
+    "l": 2,
+    "sensitive": "icd10_primary",
+    "columns": [
+      "date_of_birth",
+      "sex",
+      "municipality",
+      "arrival_ts"
+    ],
+    "linked": {
+      "date_of_birth": [
+        "age"
+      ]
+    },
+    "reason": "Every released ed_visits row shares its age band, sex, municipality and arrival hour with at least 4 other rows (k of at least 5, the HEALTH-S1 target), and every such group holds at least 2 distinct primary diagnoses (l of at least 2), so knowing those four facts never singles out a visit or reveals its diagnosis. Only the rows that miss the target are coarsened."
+  },
+  "ladder": {
+    "age20": {
+      "column": "date_of_birth",
+      "op": "widen_band",
+      "width": 20,
+      "reason": "At-risk rows only: 10-year age band widened to 20 years (also in age)."
+    },
+    "town_other": {
+      "column": "municipality",
+      "op": "set",
+      "value": "other",
+      "reason": "At-risk rows only: municipality becomes other."
+    },
+    "hour3": {
+      "column": "arrival_ts",
+      "op": "widen_hour",
+      "block": 3,
+      "reason": "At-risk rows only: arrival hour widened to a 3-hour block."
+    }
+  },
+  "floor": 0.85,
+  "rule": "best composite among orders with no row at risk and every required task at or above the floor",
+  "chosen": "age20-town_other-hour3",
+  "orders": [
+    {
+      "order": [
+        "age20",
+        "town_other",
+        "hour3"
+      ],
+      "name": "age20-town_other-hour3",
+      "tasks": {
+        "H-U2": 1.0,
+        "H-U4": 0.8744085633885061,
+        "H-U6": 0.9641009930884665,
+        "H-U7": 1.0,
+        "H-U8": 0.9945320392350445
+      },
+      "privacy": 1.0,
+      "utility": 0.9666,
+      "composite": 0.9845,
+      "at_risk_after": 0,
+      "rows_released": 46398,
+      "steps": [
+        {
+          "step": "age20",
+          "column": "date_of_birth",
+          "rows_changed": 3613
+        },
+        {
+          "step": "town_other",
+          "column": "municipality",
+          "rows_changed": 2458
+        },
+        {
+          "step": "hour3",
+          "column": "arrival_ts",
+          "rows_changed": 125
+        },
+        {
+          "step": "suppress",
+          "column": "date_of_birth, sex, municipality, arrival_ts",
+          "rows_changed": 28
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "age20",
+        "hour3",
+        "town_other"
+      ],
+      "name": "age20-hour3-town_other",
+      "tasks": {
+        "H-U2": 1.0,
+        "H-U4": 0.9628473605950546,
+        "H-U6": 0.963939166656612,
+        "H-U7": 1.0,
+        "H-U8": 0.8861748435603534
+      },
+      "privacy": 1.0,
+      "utility": 0.9626,
+      "composite": 0.9826,
+      "at_risk_after": 0,
+      "rows_released": 46398,
+      "steps": [
+        {
+          "step": "age20",
+          "column": "date_of_birth",
+          "rows_changed": 3613
+        },
+        {
+          "step": "hour3",
+          "column": "arrival_ts",
+          "rows_changed": 2458
+        },
+        {
+          "step": "town_other",
+          "column": "municipality",
+          "rows_changed": 606
+        },
+        {
+          "step": "suppress",
+          "column": "date_of_birth, sex, municipality, arrival_ts",
+          "rows_changed": 59
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "town_other",
+        "age20",
+        "hour3"
+      ],
+      "name": "town_other-age20-hour3",
+      "tasks": {
+        "H-U2": 1.0,
+        "H-U4": 0.7897981567363148,
+        "H-U6": 0.9641950063457823,
+        "H-U7": 0.9995844890319983,
+        "H-U8": 0.9976270147730443
+      },
+      "privacy": 1.0,
+      "utility": 0.9502,
+      "composite": 0.9768,
+      "at_risk_after": 0,
+      "rows_released": 46395,
+      "steps": [
+        {
+          "step": "town_other",
+          "column": "municipality",
+          "rows_changed": 3613
+        },
+        {
+          "step": "age20",
+          "column": "date_of_birth",
+          "rows_changed": 49
+        },
+        {
+          "step": "hour3",
+          "column": "arrival_ts",
+          "rows_changed": 49
+        },
+        {
+          "step": "suppress",
+          "column": "date_of_birth, sex, municipality, arrival_ts",
+          "rows_changed": 3
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 3
+        }
+      ]
+    },
+    {
+      "order": [
+        "town_other",
+        "hour3",
+        "age20"
+      ],
+      "name": "town_other-hour3-age20",
+      "tasks": {
+        "H-U2": 1.0,
+        "H-U4": 0.7897981567363148,
+        "H-U6": 0.9641950063457823,
+        "H-U7": 0.9995844890319983,
+        "H-U8": 0.9976270147730443
+      },
+      "privacy": 1.0,
+      "utility": 0.9502,
+      "composite": 0.9768,
+      "at_risk_after": 0,
+      "rows_released": 46395,
+      "steps": [
+        {
+          "step": "town_other",
+          "column": "municipality",
+          "rows_changed": 3613
+        },
+        {
+          "step": "hour3",
+          "column": "arrival_ts",
+          "rows_changed": 49
+        },
+        {
+          "step": "age20",
+          "column": "date_of_birth",
+          "rows_changed": 3
+        },
+        {
+          "step": "suppress",
+          "column": "date_of_birth, sex, municipality, arrival_ts",
+          "rows_changed": 3
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 3
+        }
+      ]
+    },
+    {
+      "order": [
+        "hour3",
+        "age20",
+        "town_other"
+      ],
+      "name": "hour3-age20-town_other",
+      "tasks": {
+        "H-U2": 1.0,
+        "H-U4": 0.9561502357787641,
+        "H-U6": 0.9693786628601387,
+        "H-U7": 1.0,
+        "H-U8": 0.8281804757084542
+      },
+      "privacy": 1.0,
+      "utility": 0.9507,
+      "composite": 0.977,
+      "at_risk_after": 0,
+      "rows_released": 46398,
+      "steps": [
+        {
+          "step": "hour3",
+          "column": "arrival_ts",
+          "rows_changed": 3613
+        },
+        {
+          "step": "age20",
+          "column": "date_of_birth",
+          "rows_changed": 781
+        },
+        {
+          "step": "town_other",
+          "column": "municipality",
+          "rows_changed": 627
+        },
+        {
+          "step": "suppress",
+          "column": "date_of_birth, sex, municipality, arrival_ts",
+          "rows_changed": 57
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "hour3",
+        "town_other",
+        "age20"
+      ],
+      "name": "hour3-town_other-age20",
+      "tasks": {
+        "H-U2": 1.0,
+        "H-U4": 0.9451502601091255,
+        "H-U6": 0.9641950063457823,
+        "H-U7": 1.0,
+        "H-U8": 0.8256416904329791
+      },
+      "privacy": 1.0,
+      "utility": 0.947,
+      "composite": 0.9752,
+      "at_risk_after": 0,
+      "rows_released": 46398,
+      "steps": [
+        {
+          "step": "hour3",
+          "column": "arrival_ts",
+          "rows_changed": 3613
+        },
+        {
+          "step": "town_other",
+          "column": "municipality",
+          "rows_changed": 781
+        },
+        {
+          "step": "age20",
+          "column": "date_of_birth",
+          "rows_changed": 0
+        },
+        {
+          "step": "suppress",
+          "column": "date_of_birth, sex, municipality, arrival_ts",
+          "rows_changed": 0
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    }
+  ]
+}

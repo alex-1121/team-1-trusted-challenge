@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from . import build, checks, contract, protect, redteam, score
+from . import build, checks, contract, protect, redteam, score, selector
 
 
 def main(argv=None):
@@ -24,6 +24,7 @@ def main(argv=None):
     b.add_argument("--results", help="default: results/<scenario>-build")
     b.add_argument("--submission", help="default: pets_submission at the repo root")
     b.add_argument("--pets-eval", default=score.PETS_EVAL)
+    b.add_argument("--contract", help="contract JSON (default: contracts/<scenario>.json)")
     q = sub.add_parser("score", help="run the organisers' scorecard and check, write a summary")
     q.add_argument("--original", required=True)
     q.add_argument("--protected", required=True)
@@ -46,6 +47,13 @@ def main(argv=None):
     r.add_argument("--truth", help="truth/ folder (for the news-clip linkage score)")
     r.add_argument("--adversary", help="adversary/ folder (for the news-clip linkage)")
     r.add_argument("--label", default="")
+    r.add_argument("--attack-specs", help="metadata/attack_specs.json (for the band-aware scorer linkage)")
+    s = sub.add_parser("select", help="write a scenario contract from detected labels and the scenario's required tasks (ablation)")
+    s.add_argument("--scenario", required=True)
+    s.add_argument("--original", help="dataset folder (default: the scenario's dataset in the proving ground)")
+    s.add_argument("--proving-ground", default=score.PROVING_GROUND)
+    s.add_argument("--out", required=True, help="contract JSON to write")
+    s.add_argument("--evidence", help="ablation evidence JSON to write")
     a = ap.parse_args(argv)
     if a.cmd == "protect":
         c = contract.load(a.contract)
@@ -56,13 +64,23 @@ def main(argv=None):
         plan = protect.protect_folder(c, a.original, a.out, key, labels)
         print(f"wrote {len(plan)} plan rows to {a.out}")
     elif a.cmd == "build":
-        plan = build.run(a.scenario, a.original, a.out, a.results, a.submission, a.pets_eval)
+        plan = build.run(a.scenario, a.original, a.out, a.results, a.submission, a.pets_eval, a.contract)
         print(f"built {a.scenario}: {len(plan)} plan rows, results in {a.results or 'results/' + a.scenario.lower() + '-build'}")
     elif a.cmd == "checks":
         checks.run(a.protected, a.original, a.out, a.truth, sys.argv[1:] if argv is None else argv)
         print(f"wrote checks to {a.out}")
+    elif a.cmd == "select":
+        import json
+        pg = Path(a.proving_ground)
+        original = Path(a.original or pg / "data" / selector.pio.get_scenario(a.scenario, pg)["dataset"])
+        c, ev = selector.select(original, a.scenario, pg)
+        for path, obj in ((a.out, c), (a.evidence, ev)):
+            if path:
+                Path(path).parent.mkdir(parents=True, exist_ok=True)
+                Path(path).write_text(json.dumps(obj, indent=2, ensure_ascii=False) + "\n")
+        print(f"wrote {a.out}")
     elif a.cmd == "redteam":
-        rep = redteam.run(a.protected, a.original, contract.load(a.contract), Path(a.out).parent, a.truth, a.adversary, a.label)
+        rep = redteam.run(a.protected, a.original, contract.load(a.contract), Path(a.out).parent, a.truth, a.adversary, a.label, a.attack_specs)
         redteam.write(rep, a.out)
         print(f"gate {rep['gate']}: " + ", ".join(f"{k} {v['value']}" for k, v in rep["attacks"].items()))
     else:

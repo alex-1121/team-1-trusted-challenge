@@ -1,0 +1,113 @@
+{
+  "release": "pub-s3-build (contracts/generated/PUB-S3.auto.json)",
+  "table": "service_requests",
+  "time_column": null,
+  "gate": "fail",
+  "rule": "every attack at or below its threshold; thresholds are our choice, stated here",
+  "attacks": {
+    "order_attack": {
+      "metric": "share_rows_date_rebuilt",
+      "value": 0.0,
+      "detail": {
+        "applicable": false,
+        "why": "no hour-only column in the release",
+        "share_rows_date_rebuilt": 0.0
+      },
+      "threshold": 0.05,
+      "pass": true
+    },
+    "news_linkage": {
+      "metric": "share_clips_reidentified",
+      "value": null,
+      "detail": null,
+      "threshold": 0.0,
+      "pass": null
+    },
+    "person_fingerprint": {
+      "metric": "share_persons_unique",
+      "value": 0.0,
+      "detail": {
+        "applicable": false,
+        "why": "no person key released (no pseudonym, no repeating token)",
+        "share_persons_unique": 0.0,
+        "tables_checked": []
+      },
+      "threshold": 0.05,
+      "pass": true
+    },
+    "scorer_linkage_band_aware": {
+      "metric": "worst_reidentification_rate",
+      "value": 0.0,
+      "detail": {
+        "specs": [
+          {
+            "adversary": "neighbourhood_forum_posts",
+            "qis_used": [
+              {
+                "kind": "time",
+                "protected": [
+                  "ts_created"
+                ]
+              },
+              {
+                "kind": "postcode",
+                "protected": [
+                  "postcode"
+                ]
+              }
+            ],
+            "reidentification_rate": 0.0,
+            "claim_precision": null,
+            "n_unique_claims": 0,
+            "n_targets_in_data": 1262,
+            "share_targets_in_candidate_set_le5": 0.0,
+            "median_candidate_set": 17048.0
+          },
+          {
+            "adversary": "public_directory",
+            "qis_used": [
+              {
+                "kind": "postcode",
+                "protected": [
+                  "postcode"
+                ]
+              }
+            ],
+            "reidentification_rate": 0.0,
+            "claim_precision": null,
+            "n_unique_claims": 0,
+            "n_targets_in_data": 400,
+            "share_targets_in_candidate_set_le5": 0.0,
+            "median_candidate_set": 29634.0
+          }
+        ],
+        "worst_reidentification_rate": 0.0
+      },
+      "threshold": 0.01,
+      "pass": true
+    },
+    "plain_hash": {
+      "metric": "worst_share_reversed",
+      "value": 0.0,
+      "detail": {
+        "hash_like_columns": [],
+        "worst_share_reversed": 0.0
+      },
+      "threshold": 0.0,
+      "pass": true
+    }
+  },
+  "utility_check": {
+    "rule": "every required task scores at least 0.5",
+    "scores": {
+      "PUB-U1": 0.0,
+      "PUB-U2": 0.0,
+      "PUB-U3": 0.6666666666666666
+    },
+    "pass": false,
+    "below_floor": {
+      "PUB-U1": 0.0,
+      "PUB-U2": 0.0
+    }
+  }
+}

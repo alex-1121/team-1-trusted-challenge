@@ -1,8 +1,12 @@
 {
-  "recipient": "University research group (research environment)",
-  "purpose": "Study ED crowding and revisits: length of stay, revisits, diagnosis mix, arrival patterns",
-  "trust_level": "research-env (known recipient, no public release)",
-  "threat_model": "Record linkage against a public directory; dictionary attack on identifier hashes; leaked direct identifiers",
+  "scenario": "HEALTH-S1",
+  "dataset": "health",
+  "generated_by": "pets_transformer.selector",
+  "tolerance": 0.05,
+  "recipient": "University research group studying ED crowding and revisits",
+  "purpose": "Analyse length of stay, revisits and diagnosis patterns",
+  "trust_level": "controlled_research",
+  "threat_model": "Researcher with access to public_directory, news_clips_health and social_posts_health; may try record linkage on QIs (age, sex, municipality, arrival time).",
   "required_tasks": [
     "H-U2",
     "H-U4",
@@ -11,23 +15,25 @@
     "H-U8"
   ],
   "tables": {
+    "clinical_notes": {
+      "action": "withhold",
+      "record_id": "note_id",
+      "reason": "Withheld: without it every required task stays within 0.05 of the reference (H-U2 1.0000, H-U4 1.0000, H-U6 1.0000, H-U7 1.0000, H-U8 1.0000)."
+    },
     "ed_visits": {
       "action": "release",
       "record_id": "visit_id",
-      "reason": "Core table for every required task."
+      "reason": "Released: without it H-U2 0.0000, H-U4 0.0000, H-U6 0.0000, H-U7 0.0000, H-U8 0.0000."
     },
     "lab_results": {
       "action": "release",
       "record_id": "lab_id",
-      "reason": "Needed for the visit-to-lab join; sampled_ts dropped."
-    },
-    "clinical_notes": {
-      "action": "withhold",
-      "reason": "Free-text notes carry identifying detail; no required task uses them and no redactor is in scope."
+      "reason": "Released: without it H-U7 0.0000."
     },
     "published_weekly_stats": {
       "action": "withhold",
-      "reason": "Aggregate table that would add a second linkage path (week, municipality, age band); no required task uses it."
+      "record_id": "stat_id",
+      "reason": "Withheld: without it every required task stays within 0.05 of the reference (H-U2 1.0000, H-U4 1.0000, H-U6 1.0000, H-U7 1.0000, H-U8 1.0000)."
     }
   },
   "columns": {
@@ -35,13 +41,17 @@
       "visit_id": {
         "pet": "token",
         "params": {
-          "prefix": "V"
+          "prefix": "T"
         },
-        "reason": "Record key, sequential in arrival order: kept as is, sorting by it gives back every arrival date (results/redteam/before-7cf541b.json). A keyed token with the same key as lab_results.visit_id keeps the H-U7 join and carries no order."
+        "reason": "Detected record_key (RECORD_ID). Candidates tried, most private first: drop: outside 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 0.9985); keyed token: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: keyed token. A keyed HMAC-SHA256 token keeps joins and carries no order, which a sequential id would give back."
       },
       "patient_hetu": {
         "pet": "drop",
-        "reason": "Direct identifier. A keyed pseudonym would link every visit of a patient, and age band, sex, municipality and the set of arrival hours then single out most repeat patients (results/redteam/before-7cf541b.json). No HEALTH-S1 task needs it: H-U6 reads readmit_30d. Trade-off: no patient-level linkage for the researchers."
+        "reason": "Detected direct_identifier (NATIONAL_ID). The only candidate for this type is drop."
+      },
+      "patient_name": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (PERSON_NAME). The only candidate for this type is drop."
       },
       "date_of_birth": {
         "pet": "age_band",
@@ -51,137 +61,235 @@
             "age"
           ]
         },
-        "reason": "Quasi-identifier; 10-year band written here so the scorer counts it in k, and copied to age for H-U6 (30-day revisit rate by age band)."
+        "reason": "Detected quasi_identifier (BIRTH_DATE). Candidates tried, most private first: drop: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.0000, H-U7 1.0000, H-U8 1.0000); 20-year age band: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.0271, H-U7 1.0000, H-U8 1.0000); 10-year age band: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: 10-year age band."
       },
       "sex": {
-        "pet": "keep",
-        "reason": "Kept: stratified analysis context; low-cardinality quasi-identifier counted in k."
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (SEX). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "phone": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (PHONE). The only candidate for this type is drop."
+      },
+      "home_address": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (STREET_ADDRESS). The only candidate for this type is drop."
       },
       "postcode": {
         "pet": "drop",
-        "reason": "Quasi-identifier finer than needed; municipality serves H-U4 (attacker: linkage to public directory)."
+        "reason": "Detected quasi_identifier (POSTCODE). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
       },
       "municipality": {
         "pet": "top_n_exact_else_other",
         "params": {
           "n": 8
         },
-        "reason": "Eight largest municipalities exact for H-U4 diagnosis mix, rest become other to lift k (attacker: linkage)."
+        "reason": "Detected quasi_identifier (MUNICIPALITY). Candidates tried, most private first: drop: outside 0.05 (H-U2 1.0000, H-U4 0.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000); 8 most common, rest other: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: 8 most common, rest other."
       },
       "arrival_ts": {
         "pet": "hour_of_day",
-        "reason": "Exact timestamp is a quasi-identifier; hour of day as HH:00 serves H-U8 arrival curve, date dropped (no seasonality study possible)."
-      },
-      "resp_rate": {
-        "pet": "keep",
-        "reason": "Kept: clinical measurement, not an identifier at this granularity."
+        "reason": "Detected quasi_identifier (TIMESTAMP). Candidates tried, most private first: drop: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.0000); month: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.0000); ISO week: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.0000); hour of day: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: hour of day."
       },
       "arrival_mode": {
         "pet": "drop",
-        "reason": "Catalogued quasi-identifier (helicopter and police arrivals are rare); no required task reads it, and dropping it cuts the share of groups with a single diagnosis from 0.2787 (results/checks/l_diversity.json at commit a7c9b76) to 0.1128 (results/checks/l_diversity.json)."
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "ambulance_unit": {
+        "pet": "drop",
+        "reason": "Detected technical_identifier (HOSTNAME). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "triage": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: outside 0.05 (H-U2 0.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000); kept: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: kept."
+      },
+      "chief_complaint": {
+        "pet": "drop",
+        "reason": "Detected free_text (FREE_TEXT). The only candidate for this type is drop."
+      },
+      "icd10_primary": {
+        "pet": "keep",
+        "reason": "Detected sensitive_attribute (DIAGNOSIS_CODE). Candidates tried, most private first: drop: outside 0.05 (H-U2 1.0000, H-U4 0.0000, H-U6 0.9642, H-U7 0.5000, H-U8 1.0000); kept: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: kept."
+      },
+      "icd10_secondary": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "systolic_bp": {
+        "pet": "drop",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "diastolic_bp": {
+        "pet": "drop",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "heart_rate": {
+        "pet": "drop",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "resp_rate": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (AGE). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "temp_c": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (MEASUREMENT). Candidates tried, most private first: drop: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 1.0000); kept: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: kept."
+      },
+      "spo2": {
+        "pet": "drop",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "pain_nrs": {
+        "pet": "drop",
+        "reason": "Detected sensitive_attribute (OTHER). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "attending_physician_id": {
+        "pet": "drop",
+        "reason": "Detected technical_identifier (RECORD_ID). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "attending_physician_name": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (PERSON_NAME). The only candidate for this type is drop."
       },
       "discharge_ts": {
         "pet": "drop",
-        "reason": "Exact timestamp quasi-identifier; length of stay is already in los_minutes for H-U2."
+        "reason": "Detected quasi_identifier (TIMESTAMP). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
+      },
+      "los_minutes": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (MEASUREMENT). Candidates tried, most private first: drop: outside 0.05 (H-U2 0.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000); kept: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: kept."
+      },
+      "disposition": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: drop."
+      },
+      "readmit_30d": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (MEASUREMENT). Candidates tried, most private first: drop: outside 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.0000, H-U7 1.0000, H-U8 0.9985); kept: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: kept."
       }
     },
     "lab_results": {
       "lab_id": {
-        "pet": "token",
-        "params": {
-          "prefix": "L"
-        },
-        "reason": "Record key numbered in visit order: kept as is, the first lab id per visit gives back the arrival order. Keyed token, no order."
+        "pet": "drop",
+        "reason": "Detected record_key (RECORD_ID). Candidates tried, most private first: drop: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: drop."
       },
       "visit_id": {
         "pet": "token",
         "params": {
-          "prefix": "V"
+          "prefix": "T"
         },
-        "reason": "Join key to ed_visits; same keyed token as ed_visits.visit_id, so H-U7 still joins, and no visit order is left."
+        "reason": "Detected technical_identifier (RECORD_ID). Candidates tried, most private first: drop: outside 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 1.0000); keyed token: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: keyed token. A keyed HMAC-SHA256 token keeps joins and carries no order, which a sequential id would give back."
+      },
+      "test_code": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: outside 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 0.9985); kept: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: kept."
+      },
+      "test_name": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: drop."
+      },
+      "value": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: outside 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 0.0000, H-U8 0.9985); kept: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: kept."
+      },
+      "unit": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: drop."
+      },
+      "ref_range": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: drop."
+      },
+      "abnormal_flag": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried, most private first: drop: within 0.05 (H-U2 0.9979, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 0.9985). Chosen: drop."
       },
       "sampled_ts": {
         "pet": "drop",
-        "reason": "Exact timestamp quasi-identifier; no required task needs lab sampling time."
+        "reason": "Detected quasi_identifier (TIMESTAMP). Candidates tried, most private first: drop: within 0.05 (H-U2 1.0000, H-U4 1.0000, H-U6 0.9642, H-U7 1.0000, H-U8 1.0000). Chosen: drop."
       }
     }
   },
   "roles": {
     "ed_visits": {
-      "direct_identifier": {
-        "pet": "drop",
-        "reason": "Direct identifier; no required task needs it (attacker: record linkage by name, phone or address)."
-      },
       "quasi_identifier": {
         "pet": "drop",
-        "reason": "Quasi-identifier the contract does not name; dropped so it cannot widen the linkage key (attacker: linkage to public directory)."
+        "reason": "default for a quasi identifier the contract does not name"
       },
       "technical_identifier": {
         "pet": "drop",
-        "reason": "Device, staff or foreign-key code; no required task needs it (attacker: linkage)."
+        "reason": "default for a technical identifier the contract does not name"
+      },
+      "sensitive_attribute": {
+        "pet": "keep",
+        "reason": "default for a sensitive attribute the contract does not name"
       },
       "free_text": {
         "pet": "drop",
-        "reason": "Free text can carry identifying detail; coded fields serve the tasks instead."
+        "reason": "default for a free text the contract does not name"
+      },
+      "non_sensitive": {
+        "pet": "keep",
+        "reason": "default for a non sensitive the contract does not name"
       },
       "record_key": {
         "pet": "token",
         "params": {
-          "prefix": "R"
+          "prefix": "T"
         },
-        "reason": "Record key: a keyed token keeps it unique for the row map and joins without the order a sequential id carries."
+        "reason": "default for a record key the contract does not name"
       },
-      "non_sensitive": {
-        "pet": "keep",
-        "reason": "Low-risk descriptive or clinical value the study uses."
-      },
-      "sensitive_attribute": {
-        "pet": "keep",
-        "reason": "Clinical measurement or diagnosis code the study needs; not an identifier at this granularity."
+      "direct_identifier": {
+        "pet": "drop",
+        "reason": "default for a direct identifier the contract does not name"
       }
     },
     "lab_results": {
-      "direct_identifier": {
-        "pet": "drop",
-        "reason": "Direct identifier; no required task needs it (attacker: record linkage by name, phone or address)."
-      },
       "quasi_identifier": {
         "pet": "drop",
-        "reason": "Quasi-identifier the contract does not name; dropped so it cannot widen the linkage key (attacker: linkage to public directory)."
+        "reason": "default for a quasi identifier the contract does not name"
       },
       "technical_identifier": {
         "pet": "drop",
-        "reason": "Device, staff or foreign-key code; no required task needs it (attacker: linkage)."
+        "reason": "default for a technical identifier the contract does not name"
+      },
+      "sensitive_attribute": {
+        "pet": "keep",
+        "reason": "default for a sensitive attribute the contract does not name"
       },
       "free_text": {
         "pet": "drop",
-        "reason": "Free text can carry identifying detail; coded fields serve the tasks instead."
+        "reason": "default for a free text the contract does not name"
+      },
+      "non_sensitive": {
+        "pet": "keep",
+        "reason": "default for a non sensitive the contract does not name"
       },
       "record_key": {
         "pet": "token",
         "params": {
-          "prefix": "R"
+          "prefix": "T"
         },
-        "reason": "Record key: a keyed token keeps it unique for the row map and joins without the order a sequential id carries."
+        "reason": "default for a record key the contract does not name"
       },
-      "non_sensitive": {
-        "pet": "keep",
-        "reason": "Low-risk descriptive or clinical value the study uses."
-      },
-      "sensitive_attribute": {
-        "pet": "keep",
-        "reason": "Clinical measurement or diagnosis code the study needs; not an identifier at this granularity."
+      "direct_identifier": {
+        "pet": "drop",
+        "reason": "default for a direct identifier the contract does not name"
       }
     }
   },
   "k_target": {
     "table": "ed_visits",
+    "join_flags": [
+      {
+        "table": "lab_results",
+        "on": "visit_id"
+      }
+    ],
     "k": 5,
     "l": 2,
     "sensitive": "icd10_primary",
     "columns": [
       "date_of_birth",
-      "sex",
       "municipality",
       "arrival_ts"
     ],
@@ -190,31 +298,30 @@
         "age"
       ]
     },
-    "reason": "Every released ed_visits row shares its age band, sex, municipality and arrival hour with at least 4 other rows (k of at least 5, the HEALTH-S1 target), and every such group holds at least 2 distinct primary diagnoses (l of at least 2), so knowing those four facts never singles out a visit or reveals its diagnosis. Only the rows that miss the target are coarsened.",
     "ladder": {
-      "age20": {
+      "date_of_birth:widen_band": {
         "column": "date_of_birth",
         "op": "widen_band",
         "width": 20,
-        "reason": "At-risk rows only: 10-year age band widened to 20 years (also in age)."
+        "reason": "At-risk rows only: age band widened to 20 years."
       },
-      "town_other": {
+      "municipality:set": {
         "column": "municipality",
         "op": "set",
         "value": "other",
-        "reason": "At-risk rows only: municipality becomes other."
+        "reason": "At-risk rows only: place becomes other."
       },
-      "hour3": {
+      "arrival_ts:widen_hour": {
         "column": "arrival_ts",
         "op": "widen_hour",
         "block": 3,
-        "reason": "At-risk rows only: arrival hour widened to a 3-hour block."
+        "reason": "At-risk rows only: hour widened to a 3-hour block."
       }
-    }
+    },
+    "reason": "Every released ed_visits row shares its kept quasi-identifiers (date_of_birth, municipality, arrival_ts) with at least 4 other rows, and every such group holds at least 2 distinct icd10_primary values; only the rows that miss the target are coarsened, and rows still at risk get those columns suppressed."
   },
   "k_columns": [
     "date_of_birth",
-    "sex",
     "municipality",
     "arrival_ts"
   ]

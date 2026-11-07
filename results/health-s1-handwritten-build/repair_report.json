@@ -1,0 +1,40 @@
+{
+  "order": [
+    "age20",
+    "town_other",
+    "hour3"
+  ],
+  "rows": 46398,
+  "at_risk_before": 3613,
+  "share_at_risk_before": 0.0779,
+  "steps": [
+    {
+      "step": "age20",
+      "column": "date_of_birth",
+      "rows_changed": 3613
+    },
+    {
+      "step": "town_other",
+      "column": "municipality",
+      "rows_changed": 2458
+    },
+    {
+      "step": "hour3",
+      "column": "arrival_ts",
+      "rows_changed": 125
+    },
+    {
+      "step": "suppress",
+      "column": "date_of_birth, sex, municipality, arrival_ts",
+      "rows_changed": 28
+    },
+    {
+      "step": "drop_rows",
+      "column": "(row)",
+      "rows_changed": 0
+    }
+  ],
+  "rows_released": 46398,
+  "at_risk_after": 0,
+  "share_at_risk_after": 0.0
+}

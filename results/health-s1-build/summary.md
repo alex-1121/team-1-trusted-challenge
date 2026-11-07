@@ -6,11 +6,11 @@ Every number is copied from scorecard.json or computed by `score`. self-assessme
 
 | Task | What it measures | Before | After |
 | --- | --- | --- | --- |
-| H-U2 | Median length of stay by triage level | 1.0000 | 1.0000 |
-| H-U4 | Diagnosis-group mix in the eight largest municipalities | 1.0000 | 0.8744 |
-| H-U6 | 30-day revisit rate by age band (needs readmit_30d or a consistent patient pseudonym) | 1.0000 | 0.9641 |
+| H-U2 | Median length of stay by triage level | 1.0000 | 0.9979 |
+| H-U4 | Diagnosis-group mix in the eight largest municipalities | 1.0000 | 0.9611 |
+| H-U6 | 30-day revisit rate by age band (needs readmit_30d or a consistent patient pseudonym) | 1.0000 | 0.9579 |
 | H-U7 | CRP vs temperature relationship and CRP by diagnosis group (needs visit join) | 1.0000 | 1.0000 |
-| H-U8 | Hour-of-day arrival curve | 1.0000 | 0.9945 |
+| H-U8 | Hour-of-day arrival curve | 1.0000 | 0.8769 |
 
 ## Privacy risk components (lower is better)
 
@@ -30,8 +30,8 @@ Every number is copied from scorecard.json or computed by `score`. self-assessme
 
 ## k-anonymity (smallest group of rows sharing the same attributes)
 
-- Scorer, ed_visits: columns date_of_birth, sex, municipality, arrival_ts; k<5 share 0.0; median k 28.0; min k 5.
-- Our own, ed_visits: columns date_of_birth, sex, municipality, arrival_ts; k<5 share 0.0000; min k 5.
+- Scorer, ed_visits: columns date_of_birth, municipality, arrival_ts; k<5 share 0.0; median k 55.0; min k 5.
+- Our own: columns date_of_birth, municipality, arrival_ts; k<5 share 0.0000; min k 5.
 
 ## Residual risk
 
@@ -41,5 +41,5 @@ Attacker model: the toolkit's shipped attackers only. Attacks run: linkage re-id
 
 ## Scores
 
-- Privacy 1.0, utility 0.9666, composite 0.9845 (self-assessment, not the official judging score).
+- Privacy 1.0, utility 0.9588, composite 0.9808 (self-assessment, not the official judging score).
 - Before: privacy 0.1716, utility 1.0, composite 0.2752.

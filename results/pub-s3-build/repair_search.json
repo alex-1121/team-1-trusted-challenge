@@ -1,0 +1,336 @@
+{
+  "target": {
+    "table": "service_requests",
+    "k": 5,
+    "l": 1,
+    "columns": [
+      "ts_created",
+      "postcode",
+      "lat",
+      "lon",
+      "ts_closed"
+    ],
+    "linked": {},
+    "reason": "Every released service_requests row shares its kept quasi-identifiers (ts_created, postcode, lat, lon, ts_closed) with at least 4 other rows; only the rows that miss the target are coarsened, and rows still at risk get those columns suppressed."
+  },
+  "ladder": {
+    "ts_created:to_month": {
+      "column": "ts_created",
+      "op": "to_month",
+      "reason": "At-risk rows only: date coarsened to its month."
+    },
+    "postcode:prefix": {
+      "column": "postcode",
+      "op": "prefix",
+      "n": 2,
+      "reason": "At-risk rows only: one postcode digit fewer."
+    },
+    "lat:round": {
+      "column": "lat",
+      "op": "round",
+      "decimals": 2,
+      "reason": "At-risk rows only: coordinate grid made 10 times coarser."
+    },
+    "lon:round": {
+      "column": "lon",
+      "op": "round",
+      "decimals": 2,
+      "reason": "At-risk rows only: coordinate grid made 10 times coarser."
+    },
+    "ts_closed:to_month": {
+      "column": "ts_closed",
+      "op": "to_month",
+      "reason": "At-risk rows only: date coarsened to its month."
+    }
+  },
+  "floor": 0.85,
+  "rule": "best composite among orders with no row at risk and every required task at or above the floor",
+  "chosen": "ts_created:to_month-postcode:prefix-lat:round-lon:round-ts_closed:to_month",
+  "orders": [
+    {
+      "order": [
+        "ts_created:to_month",
+        "postcode:prefix",
+        "lat:round",
+        "lon:round",
+        "ts_closed:to_month"
+      ],
+      "name": "ts_created:to_month-postcode:prefix-lat:round-lon:round-ts_closed:to_month",
+      "tasks": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.6666666666666666
+      },
+      "privacy": 1.0,
+      "utility": 0.2222,
+      "composite": 0.386,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "ts_created:to_month",
+          "column": "ts_created",
+          "rows_changed": 31653
+        },
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 31643
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 31643
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 31622
+        },
+        {
+          "step": "ts_closed:to_month",
+          "column": "ts_closed",
+          "rows_changed": 30775
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, lat, lon, ts_closed",
+          "rows_changed": 16515
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "postcode:prefix",
+        "lat:round",
+        "lon:round",
+        "ts_closed:to_month",
+        "ts_created:to_month"
+      ],
+      "name": "postcode:prefix-lat:round-lon:round-ts_closed:to_month-ts_created:to_month",
+      "tasks": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.6666666666666666
+      },
+      "privacy": 1.0,
+      "utility": 0.2222,
+      "composite": 0.386,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 31653
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 31653
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 31653
+        },
+        {
+          "step": "ts_closed:to_month",
+          "column": "ts_closed",
+          "rows_changed": 31643
+        },
+        {
+          "step": "ts_created:to_month",
+          "column": "ts_created",
+          "rows_changed": 31541
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, lat, lon, ts_closed",
+          "rows_changed": 16511
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "lat:round",
+        "lon:round",
+        "ts_closed:to_month",
+        "ts_created:to_month",
+        "postcode:prefix"
+      ],
+      "name": "lat:round-lon:round-ts_closed:to_month-ts_created:to_month-postcode:prefix",
+      "tasks": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.6666666666666666
+      },
+      "privacy": 1.0,
+      "utility": 0.2222,
+      "composite": 0.386,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 31653
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 31653
+        },
+        {
+          "step": "ts_closed:to_month",
+          "column": "ts_closed",
+          "rows_changed": 31653
+        },
+        {
+          "step": "ts_created:to_month",
+          "column": "ts_created",
+          "rows_changed": 31607
+        },
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 18924
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, lat, lon, ts_closed",
+          "rows_changed": 17325
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "lon:round",
+        "ts_closed:to_month",
+        "ts_created:to_month",
+        "postcode:prefix",
+        "lat:round"
+      ],
+      "name": "lon:round-ts_closed:to_month-ts_created:to_month-postcode:prefix-lat:round",
+      "tasks": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.6666666666666666
+      },
+      "privacy": 1.0,
+      "utility": 0.2222,
+      "composite": 0.386,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 31653
+        },
+        {
+          "step": "ts_closed:to_month",
+          "column": "ts_closed",
+          "rows_changed": 31653
+        },
+        {
+          "step": "ts_created:to_month",
+          "column": "ts_created",
+          "rows_changed": 31653
+        },
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 30733
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 30143
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, lat, lon, ts_closed",
+          "rows_changed": 16635
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "ts_closed:to_month",
+        "ts_created:to_month",
+        "postcode:prefix",
+        "lat:round",
+        "lon:round"
+      ],
+      "name": "ts_closed:to_month-ts_created:to_month-postcode:prefix-lat:round-lon:round",
+      "tasks": {
+        "PUB-U1": 0.0,
+        "PUB-U2": 0.0,
+        "PUB-U3": 0.6666666666666666
+      },
+      "privacy": 1.0,
+      "utility": 0.2222,
+      "composite": 0.386,
+      "at_risk_after": 0,
+      "rows_released": 31653,
+      "steps": [
+        {
+          "step": "ts_closed:to_month",
+          "column": "ts_closed",
+          "rows_changed": 31653
+        },
+        {
+          "step": "ts_created:to_month",
+          "column": "ts_created",
+          "rows_changed": 31653
+        },
+        {
+          "step": "postcode:prefix",
+          "column": "postcode",
+          "rows_changed": 31540
+        },
+        {
+          "step": "lat:round",
+          "column": "lat",
+          "rows_changed": 31540
+        },
+        {
+          "step": "lon:round",
+          "column": "lon",
+          "rows_changed": 30668
+        },
+        {
+          "step": "suppress",
+          "column": "ts_created, postcode, lat, lon, ts_closed",
+          "rows_changed": 16558
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    }
+  ]
+}

@@ -89,3 +89,71 @@ def test_shipped_contract_has_k_target_and_no_sequential_keys_kept():
         assert C["roles"][t]["record_key"]["pet"] == "token"
     assert C["columns"]["ed_visits"]["visit_id"]["pet"] == C["columns"]["lab_results"]["visit_id"]["pet"] == "token"
     assert C["columns"]["ed_visits"]["visit_id"]["params"] == C["columns"]["lab_results"]["visit_id"]["params"]
+
+
+def _tiny(tmp_path):
+    d = tmp_path / "toy"
+    d.mkdir()
+    n = 40
+    pd.DataFrame({"rec": [f"RC-{i:05d}" for i in range(n)], "secret": [f"secret{i}" for i in range(n)],
+                  "colour": ["red", "blue"] * (n // 2), "size": [str(i % 7) for i in range(n)]}).to_csv(d / "t.csv", index=False)
+    labels = pd.DataFrame({"dataset": "toy", "table": "t", "column": ["rec", "secret", "colour", "size"],
+                           "privacy_role": ["record_key", "direct_identifier", "non_sensitive", "non_sensitive"],
+                           "subtype": ["RECORD_ID", "OTHER", "CATEGORY", "MEASUREMENT"]})
+    return d, labels
+
+
+def test_selector_keeps_only_what_a_task_needs(tmp_path):
+    from pets_transformer import selector
+    d, labels = _tiny(tmp_path)
+    scen = {"id": "TOY-S1", "recipient": "r", "purpose": "p", "trust_level": "t", "threat_model": "m", "utility_requirements": ["U1"]}
+
+    def util(domain, orig, prot, scen):  # U1 needs the colour column only
+        return [{"id": "U1", "score": 1.0 if "colour" in prot.get("t", pd.DataFrame()).columns else 0.0}]
+    c, ev = selector.select(d, "TOY-S1", tmp_path, labels=labels, scen=scen, utility_fn=util, log=lambda *_: None)
+    cols = c["columns"]["t"]
+    assert cols["colour"]["pet"] == "keep" and "drop: outside" in cols["colour"]["reason"]
+    assert cols["size"]["pet"] == "drop" and cols["secret"]["pet"] == "drop" and cols["rec"]["pet"] == "drop"
+    assert ct_load_ok(c)
+
+
+def ct_load_ok(c):
+    import tempfile
+    with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as f:
+        json.dump(c, f)
+    return ct.load(f.name) is not None
+
+
+def test_plain_hash_is_caught_and_keyed_token_is_not(tmp_path):
+    import hashlib
+    o, p = tmp_path / "o", tmp_path / "p"
+    o.mkdir(), p.mkdir()
+    ids = [f"010190-{i:03d}A" for i in range(30)]
+    pd.DataFrame({"id": ids}).to_csv(o / "t.csv", index=False)
+    pd.DataFrame({"plain": [hashlib.sha256(x.encode()).hexdigest() for x in ids],
+                  "keyed": list(pets.token(pd.Series(ids), KEY, "T").str[1:].str.ljust(64, "0"))}).to_csv(p / "t.csv", index=False)
+    r = redteam.plain_hash(p, o)
+    shares = {x["column"]: x["share_reversed"] for x in r["hash_like_columns"]}
+    assert shares["plain"] == 1.0 and shares["keyed"] == 0.0 and r["worst_share_reversed"] == 1.0
+
+
+def test_contract_without_hour_column_has_no_order_attack():
+    assert redteam._time_column({"columns": {"t": {"a": {"pet": "keep"}}}}) == (None, None)
+
+
+def test_selector_takes_the_most_private_candidate_that_keeps_the_task(tmp_path):
+    from pets_transformer import selector
+    d = tmp_path / "toy"
+    d.mkdir()
+    ts = [f"2025-0{1 + i % 9}-1{i % 9} {i % 24:02d}:15:00" for i in range(40)]
+    pd.DataFrame({"rec": [f"RC-{i:05d}" for i in range(40)], "ts": ts}).to_csv(d / "t.csv", index=False)
+    labels = pd.DataFrame({"dataset": "toy", "table": "t", "column": ["rec", "ts"],
+                           "privacy_role": ["record_key", "quasi_identifier"], "subtype": ["RECORD_ID", "TIMESTAMP"]})
+    scen = {"id": "TOY", "recipient": "r", "purpose": "p", "trust_level": "t", "threat_model": "m", "utility_requirements": ["U1"]}
+
+    def util(domain, orig, prot, scen):  # U1 needs the month of ts
+        t = prot.get("t", pd.DataFrame())
+        good = "ts" in t and t.ts.astype(str).str[:7].eq(orig["t"].ts.str[:7]).all()
+        return [{"id": "U1", "score": 1.0 if good else 0.0}]
+    c, _ = selector.select(d, "TOY", tmp_path, labels=labels, scen=scen, utility_fn=util, log=lambda *_: None)
+    assert c["columns"]["t"]["ts"]["pet"] == "month"

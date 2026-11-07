@@ -49,6 +49,7 @@
       "metric": "share_persons_unique",
       "value": 0.3544,
       "detail": {
+        "table": "ed_visits",
         "applicable": true,
         "person_column": "patient_hetu",
         "fingerprint": [
@@ -60,10 +61,132 @@
         "persons": 25955,
         "persons_with_2plus_rows": 9885,
         "share_persons_unique": 0.3544,
-        "share_repeat_persons_unique": 0.8464
+        "share_repeat_persons_unique": 0.8464,
+        "tables_checked": [
+          {
+            "table": "ed_visits",
+            "applicable": true,
+            "person_column": "patient_hetu",
+            "fingerprint": [
+              "date_of_birth",
+              "sex",
+              "municipality",
+              "arrival_ts"
+            ],
+            "persons": 25955,
+            "persons_with_2plus_rows": 9885,
+            "share_persons_unique": 0.3544,
+            "share_repeat_persons_unique": 0.8464
+          }
+        ]
       },
       "threshold": 0.05,
       "pass": false
+    },
+    "scorer_linkage_band_aware": {
+      "metric": "worst_reidentification_rate",
+      "value": 0.0,
+      "detail": {
+        "specs": [
+          {
+            "adversary": "news_clips_health",
+            "qis_used": [
+              {
+                "kind": "exact",
+                "protected": [
+                  "municipality"
+                ]
+              },
+              {
+                "kind": "age",
+                "protected": [
+                  "age"
+                ]
+              },
+              {
+                "kind": "sex",
+                "protected": [
+                  "sex"
+                ]
+              }
+            ],
+            "reidentification_rate": 0.0,
+            "claim_precision": null,
+            "n_unique_claims": 0,
+            "n_targets_in_data": 200,
+            "share_targets_in_candidate_set_le5": 0.0,
+            "median_candidate_set": 270.0,
+            "attribute_inference": {
+              "sensitive": "icd10_primary",
+              "inferred": 0,
+              "base_rate_majority_guess": 0.19,
+              "advantage_over_base_rate": 0.0,
+              "success_rate": 0.0
+            }
+          },
+          {
+            "adversary": "social_posts_health",
+            "qis_used": [
+              {
+                "kind": "exact",
+                "protected": [
+                  "municipality"
+                ]
+              }
+            ],
+            "reidentification_rate": 0.0,
+            "claim_precision": null,
+            "n_unique_claims": 0,
+            "n_targets_in_data": 850,
+            "share_targets_in_candidate_set_le5": 0.0,
+            "median_candidate_set": 18313.0,
+            "attribute_inference": {
+              "sensitive": "icd10_primary",
+              "inferred": 0,
+              "base_rate_majority_guess": 0.1106,
+              "advantage_over_base_rate": 0.0,
+              "success_rate": 0.0
+            }
+          },
+          {
+            "adversary": "public_directory",
+            "qis_used": [
+              {
+                "kind": "exact",
+                "protected": [
+                  "municipality"
+                ]
+              }
+            ],
+            "reidentification_rate": 0.0,
+            "claim_precision": null,
+            "n_unique_claims": 0,
+            "n_targets_in_data": 739,
+            "share_targets_in_candidate_set_le5": 0.0,
+            "median_candidate_set": 4916.0,
+            "attribute_inference": {
+              "sensitive": "icd10_primary",
+              "inferred": 0,
+              "base_rate_majority_guess": 0.1597,
+              "advantage_over_base_rate": 0.0,
+              "success_rate": 0.0
+            }
+          }
+        ],
+        "worst_reidentification_rate": 0.0
+      },
+      "threshold": 0.01,
+      "pass": true
+    },
+    "plain_hash": {
+      "metric": "worst_share_reversed",
+      "value": 0.0,
+      "detail": {
+        "hash_like_columns": [],
+        "worst_share_reversed": 0.0
+      },
+      "threshold": 0.0,
+      "pass": true
     }
   }
 }
