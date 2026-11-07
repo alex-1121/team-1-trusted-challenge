@@ -1,0 +1,95 @@
+{
+ "check": "a teammate regenerates with the same command and Faker version; each file's sha256 must match",
+ "columns": {
+  "calib": 1800,
+  "locked": 1800,
+  "train": 13800
+ },
+ "command": "python scripts/semantic/gen_corpus.py --out data/semantic-corpus --per-type 60 --seed 1000",
+ "faker": "40.44.0",
+ "files": {
+  "faker": "40.44.0",
+  "files": {
+   "calib": {
+    "columns": 1800,
+    "locales": [
+     "sk_SK",
+     "ro_RO",
+     "el_GR"
+    ],
+    "sha256": "c8bccca72c4ea10c1b8a89b3d8956a11da4a7237089d2fdd7b5116284ccc6654"
+   },
+   "locked": {
+    "columns": 1800,
+    "locales": [
+     "cs_CZ",
+     "pt_PT",
+     "hu_HU"
+    ],
+    "sha256": "68ed961b91d6cd3aa8c3320ec6e57aa6ec6ae4ad4aa6d03c3a1dd426eaa060d4"
+   },
+   "train": {
+    "columns": 13800,
+    "locales": [
+     "bg_BG",
+     "da_DK",
+     "de_AT",
+     "de_DE",
+     "de_LU",
+     "en_IE",
+     "es_ES",
+     "et_EE",
+     "fi_FI",
+     "fr_BE",
+     "fr_FR",
+     "ga_IE",
+     "hr_HR",
+     "it_IT",
+     "lb_LU",
+     "lt_LT",
+     "lv_LV",
+     "mt_MT",
+     "nl_BE",
+     "nl_NL",
+     "pl_PL",
+     "sl_SI",
+     "sv_SE"
+    ],
+    "sha256": "397221a591c2f9946e4059e1b2af10b191845de4c4c44467bb02e4b0e278adae"
+   }
+  },
+  "per_type": 60,
+  "seed": 1000
+ },
+ "generator_sha256": {
+  "scripts/semantic/gen_corpus.py": "0519a3569eb1bcd47b5f972e7b07c3efbc113513129793dea394760f0c7d4c79",
+  "scripts/semantic/locales.py": "fe16e7f211c22622b48dee6a75e35e6268804835bdf5aa411e0b70b79fb3c85f"
+ },
+ "llm_values_sha256": {
+  "bg.json": "1c5c876513aee2eae94f13546f7978d470262a075d41825d05deed0b13e1d85b",
+  "cs.json": "766f8d1ddc5080a162bbeecae91415a967031879e8db72bffa130326abb5a70b",
+  "da.json": "3f599b3b8169ecec2debd276665953856df070b51b54f1a56e2b25b4b2f4c36d",
+  "de.json": "cfe276a33c802da7d9f53416f7bad4864aa654080d0441d7e076452588f47645",
+  "el.json": "3fc79431ca2c95baf4dd05bc83217c32d5518248e8c0f8d7e4929c63ffb3a719",
+  "en.json": "7a232071494631b9976f1ea34ce714ebadadc97cc9b87a26f685af4edace820a",
+  "es.json": "d3105145140530f6ca90bb48b7cc211b318f9d5b3e85e0f05405c4759f0c165c",
+  "et.json": "5fcd1a9a3a04afbd56e90b56f9c1b570dff7c72c01fa06243fd5582e03f8531b",
+  "fi.json": "175d023100b791eb20100526f02811b5e209f084c5452abe091a2939a367c310",
+  "fr.json": "841df5187352dee233489bcdf0c1334c50a242d1a6012f4d932835b7e61cec44",
+  "ga.json": "5d6d351ca90818c670d5977996168f19adb5febda844619d935964992bafd65c",
+  "hr.json": "e96dd0876a6061e6df80069c6b603aaeb48655eb0b028aab68746985dc163841",
+  "hu.json": "0487a24942af940d371ee64f5334b629cd91c2f67ec8b92588b2121deb904fd0",
+  "it.json": "270a0fc17ed78d4bb272ef8e077897c6b0a88a716667431ab4211f382582fd28",
+  "lb.json": "197b906e00ebf3ddf24a0165b94238c5c414fd2768f14fd4f379703a14081a73",
+  "lt.json": "b723d2178aeccef39b6a8d84ae81adfebcb2428cc9c8abb06f06b4217f84196a",
+  "lv.json": "aebaf151fcb600274540376a8be43f01bfdfd49e9ff978f69b71bb4cb8b5391b",
+  "mt.json": "e928bb97286ffab0c8362f20d55a33ce21c21f3bf63c7f7e5004b1abc4c29f6c",
+  "nl.json": "6d69335eb400b1e47bd78af9232b2736a02c7124a18f5517fdd5b2abeaa033cd",
+  "pl.json": "57267db06fb2f71b5d91cb99090d43bc3df9633a40174d6d3018c20e5f61aff5",
+  "pt.json": "c218fd785da25a8bdfac88820d3c3265b09cc9e2554f4df5f23cd2434e9541f3",
+  "ro.json": "337148910b5a806e8126b943a57521c7a3ad9b3be07284f63227599276490e29",
+  "sk.json": "1246fcf40189cb3e3dea577491b8e4f2608fefb8049d4428acae5b8699be7995",
+  "sl.json": "0dd20d226bca2b61163739f77e1f734728b06b03f1147f8883ba6a980b7586e9",
+  "sv.json": "d0895f05918fcada441d875c14b870e82a61b9601bda045772a8a7c0269b03fa"
+ }
+}
