@@ -1,0 +1,189 @@
+{
+  "n_fields": 39,
+  "n_predicted": 39,
+  "accuracy": 0.7436,
+  "macro_f1": 0.7462,
+  "sensitive_recall": 0.9565,
+  "per_role": {
+    "direct_identifier": {
+      "precision": 0.875,
+      "recall": 0.7778,
+      "f1": 0.8235,
+      "support": 9
+    },
+    "quasi_identifier": {
+      "precision": 0.875,
+      "recall": 1.0,
+      "f1": 0.9333,
+      "support": 7
+    },
+    "sensitive_attribute": {
+      "precision": 0.1667,
+      "recall": 0.5,
+      "f1": 0.25,
+      "support": 2
+    },
+    "technical_identifier": {
+      "precision": 0.6,
+      "recall": 1.0,
+      "f1": 0.75,
+      "support": 3
+    },
+    "free_text": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 2
+    },
+    "record_key": {
+      "precision": 1.0,
+      "recall": 0.6667,
+      "f1": 0.8,
+      "support": 3
+    },
+    "non_sensitive": {
+      "precision": 0.875,
+      "recall": 0.5385,
+      "f1": 0.6667,
+      "support": 13
+    }
+  },
+  "confusion": {
+    "direct_identifier": {
+      "direct_identifier": 7,
+      "free_text": 0,
+      "non_sensitive": 0,
+      "quasi_identifier": 0,
+      "record_key": 1,
+      "sensitive_attribute": 0,
+      "technical_identifier": 0
+    },
+    "free_text": {
+      "direct_identifier": 0,
+      "free_text": 2,
+      "non_sensitive": 0,
+      "quasi_identifier": 0,
+      "record_key": 0,
+      "sensitive_attribute": 0,
+      "technical_identifier": 0
+    },
+    "non_sensitive": {
+      "direct_identifier": 0,
+      "free_text": 0,
+      "non_sensitive": 7,
+      "quasi_identifier": 0,
+      "record_key": 0,
+      "sensitive_attribute": 1,
+      "technical_identifier": 0
+    },
+    "quasi_identifier": {
+      "direct_identifier": 0,
+      "free_text": 0,
+      "non_sensitive": 1,
+      "quasi_identifier": 7,
+      "record_key": 0,
+      "sensitive_attribute": 0,
+      "technical_identifier": 0
+    },
+    "record_key": {
+      "direct_identifier": 0,
+      "free_text": 0,
+      "non_sensitive": 0,
+      "quasi_identifier": 0,
+      "record_key": 2,
+      "sensitive_attribute": 0,
+      "technical_identifier": 0
+    },
+    "sensitive_attribute": {
+      "direct_identifier": 0,
+      "free_text": 0,
+      "non_sensitive": 5,
+      "quasi_identifier": 0,
+      "record_key": 0,
+      "sensitive_attribute": 1,
+      "technical_identifier": 0
+    },
+    "technical_identifier": {
+      "direct_identifier": 2,
+      "free_text": 0,
+      "non_sensitive": 0,
+      "quasi_identifier": 0,
+      "record_key": 0,
+      "sensitive_attribute": 0,
+      "technical_identifier": 3
+    }
+  },
+  "subtype_accuracy": 0.6667,
+  "errors": [
+    {
+      "dataset": "customer_service",
+      "table": "customers",
+      "column": "customer_number",
+      "privacy_role": "direct_identifier",
+      "predicted": "technical_identifier"
+    },
+    {
+      "dataset": "customer_service",
+      "table": "customers",
+      "column": "contract_number",
+      "privacy_role": "direct_identifier",
+      "predicted": "technical_identifier"
+    },
+    {
+      "dataset": "customer_service",
+      "table": "customers",
+      "column": "marketing_consent",
+      "privacy_role": "non_sensitive",
+      "predicted": "sensitive_attribute"
+    },
+    {
+      "dataset": "customer_service",
+      "table": "customers",
+      "column": "accessibility_needs",
+      "privacy_role": "sensitive_attribute",
+      "predicted": "non_sensitive"
+    },
+    {
+      "dataset": "customer_service",
+      "table": "conversations",
+      "column": "conversation_id",
+      "privacy_role": "record_key",
+      "predicted": "direct_identifier"
+    },
+    {
+      "dataset": "customer_service",
+      "table": "conversations",
+      "column": "csat",
+      "privacy_role": "non_sensitive",
+      "predicted": "sensitive_attribute"
+    },
+    {
+      "dataset": "customer_service",
+      "table": "conversations",
+      "column": "resolved",
+      "privacy_role": "non_sensitive",
+      "predicted": "sensitive_attribute"
+    },
+    {
+      "dataset": "customer_service",
+      "table": "conversations",
+      "column": "n_turns",
+      "privacy_role": "non_sensitive",
+      "predicted": "sensitive_attribute"
+    },
+    {
+      "dataset": "customer_service",
+      "table": "turns",
+      "column": "seq",
+      "privacy_role": "non_sensitive",
+      "predicted": "sensitive_attribute"
+    },
+    {
+      "dataset": "customer_service",
+      "table": "turns",
+      "column": "speaker",
+      "privacy_role": "non_sensitive",
+      "predicted": "quasi_identifier"
+    }
+  ]
+}

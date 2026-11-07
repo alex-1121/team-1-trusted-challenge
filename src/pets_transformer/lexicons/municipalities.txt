@@ -1,0 +1,28 @@
+# source: data/mobility/stops.csv:municipality, data/energy/customers.csv:municipality, data/finance/customers.csv:city, data/education/students.csv:municipality
+aura
+kaarina
+kemiönsaari
+koski tl
+kustavi
+laitila
+lieto
+loimaa
+marttila
+masku
+mynämäki
+naantali
+nousiainen
+oripää
+paimio
+parainen
+pyhäranta
+pöytyä
+raisio
+rusko
+salo
+sauvo
+somero
+taivassalo
+turku
+uusikaupunki
+vehmaa
