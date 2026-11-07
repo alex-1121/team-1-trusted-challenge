@@ -27,9 +27,70 @@ Status: Context pack landed 2026-11-06; dataset, scenario and demo shape are dec
 | `decisions.md` | Team decision log |
 | `AGENTS.md` | Rules for every teammate's coding agent |
 
+## The demo in five items
+
+Every number below is copied from the file named after it in brackets. Scorecard numbers come from the organisers' `pets-eval`. They are our self-assessment and are separate from the official judging score.
+
+### 1. Types found
+
+The detector labels every column from its values alone; it never reads column names. It was tuned on six datasets and scored with `pets-eval detect` on three it did not see while tuning (`results/detect/SPLIT.md`).
+
+| Held-out dataset | macro-F1 | accuracy | sensitive recall |
+|---|---|---|---|
+| health | 0.8086 (`results/detect/health.json`) | 0.717 (`results/detect/health.json`) | 0.7209 (`results/detect/health.json`) |
+| public_admin | 0.7241 (`results/detect/public_admin.json`) | 0.8108 (`results/detect/public_admin.json`) | 0.8519 (`results/detect/public_admin.json`) |
+| customer_service | 0.7821 (`results/detect/customer_service.json`) | 0.7692 (`results/detect/customer_service.json`) | 0.9565 (`results/detect/customer_service.json`) |
+
+The target was macro-F1 above 0.65, the organisers' rule baseline B1 (`results/detect/SPLIT.md`). macro-F1 is the F1 score (a balance of missed and wrong labels) worked out per privacy role and then averaged, so rare roles count as much as common ones; 1.0 is perfect. One caveat: eight rules were added after reading public_admin's errors and the held-out label rows, so public_admin's 0.7241 and customer_service's 0.7821 are not clean held-out scores. Before those rules they were 0.5431 and 0.7462 (`results/detect/RESULTS.md`). The health score did not change (`results/detect/RESULTS.md`).
+
+The same detector labelled the organisers' unlabelled HR export: 26 columns in `results/detect/unseen_field_labels.csv`, format `column,privacy_role,subtype`. The organisers hold the answers, so we have no score for it.
+
+### 2. PET per type
+
+`results/health-s1-build/plan.md` has one row per column: detected role, PET (privacy-enhancing technique), parameters and the reason. The reasons come from `contracts/HEALTH-S1.json`. One example per PET:
+
+| Column | Detected role | PET | Reason (shortened) |
+|---|---|---|---|
+| ed_visits.patient_hetu | direct_identifier | pseudonym (keyed HMAC-SHA256) | Keeps patients linkable for the revisit task, blocks a dictionary attack on the national id |
+| ed_visits.date_of_birth | quasi_identifier | age_band, width 10 | The scorer counts the band in k; also copied to `age` for the revisit-by-age task |
+| ed_visits.municipality | quasi_identifier | top_n_exact_else_other, n 8 | Eight largest kept for the diagnosis-mix task, the rest become "other" to lift k |
+| ed_visits.arrival_ts | quasi_identifier | hour_of_day | "HH:00" serves the arrival curve; date dropped, so no seasonality study |
+| ed_visits.patient_name | direct_identifier | drop | No required task needs it |
+| ed_visits.icd10_primary | sensitive_attribute | keep | The study needs the diagnosis code |
+| clinical_notes (whole table) | free_text and others | withhold | Free text carries identifying detail; no task uses it, no redactor in scope |
+
+A quasi-identifier is a column that identifies someone only in combination, such as age band plus municipality. k is the size of the smallest group of rows that share the same quasi-identifier values. A pseudonym is a stand-in code: the same national id always gets the same code, and without the secret key the code cannot be turned back into the id.
+
+### 3. Protected output
+
+`python -m pets_transformer.cli build --scenario HEALTH-S1` writes the protected `ed_visits.csv` and `lab_results.csv` with their row maps into `pets_submission/health/`. No data file is committed: the folder is gitignored except the two label files. `ed_visits` keeps all 46398 rows (`results/health-s1-build/scorecard.json`). The organisers' identifier scan found no residual direct identifiers in the 6 files it scanned (`results/health-s1-build/check.txt`). The video shows the folder live.
+
+### 4. Utility before and after
+
+| Task | What it measures | Before | After |
+|---|---|---|---|
+| H-U2 | Median length of stay by triage level | 1.0 | 1.0 |
+| H-U4 | Diagnosis-group mix in the eight largest municipalities | 1.0 | 1.0 |
+| H-U6 | 30-day revisit rate by age band | 1.0 | 0.9642 |
+| H-U7 | CRP vs temperature and CRP by diagnosis group | 1.0 | 1.0 |
+| H-U8 | Hour-of-day arrival curve | 1.0 | 1.0 |
+| Privacy | 1 minus (half the worst risk plus half the mean risk) | 0.1716 | 0.891 |
+| Utility | Mean of the five task scores | 1.0 | 0.9928 |
+| Composite | Weighted harmonic mean, privacy weight 30, utility weight 25 | 0.2752 | 0.9346 |
+
+Before: `baseline-scores/health_HEALTH-S1_research-env_raw.json`. After: `results/health-s1-build/scorecard.json`, also in `results/health-s1-build/summary.md`. For comparison, the organisers' B2-k baseline reaches utility 0.40 on HEALTH-S1 (`data/proving-ground/docs/BENCHMARK.md`, in the restored proving ground).
+
+### 5. The scenario and residual risk
+
+HEALTH-S1: a hospital gives its emergency-department visits and lab results to a university research group in a research environment. The group studies crowding and revisits, so the five tasks above must still work (`contracts/HEALTH-S1.json`).
+
+Residual risk, from `results/health-s1-build/summary.md`: in ed_visits, the share of records with k<5 is 0.1817. That means 18.2% of the records share their quasi-identifier combination with fewer than 5 rows, so an attacker who knows those attributes about a person can narrow the match to a handful of rows or one. Attacker model: the toolkit's shipped attackers only. Attacks run: linkage re-identification with the shipped attacker files, a dictionary attack on hashed columns, a direct-identifier pattern scan, and k over the quasi-identifiers in the field catalogue. We did not test stronger attackers (more background knowledge, other outside data).
+
+What we guarantee and what we do not: `docs/guarantee-and-residual-risk.md`.
+
 ## How to run
 
-Install once, from the repo root, into the existing virtual environment (`pip install -e .`). The organisers' `pets-eval` tool and the proving-ground data must be in place (`data/README.md`).
+Install once, from the repo root: create `.venv` at the repo root, install the organisers' `pets-eval` into it (`uv pip install --python .venv/bin/python -e data/proving-ground/toolkit`, see `context/pets-eval-howto.md`), then install this package into it with `uv pip install --python .venv/bin/python -e .`. The proving-ground data must be in place (`data/README.md`).
 
 One command does everything for the health scenario:
 
