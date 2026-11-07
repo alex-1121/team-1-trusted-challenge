@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from . import build, checks, contract, protect, redteam, score, selector
+from . import build, checks, contract, policy, protect, redteam, score, selector
 
 
 def main(argv=None):
@@ -25,6 +25,7 @@ def main(argv=None):
     b.add_argument("--submission", help="default: pets_submission at the repo root")
     b.add_argument("--pets-eval", default=score.PETS_EVAL)
     b.add_argument("--contract", help="contract JSON (default: contracts/<scenario>.json)")
+    b.add_argument("--policy-dir", default=policy.DEFAULT_DIR, help="folder with <scenario>.policy.json, its .sig and allowed_signers (default: policy/)")
     q = sub.add_parser("score", help="run the organisers' scorecard and check, write a summary")
     q.add_argument("--original", required=True)
     q.add_argument("--protected", required=True)
@@ -49,6 +50,7 @@ def main(argv=None):
     r.add_argument("--adversary", help="adversary/ folder (for the news-clip linkage)")
     r.add_argument("--label", default="")
     r.add_argument("--attack-specs", help="metadata/attack_specs.json (for the band-aware scorer linkage)")
+    r.add_argument("--policy-dir", default=policy.DEFAULT_DIR, help="folder with <scenario>.policy.json, for the thresholds (default: policy/)")
     s = sub.add_parser("select", help="write a scenario contract from detected labels and the scenario's required tasks (ablation)")
     s.add_argument("--scenario", required=True)
     s.add_argument("--original", help="dataset folder (default: the scenario's dataset in the proving ground)")
@@ -65,7 +67,7 @@ def main(argv=None):
         plan = protect.protect_folder(c, a.original, a.out, key, labels)
         print(f"wrote {len(plan)} plan rows to {a.out}")
     elif a.cmd == "build":
-        plan = build.run(a.scenario, a.original, a.out, a.results, a.submission, a.pets_eval, a.contract)
+        plan = build.run(a.scenario, a.original, a.out, a.results, a.submission, a.pets_eval, a.contract, a.policy_dir)
         print(f"built {a.scenario}: {len(plan)} plan rows, results in {a.results or 'results/' + a.scenario.lower() + '-build'}")
     elif a.cmd == "checks":
         checks.run(a.protected, a.original, a.out, a.truth, sys.argv[1:] if argv is None else argv, contract.load(a.contract))
@@ -81,7 +83,9 @@ def main(argv=None):
                 Path(path).write_text(json.dumps(obj, indent=2, ensure_ascii=False) + "\n")
         print(f"wrote {a.out}")
     elif a.cmd == "redteam":
-        rep = redteam.run(a.protected, a.original, contract.load(a.contract), Path(a.out).parent, a.truth, a.adversary, a.label, a.attack_specs)
+        c = contract.load(a.contract)
+        rep = redteam.run(a.protected, a.original, c, Path(a.out).parent, policy.load(a.policy_dir, c["scenario"])["attack_thresholds"],
+                          a.truth, a.adversary, a.label, a.attack_specs)
         redteam.write(rep, a.out)
         print(f"gate {rep['gate']}: " + ", ".join(f"{k} {redteam.shown(v)}" for k, v in rep["attacks"].items()))
     else:

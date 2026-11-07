@@ -25,7 +25,8 @@ One row per top-level file and folder. Files inside `context/` and `team/` are l
 | `plans/` | Specs, tickets and plans (see `plans/README.md`) |
 | `data/` | The proving-ground data, gitignored; `data/README.md` says how to restore it |
 | `contracts/` | One JSON contract per scenario: recipient, purpose, role rules (by detected role), named column rules with their reasons, and the k target with its repair ladder. `HEALTH-S1.json` is the selector v2 output; `HEALTH-S1.handwritten.json` the hand-written start; `HEALTH-S1-noflag.json`, `HEALTH-S1-pseudonym.json` and `HEALTH-S1-informed.json` are variants for the team decisions below; `PUB-S3.json` is the selector's PUB-S3 contract after a reviewer's edit; `generated/` holds the contracts the selector wrote for HEALTH-S3, EDU-S2, ENERGY-S3 and PUB-S3 |
-| `src/pets_transformer/` | The code: `detect` (labels), `selector` (writes the contract), `pets` and `protect` (the transformations), `repair` (k and l on the rows at risk), `generalise` (what a coarsened value can stand for), `score` (the organisers' scorecard), `checks` and `redteam` (attacks the scorecard does not run), `build` (one command for all of it), `contract`, `sweep` and the command line `cli` |
+| `policy/` | One JSON policy per scenario we build, with the limits the release must meet, the recipient, the purpose and the contract hashes the data steward allows. `build` runs only when the policy's signature verifies against `policy/allowed_signers` (see "Signing a policy" under "How to run") |
+| `src/pets_transformer/` | The code: `detect` (labels), `selector` (writes the contract), `pets` and `protect` (the transformations), `repair` (k and l on the rows at risk), `generalise` (what a coarsened value can stand for), `score` (the organisers' scorecard), `checks` and `redteam` (attacks the scorecard does not run), `policy` (the signed limits and the release record), `build` (one command for all of it), `contract`, `sweep` and the command line `cli` |
 | `tests/` | pytest suite for detect, protect, score, checks, the repair sweep, the release gate (tokens, shuffle, repair, hour ranges, selector, new PETs, attacks), what the gate refuses (`test_gate.py`) and the command-line wiring |
 | `scripts/` | One-off scripts; `scripts/prototypes/` holds early experiments, such as the first HEALTH-S1 arrival-time gate |
 | `results/` | Committed evidence: detector results (`detect/`), the selector's evidence (`selection/`), the red-team gate on the earlier release (`redteam/`), the repair sweep (`sweep/`), early gate runs, and one `<scenario>-build/` folder per build (scorecard, repair search, checks, red team), including the HEALTH-S1 variants |
@@ -116,12 +117,12 @@ HEALTH-S1: a hospital gives its emergency-department visits and lab results to a
 | The organisers' linkage attacker, rerun with the age read from the band | 0.0 | 0.0 | at most 0.01 |
 | Plain hashes reversible by dictionary | 0.0 | 0.0 | 0 |
 
-Source for this release: `results/health-s1-build/redteam.json`. The gate runs in every build, as one function (`evaluate` in `src/pets_transformer/redteam.py`) before anything is copied. It refuses the release, lists every reason and leaves `pets_submission/` unwritten when any of these holds:
+Source for this release: `results/health-s1-build/redteam.json`. The gate runs in every build, as one function (`evaluate` in `src/pets_transformer/redteam.py`) before anything is copied, and every limit it reads comes from the scenario's signed policy (`policy/HEALTH-S1.policy.json`). It refuses the release, lists every reason and leaves `pets_submission/` unwritten when any of these holds:
 
 - An attack is over its threshold, or should have run and could not. Each attack reports pass, fail or not applicable with a reason. Not applicable is allowed only when the release gives the attack nothing to work on: no hour-only column, no person key, no attacker quasi-identifier left.
 - The scorer's minimum k on the contract's k-target table is under the target, the minimum k over the joined tables is under it (on the k columns; the count that includes the exact diagnosis code stays a reported number, see `docs/guarantee-and-residual-risk.md`), or the fewest distinct sensitive values in a group is under l.
 - A check the contract's k target needs did not run in this build. The gate reads only what this run produced, never a file left in a reused `results/` folder.
-- A task the scenario definition requires is missing from the scorecard or under 0.5.
+- A task the scenario definition or the policy requires is missing from the scorecard or under the policy's floor, 0.5.
 - The identifier scan found anything or did not run, or the scorecard's direct-identifier or free-text leakage risk is above zero.
 - The protected folder holds a CSV the contract does not name, or lacks one it does. Only the released tables and their row maps are copied.
 
@@ -164,7 +165,7 @@ One command does everything for the health scenario:
 python -m pets_transformer.cli build --scenario HEALTH-S1
 ```
 
-It runs these steps: the detector labels every column of the health tables and of the unseen HR export; if `contracts/<scenario>.json` does not exist, the selector writes one to `contracts/generated/`; the repair search applies the contract with every order of the repair ladder and scores each; `protect` writes the release with the chosen order (tokens, shuffled rows, repair) under a fresh HMAC key; `score` runs the organisers' scorecard and identifier check against the raw baseline; `checks` and the red team run the attacks the scorecard does not run; only if the gate passes are the contract's files copied into `pets_submission/`. Any scenario id from `metadata/scenarios.json` works: `build --scenario HEALTH-S3`. `--contract` builds from another contract file (for example `contracts/HEALTH-S1.handwritten.json`). `python -m pets_transformer.cli select --scenario <id> --out <contract.json>` runs the selector alone; `python -m pets_transformer.cli redteam` runs the red team on any release; `python -m pets_transformer.cli checks --protected <release> --original <data> --contract <contract.json> --out <folder>` runs the three extra checks on any release whose contract has a k target. ENERGY-S3 (1.6 million meter readings) takes several minutes and a few GB of memory on a laptop. Options `--original`, `--out`, `--results`, `--submission` and `--pets-eval` override the defaults (the `pets-eval` default is `.venv/bin/pets-eval` at the repo root; the data default is `data/proving-ground`; the baseline is read from `baseline-scores/`).
+It needs a signed policy (see "Signing a policy" below) and refuses without one. It runs these steps: it verifies the policy's signature and refuses a contract the policy does not allow; the detector labels every column of the health tables and of the unseen HR export; if `contracts/<scenario>.json` does not exist, the selector writes a contract, which must come out with the hash the policy allows, to `contracts/generated/`; the repair search applies the contract with every order of the repair ladder and scores each; `protect` writes the release with the chosen order (tokens, shuffled rows, repair) under a fresh HMAC key; `score` runs the organisers' scorecard and identifier check against the raw baseline; `checks` and the red team run the attacks the scorecard does not run; only if the gate passes are the contract's files copied into `pets_submission/`, with a `release_record.json`. A scenario id works when `policy/` holds a signed policy for it: HEALTH-S1, HEALTH-S3, EDU-S2, ENERGY-S3 and PUB-S3 today. `--contract` builds from another contract file, but only one the policy allows: `contracts/HEALTH-S1.handwritten.json` and the no-flag and pseudonym variants are refused, and they stay as comparison evidence. `--policy-dir` reads the policy from another folder. A selected contract must match the signed hash byte for byte, and the selector's reasons quote measured scores, so one rounded digit is enough for a refusal: on the machine this was tested on, EDU-S2 re-selected with one such digit changed, while HEALTH-S3 matched. Pass the signed file instead: `build --scenario EDU-S2 --contract contracts/generated/EDU-S2.auto.json`. `python -m pets_transformer.cli select --scenario <id> --out <contract.json>` runs the selector alone; `python -m pets_transformer.cli redteam` runs the red team on any release, with the thresholds of the policy named by the contract's `scenario` key (it measures only, so it needs no signature); `python -m pets_transformer.cli checks --protected <release> --original <data> --contract <contract.json> --out <folder>` runs the three extra checks on any release whose contract has a k target. ENERGY-S3 (1.6 million meter readings) takes several minutes and a few GB of memory on a laptop. Options `--original`, `--out`, `--results`, `--submission` and `--pets-eval` override the defaults (the `pets-eval` default is `.venv/bin/pets-eval` at the repo root; the data default is `data/proving-ground`; the baseline is read from `baseline-scores/`).
 
 What comes out:
 
@@ -173,6 +174,28 @@ What comes out:
 - `pets_submission/unseen_field_labels.csv` and `pets_submission/health_field_labels.csv`: the detector's labels for the unseen export and for the health tables. These are the only committed files in that folder.
 - `results/health-s1-build/repair_search.md` and `repair_report.json`: every repair order scored, and how many rows each step changed. `results/health-s1-build/redteam.json`: the gate. `results/health-s1-build/checks/`: l-diversity, informed attacker, joined-table k (a build whose contract has no k target writes `checks/not_run.txt` instead). `selection.json`: the selector's evidence, when the build ran it. `results/redteam/before-7cf541b.json`: the gate on the earlier release.
 - `out/health-s1-build/hmac.key`: the random key behind the tokens. Never committed.
+- `release_record.json`, in `pets_submission/` and in `results/health-s1-build/`, only after a passing gate: the policy's sha256, the signature file name, the contract's sha256, the sha256 of every released file, the recipient, the purpose, the agreement reference, the recipient's duties, what is enforced after release (nothing, `enforced_after_release` is "none") and the residual risks from the checks. A refused rebuild removes the one in `results/`.
+
+### Signing a policy
+
+The data steward owns the limits. Each `policy/<scenario>.policy.json` needs a signature `policy/<scenario>.policy.json.sig`, and `policy/allowed_signers` lists the public key allowed to sign. The principal is `data-steward` and the namespace `pets-policy`; both are fixed in `src/pets_transformer/policy.py`, so a policy cannot name its own signer. The steward's private key stays on the steward's machine and never enters this repo; only the public key and the signatures are committed.
+
+```
+# once, on the steward's machine
+ssh-keygen -t ed25519 -f ~/.ssh/pets-policy-steward
+printf 'data-steward namespaces="pets-policy" %s\n' "$(cat ~/.ssh/pets-policy-steward.pub)" > policy/allowed_signers
+
+# after every change to a policy file: remove the old signature first
+rm -f policy/HEALTH-S1.policy.json.sig
+ssh-keygen -Y sign -f ~/.ssh/pets-policy-steward -n pets-policy policy/HEALTH-S1.policy.json
+
+# what build runs, to check by hand
+ssh-keygen -Y verify -f policy/allowed_signers -I data-steward -n pets-policy -s policy/HEALTH-S1.policy.json.sig < policy/HEALTH-S1.policy.json
+```
+
+Remove the old `.sig` first: without a terminal to answer its overwrite prompt, `ssh-keygen -Y sign` exits 0 and keeps the old signature, and the build then refuses the policy.
+
+What needs a new signature: any edit to a policy file. Editing a contract changes its sha256, so put the new hash in `allowed_contracts` (`shasum -a 256 contracts/HEALTH-S1.json`) and sign again. To build the informed contract, set `attacker_assumption` to `informed` in `policy/HEALTH-S1.policy.json`, sign, and run `build --scenario HEALTH-S1-informed`.
 
 Where the numbers come from: every number is read from `scorecard.json`, written by the organisers' `pets-eval` (a self-assessment, not the official judging score). The "before" figures come from the committed raw baselines in `baseline-scores/`.
 
