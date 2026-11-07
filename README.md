@@ -6,7 +6,7 @@ Since AI Hackathon 2026, Turku, 6-8 November. TrustED challenge: protect the dat
 
 We build a working tool that detects what each column and text field of a synthetic dataset contains. It picks a privacy-enhancing transformation (PET) per data type and sharing scenario, and transforms the data. Then it shows, with measured numbers, what risk was removed and what utility remains.
 
-Status (2026-11-07): HEALTH-S1 is the scored scenario; the build detects, selects, protects, repairs, scores and red-teams in one command, and refuses a release that fails an attack or its purpose (`plans/2026-11-07-release-gate.md`).
+Status (2026-11-07): HEALTH-S1 is the scored scenario; the build detects, selects, protects, repairs, scores and red-teams in one command, and refuses a release that fails an attack or its purpose (`plans/2026-11-07-release-gate.md`). Work in progress on a fork (zraycd/team-1-trusted, branch feat/semantic-types): a multilingual model for column types the word lists cannot place; see plans/2026-11-07-eu-column-types.md. Main keeps the word-list detector until that work passes its checks.
 
 ## Start here
 
