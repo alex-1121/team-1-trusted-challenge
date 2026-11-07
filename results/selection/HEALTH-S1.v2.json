@@ -1,0 +1,2120 @@
+{
+  "scenario": "HEALTH-S1",
+  "required_tasks": [
+    "H-U2",
+    "H-U4",
+    "H-U6",
+    "H-U7",
+    "H-U8"
+  ],
+  "tolerance": 0.05,
+  "risk_line": 0.05,
+  "min_gain": 0.01,
+  "k": 5,
+  "knowable_rule": "a kept column the detector labels quasi_identifier (any subtype), or a kept non_sensitive column of subtype CATEGORY with at most 20 distinct values; sensitive attributes, dropped columns, keyed tokens and free text are never knowable",
+  "main_table": "ed_visits",
+  "reference_scores": {
+    "H-U2": 1.0,
+    "H-U4": 1.0,
+    "H-U6": 1.0,
+    "H-U7": 1.0,
+    "H-U8": 1.0
+  },
+  "final_scores_before_repair": {
+    "H-U2": 0.9978835978835979,
+    "H-U4": 1.0,
+    "H-U6": 0.9641950063457823,
+    "H-U7": 1.0,
+    "H-U8": 0.9985113097635784
+  },
+  "final_scores_after_repair": {
+    "H-U2": 0.9978835978835979,
+    "H-U4": 0.8429054492952309,
+    "H-U6": 0.9581072056891449,
+    "H-U7": 1.0,
+    "H-U8": 0.996629530006826
+  },
+  "risk_after_repair": {
+    "ed_visits": {
+      "risk": 0.1547,
+      "knowable": [
+        "date_of_birth",
+        "municipality",
+        "arrival_ts",
+        "triage"
+      ],
+      "line_met": false
+    },
+    "lab_results": {
+      "risk": 0.0,
+      "knowable": [
+        "test_code"
+      ],
+      "line_met": true
+    }
+  },
+  "fitness": {
+    "trust_level": "controlled_research",
+    "k": 5,
+    "tables": {
+      "ed_visits": {
+        "n_rows": 46398,
+        "columns": [
+          "date_of_birth",
+          "municipality",
+          "arrival_ts",
+          "triage",
+          "icd10_primary",
+          "temp_c",
+          "los_minutes",
+          "readmit_30d",
+          "age"
+        ],
+        "share_k_below_5": 1.0
+      },
+      "lab_results": {
+        "n_rows": 130341,
+        "columns": [
+          "test_code",
+          "value"
+        ],
+        "share_k_below_5": 0.0154
+      }
+    },
+    "rule": "Share of the released rows whose combination of every kept value (every kept column except keyed tokens and free text) is shared by fewer than 5 rows, on the final release after the k repair. Reported for the fit-for-sharing statement; it decides nothing in selection."
+  },
+  "moved_after_repair": [],
+  "trail": [
+    {
+      "table": "clinical_notes",
+      "column": "(table)",
+      "decision": "withhold",
+      "scores": {
+        "H-U2": 1.0,
+        "H-U4": 1.0,
+        "H-U6": 1.0,
+        "H-U7": 1.0,
+        "H-U8": 1.0
+      }
+    },
+    {
+      "table": "ed_visits",
+      "column": "(table)",
+      "decision": "release",
+      "scores": {
+        "H-U2": 0.0,
+        "H-U4": 0.0,
+        "H-U6": 0.0,
+        "H-U7": 0.0,
+        "H-U8": 0.0
+      }
+    },
+    {
+      "table": "lab_results",
+      "column": "(table)",
+      "decision": "release",
+      "scores": {
+        "H-U2": 1.0,
+        "H-U4": 1.0,
+        "H-U6": 1.0,
+        "H-U7": 0.0,
+        "H-U8": 1.0
+      }
+    },
+    {
+      "table": "published_weekly_stats",
+      "column": "(table)",
+      "decision": "withhold",
+      "scores": {
+        "H-U2": 1.0,
+        "H-U4": 1.0,
+        "H-U6": 1.0,
+        "H-U7": 1.0,
+        "H-U8": 1.0
+      }
+    },
+    {
+      "table": "ed_visits",
+      "column": "date_of_birth",
+      "role": "quasi_identifier",
+      "subtype": "BIRTH_DATE",
+      "chosen": "10-year age band",
+      "rule": "line",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.0,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "20-year age band",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.02710592756380137,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 5,
+          "knowable": [
+            "date_of_birth"
+          ],
+          "gain_over_drop": 0.02710592756380137
+        },
+        {
+          "candidate": "10-year age band",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 9,
+          "knowable": [
+            "date_of_birth"
+          ],
+          "gain_over_drop": 0.9641950063457823
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "sex",
+      "role": "quasi_identifier",
+      "subtype": "SEX",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "exact",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 2,
+          "knowable": [
+            "date_of_birth",
+            "sex"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "postcode",
+      "role": "quasi_identifier",
+      "subtype": "POSTCODE",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "2-digit postcode area",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 4.3105306263201e-05,
+          "distinct": 8,
+          "knowable": [
+            "date_of_birth",
+            "postcode"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "3-digit postcode area",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.001767317556791241,
+          "distinct": 47,
+          "knowable": [
+            "date_of_birth",
+            "postcode"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "municipality",
+      "role": "quasi_identifier",
+      "subtype": "MUNICIPALITY",
+      "chosen": "8 most common, rest other",
+      "rule": "line",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 0.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "8 most common, rest other",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 9,
+          "knowable": [
+            "date_of_birth",
+            "municipality"
+          ],
+          "gain_over_drop": 1.0
+        },
+        {
+          "candidate": "exact",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.000819000819000819,
+          "distinct": 28,
+          "knowable": [
+            "date_of_birth",
+            "municipality"
+          ],
+          "gain_over_drop": 1.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "arrival_ts",
+      "role": "quasi_identifier",
+      "subtype": "TIMESTAMP",
+      "chosen": "hour of day",
+      "rule": "line",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 0.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "month",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 0.0
+          },
+          "ok": false,
+          "risk": 0.00301737143842407,
+          "distinct": 12,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "ISO week",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 0.0
+          },
+          "ok": false,
+          "risk": 0.10045691624638993,
+          "distinct": 53,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "hour of day",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 24,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": 1.0
+        },
+        {
+          "candidate": "date",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 0.0
+          },
+          "ok": false,
+          "risk": 0.5562308720203457,
+          "distinct": 365,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "date and hour",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.999030130609078,
+          "distinct": 8314,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": 1.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "resp_rate",
+      "role": "quasi_identifier",
+      "subtype": "AGE",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "exact",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.4904952799689642,
+          "distinct": 51,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "resp_rate"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "discharge_ts",
+      "role": "quasi_identifier",
+      "subtype": "TIMESTAMP",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "month",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.4519375835165309,
+          "distinct": 14,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "discharge_ts"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "ISO week",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.8932712616923143,
+          "distinct": 53,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "discharge_ts"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "hour of day",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.42463037199879305,
+          "distinct": 24,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "discharge_ts"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "date",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.9989008146902884,
+          "distinct": 367,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "discharge_ts"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "date and hour",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 1.0,
+          "distinct": 8595,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "discharge_ts"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "lab_results",
+      "column": "sampled_ts",
+      "role": "quasi_identifier",
+      "subtype": "TIMESTAMP",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "month",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 13,
+          "knowable": [
+            "sampled_ts"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "ISO week",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 53,
+          "knowable": [
+            "sampled_ts"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "hour of day",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 24,
+          "knowable": [
+            "sampled_ts"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "date",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 366,
+          "knowable": [
+            "sampled_ts"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "date and hour",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.02369170099968544,
+          "distinct": 8338,
+          "knowable": [
+            "sampled_ts"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "ambulance_unit",
+      "role": "technical_identifier",
+      "subtype": "HOSTNAME",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "keyed token",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 322,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "attending_physician_id",
+      "role": "technical_identifier",
+      "subtype": "RECORD_ID",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "keyed token",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 140,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "lab_results",
+      "column": "visit_id",
+      "role": "technical_identifier",
+      "subtype": "RECORD_ID",
+      "chosen": "keyed token",
+      "rule": "line",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 0.0,
+            "H-U8": 1.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "keyed token",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 26209,
+          "knowable": [],
+          "gain_over_drop": 1.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "icd10_primary",
+      "role": "sensitive_attribute",
+      "subtype": "DIAGNOSIS_CODE",
+      "chosen": "kept",
+      "rule": "line",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 0.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 0.5,
+            "H-U8": 1.0
+          },
+          "ok": false,
+          "risk": 0.022651838441312126,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 50,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": 1.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "icd10_secondary",
+      "role": "sensitive_attribute",
+      "subtype": "DIAGNOSIS_CODE",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 114,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "systolic_bp",
+      "role": "sensitive_attribute",
+      "subtype": "OTHER",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 181,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "diastolic_bp",
+      "role": "sensitive_attribute",
+      "subtype": "OTHER",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 140,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "heart_rate",
+      "role": "sensitive_attribute",
+      "subtype": "OTHER",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 157,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "spo2",
+      "role": "sensitive_attribute",
+      "subtype": "OTHER",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 20,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "pain_nrs",
+      "role": "sensitive_attribute",
+      "subtype": "OTHER",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 11,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "chief_complaint",
+      "role": "free_text",
+      "subtype": "FREE_TEXT",
+      "chosen": "drop",
+      "rule": "only candidate",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 1.0,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ]
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "arrival_mode",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.022651838441312126,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.08241734557524032,
+          "distinct": 4,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "arrival_mode"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "triage",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "kept",
+      "rule": "line not met",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 0.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": false,
+          "risk": 0.022651838441312126,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.1848355532566059,
+          "distinct": 5,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "triage"
+          ],
+          "gain_over_drop": 1.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "temp_c",
+      "role": "non_sensitive",
+      "subtype": "MEASUREMENT",
+      "chosen": "kept",
+      "rule": "line not met",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 0.0,
+            "H-U8": 1.0
+          },
+          "ok": false,
+          "risk": 0.1848355532566059,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "triage"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.1848355532566059,
+          "distinct": 70,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "triage"
+          ],
+          "gain_over_drop": 1.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "los_minutes",
+      "role": "non_sensitive",
+      "subtype": "MEASUREMENT",
+      "chosen": "kept",
+      "rule": "line not met",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 0.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": false,
+          "risk": 0.1848355532566059,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "triage"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.1848355532566059,
+          "distinct": 1354,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "triage"
+          ],
+          "gain_over_drop": 1.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "disposition",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 0.9978835978835979,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 0.9985113097635784
+          },
+          "ok": true,
+          "risk": 0.1848355532566059,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "triage"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.3230096124832967,
+          "distinct": 7,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "triage",
+            "disposition"
+          ],
+          "gain_over_drop": 0.002116402116402072
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "readmit_30d",
+      "role": "non_sensitive",
+      "subtype": "MEASUREMENT",
+      "chosen": "kept",
+      "rule": "line not met",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 0.9978835978835979,
+            "H-U4": 1.0,
+            "H-U6": 0.0,
+            "H-U7": 1.0,
+            "H-U8": 0.9985113097635784
+          },
+          "ok": false,
+          "risk": 0.1848355532566059,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "triage"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "H-U2": 0.9978835978835979,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 0.9985113097635784
+          },
+          "ok": true,
+          "risk": 0.1848355532566059,
+          "distinct": 2,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "triage"
+          ],
+          "gain_over_drop": 0.9641950063457823
+        }
+      ]
+    },
+    {
+      "table": "lab_results",
+      "column": "test_code",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "kept",
+      "rule": "line",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 0.9978835978835979,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 0.0,
+            "H-U8": 0.9985113097635784
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "H-U2": 0.9978835978835979,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 0.9985113097635784
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 15,
+          "knowable": [
+            "test_code"
+          ],
+          "gain_over_drop": 1.0
+        }
+      ]
+    },
+    {
+      "table": "lab_results",
+      "column": "test_name",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 0.9978835978835979,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 0.9985113097635784
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "test_code"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "H-U2": 0.9978835978835979,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 0.9985113097635784
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 15,
+          "knowable": [
+            "test_code",
+            "test_name"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "lab_results",
+      "column": "value",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "kept",
+      "rule": "line",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 0.9978835978835979,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 0.0,
+            "H-U8": 0.9985113097635784
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "test_code"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "H-U2": 0.9978835978835979,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 0.9985113097635784
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 1341,
+          "knowable": [
+            "test_code"
+          ],
+          "gain_over_drop": 1.0
+        }
+      ]
+    },
+    {
+      "table": "lab_results",
+      "column": "unit",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 0.9978835978835979,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 0.9985113097635784
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "test_code"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "H-U2": 0.9978835978835979,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 0.9985113097635784
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 8,
+          "knowable": [
+            "test_code",
+            "unit"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "lab_results",
+      "column": "ref_range",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 0.9978835978835979,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 0.9985113097635784
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "test_code"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "H-U2": 0.9978835978835979,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 0.9985113097635784
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 15,
+          "knowable": [
+            "test_code",
+            "ref_range"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "lab_results",
+      "column": "abnormal_flag",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 0.9978835978835979,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 0.9985113097635784
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "test_code"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "H-U2": 0.9978835978835979,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 0.9985113097635784
+          },
+          "ok": true,
+          "risk": 7.672182966219378e-06,
+          "distinct": 3,
+          "knowable": [
+            "test_code",
+            "abnormal_flag"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "visit_id",
+      "role": "record_key",
+      "subtype": "RECORD_ID",
+      "chosen": "keyed token",
+      "rule": "line not met",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 0.9978835978835979,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 0.0,
+            "H-U8": 0.9985113097635784
+          },
+          "ok": false,
+          "risk": 0.1848355532566059,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "triage"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "keyed token",
+          "scores": {
+            "H-U2": 0.9978835978835979,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 0.9985113097635784
+          },
+          "ok": true,
+          "risk": 0.1848355532566059,
+          "distinct": 46398,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "triage"
+          ],
+          "gain_over_drop": 1.0
+        }
+      ]
+    },
+    {
+      "table": "lab_results",
+      "column": "lab_id",
+      "role": "record_key",
+      "subtype": "RECORD_ID",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 0.9978835978835979,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 0.9985113097635784
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "test_code"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "keyed token",
+          "scores": {
+            "H-U2": 0.9978835978835979,
+            "H-U4": 1.0,
+            "H-U6": 0.9641950063457823,
+            "H-U7": 1.0,
+            "H-U8": 0.9985113097635784
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 130341,
+          "knowable": [
+            "test_code"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "patient_hetu",
+      "role": "direct_identifier",
+      "subtype": "NATIONAL_ID",
+      "chosen": "drop",
+      "rule": "only candidate",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 1.0,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.1848355532566059,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "triage"
+          ]
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "patient_name",
+      "role": "direct_identifier",
+      "subtype": "PERSON_NAME",
+      "chosen": "drop",
+      "rule": "only candidate",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 1.0,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.1848355532566059,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "triage"
+          ]
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "phone",
+      "role": "direct_identifier",
+      "subtype": "PHONE",
+      "chosen": "drop",
+      "rule": "only candidate",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 1.0,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.1848355532566059,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "triage"
+          ]
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "home_address",
+      "role": "direct_identifier",
+      "subtype": "STREET_ADDRESS",
+      "chosen": "drop",
+      "rule": "only candidate",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 1.0,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.1848355532566059,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "triage"
+          ]
+        }
+      ]
+    },
+    {
+      "table": "ed_visits",
+      "column": "attending_physician_name",
+      "role": "direct_identifier",
+      "subtype": "PERSON_NAME",
+      "chosen": "drop",
+      "rule": "only candidate",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "H-U2": 1.0,
+            "H-U4": 1.0,
+            "H-U6": 1.0,
+            "H-U7": 1.0,
+            "H-U8": 1.0
+          },
+          "ok": true,
+          "risk": 0.1848355532566059,
+          "distinct": 0,
+          "knowable": [
+            "date_of_birth",
+            "municipality",
+            "arrival_ts",
+            "triage"
+          ]
+        }
+      ]
+    }
+  ]
+}

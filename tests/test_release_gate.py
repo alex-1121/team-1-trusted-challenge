@@ -141,22 +141,158 @@ def test_contract_without_hour_column_has_no_order_attack():
     assert redteam._time_column({"columns": {"t": {"a": {"pet": "keep"}}}}) == (None, None)
 
 
-def test_selector_takes_the_most_private_candidate_that_keeps_the_task(tmp_path):
-    from pets_transformer import selector
+def _ts_toy(tmp_path, ts):
     d = tmp_path / "toy"
     d.mkdir()
-    ts = [f"2025-0{1 + i % 4}-1{i % 9} {i % 24:02d}:15:00" for i in range(40)]  # 10 rows per month, so k>=5 holds
-    pd.DataFrame({"rec": [f"RC-{i:05d}" for i in range(40)], "ts": ts}).to_csv(d / "t.csv", index=False)
+    pd.DataFrame({"rec": [f"RC-{i:05d}" for i in range(len(ts))], "ts": ts}).to_csv(d / "t.csv", index=False)
     labels = pd.DataFrame({"dataset": "toy", "table": "t", "column": ["rec", "ts"],
                            "privacy_role": ["record_key", "quasi_identifier"], "subtype": ["RECORD_ID", "TIMESTAMP"]})
     scen = {"id": "TOY", "recipient": "r", "purpose": "p", "trust_level": "t", "threat_model": "m", "utility_requirements": ["U1"]}
+    return d, labels, scen
 
-    def util(domain, orig, prot, scen):  # U1 needs the month of ts
+
+def test_selector_takes_the_most_useful_candidate_under_the_risk_line(tmp_path):
+    from pets_transformer import selector
+    # 80 rows on 8 dates, 10 per date, hours spread: date is under the line, date and hour is not
+    ts = [f"2025-01-0{1 + i // 10} {i % 24:02d}:15:00" for i in range(80)]
+    d, labels, scen = _ts_toy(tmp_path, ts)
+
+    def util(domain, orig, prot, scen):  # U1: 0.96 for the right month, 1.0 when the date is right too
+        t = prot.get("t", pd.DataFrame())
+        if "ts" not in t:
+            return [{"id": "U1", "score": 0.0}]
+        p, o = t.ts.astype(str), orig["t"].ts
+        return [{"id": "U1", "score": 0.96 * p.str[:7].eq(o.str[:7]).mean() + 0.04 * p.str[:10].eq(o.str[:10]).mean()}]
+    c, ev = selector.select(d, "TOY", tmp_path, labels=labels, scen=scen, utility_fn=util, log=lambda *_: None)
+    rule = c["columns"]["t"]["ts"]
+    # month is coarser and also under the line; the rule takes utility, not the most private candidate
+    assert rule["pet"] == "day"
+    tried = {x["candidate"]: x for x in next(x for x in ev["trail"] if x["column"] == "ts")["tried"]}
+    assert tried["month"]["ok"] and tried["month"]["risk"] < selector.RISK_LINE
+    assert tried["date and hour"]["ok"] and tried["date and hour"]["risk"] >= selector.RISK_LINE
+    assert f"risk line {selector.RISK_LINE}" in rule["reason"] and "risk 0.0000" in rule["reason"] and "utility U1" in rule["reason"]
+    assert c["fitness"]["trust_level"] == "t" and c["fitness"]["tables"]["t"]["n_rows"] == 80
+
+
+def test_selector_takes_the_candidate_under_the_risk_line_when_utility_ties(tmp_path):
+    from pets_transformer import selector
+    ts = [f"2025-0{1 + i % 4}-1{i % 9} {i % 24:02d}:15:00" for i in range(40)]  # 10 rows per month, dates mostly unique
+    d, labels, scen = _ts_toy(tmp_path, ts)
+
+    def util(domain, orig, prot, scen):  # U1 needs the month of ts: month, date and date and hour all score 1.0
         t = prot.get("t", pd.DataFrame())
         good = "ts" in t and t.ts.astype(str).str[:7].eq(orig["t"].ts.str[:7]).all()
         return [{"id": "U1", "score": 1.0 if good else 0.0}]
-    c, _ = selector.select(d, "TOY", tmp_path, labels=labels, scen=scen, utility_fn=util, log=lambda *_: None)
+    c, ev = selector.select(d, "TOY", tmp_path, labels=labels, scen=scen, utility_fn=util, log=lambda *_: None)
+    tried = {x["candidate"]: x for x in next(x for x in ev["trail"] if x["column"] == "ts")["tried"]}
+    assert tried["date"]["scores"] == tried["month"]["scores"] and tried["date"]["ok"]
+    assert tried["date"]["risk"] >= selector.RISK_LINE > tried["month"]["risk"]
+    # "date" sorts before "month", so only the risk can have decided
     assert c["columns"]["t"]["ts"]["pet"] == "month"
+
+
+def test_risk_leaves_measurements_and_sensitive_values_out_of_the_knowable_set():
+    from pets_transformer import selector
+    n = 30
+    frame = pd.DataFrame({"rate": [str(10 + i) for i in range(n)], "town": ["A", "B", "C"] * 10,
+                          "temp": [f"36.{i}" for i in range(n)], "dx": [f"J{i:02d}" for i in range(n)],
+                          "code": [f"C{i % 25}" for i in range(n)]})
+    labels = pd.DataFrame({"dataset": "x", "table": "t", "column": list(frame.columns),
+                           "privacy_role": ["quasi_identifier", "quasi_identifier", "non_sensitive", "sensitive_attribute", "non_sensitive"],
+                           "subtype": ["AGE", "MUNICIPALITY", "MEASUREMENT", "DIAGNOSIS_CODE", "CATEGORY"]})
+    contract = {"columns": {"t": {col: {"pet": "keep"} for col in frame.columns}}}
+    share, cols = selector.risk(frame, "t", contract, labels)
+    # a numeric quasi-identifier stays in; a measurement, a sensitive value and a 25-value category stay out
+    assert cols == ["rate", "town"] and share == 1.0
+    contract["columns"]["t"]["rate"] = {"pet": "drop"}
+    assert selector.risk(frame, "t", contract, labels) == (0.0, ["town"])
+
+
+def test_selector_drops_a_column_no_task_needs_when_utility_and_risk_tie(tmp_path):
+    from pets_transformer import selector
+    d = tmp_path / "toy"
+    d.mkdir()
+    pd.DataFrame({"rec": [f"RC-{i:05d}" for i in range(40)], "town": ["A", "B", "C", "D"] * 10}).to_csv(d / "t.csv", index=False)
+    labels = pd.DataFrame({"dataset": "toy", "table": "t", "column": ["rec", "town"],
+                           "privacy_role": ["record_key", "quasi_identifier"], "subtype": ["RECORD_ID", "MUNICIPALITY"]})
+    scen = {"id": "TOY", "recipient": "r", "purpose": "p", "trust_level": "t", "threat_model": "m", "utility_requirements": ["U1"]}
+    def util(domain, orig, prot, scen):  # U1 needs the table released, no column of it
+        return [{"id": "U1", "score": 1.0 if "t" in prot else 0.0}]
+    c, ev = selector.select(d, "TOY", tmp_path, labels=labels, scen=scen, utility_fn=util, log=lambda *_: None)
+    tried = next(x for x in ev["trail"] if x["column"] == "town")["tried"]
+    # every candidate scores 1.0 with risk 0; "8 most common, rest other" sorts before "drop", so the name alone would keep it
+    assert {x["risk"] for x in tried} == {0.0} and len({x["scores"]["U1"] for x in tried}) == 1
+    rule = c["columns"]["t"]["town"]
+    assert rule["pet"] == "drop" and "ties: lower risk, then fewer distinct values, then name" in rule["reason"]
+
+
+def _gain_toy(tmp_path, gain):
+    from pets_transformer import selector
+    d = tmp_path / "toy"
+    d.mkdir()
+    pd.DataFrame({"rec": [f"RC-{i:05d}" for i in range(40)], "colour": ["A", "B", "C", "D"] * 10}).to_csv(d / "t.csv", index=False)
+    labels = pd.DataFrame({"dataset": "toy", "table": "t", "column": ["rec", "colour"],
+                           "privacy_role": ["record_key", "non_sensitive"], "subtype": ["RECORD_ID", "CATEGORY"]})
+    scen = {"id": "TOY", "recipient": "r", "purpose": "p", "trust_level": "t", "threat_model": "m", "utility_requirements": ["U1", "U2"]}
+
+    def util(domain, orig, prot, scen):  # U1 gains `gain` with colour kept; U2 does not need it
+        t = prot.get("t", pd.DataFrame())
+        return [{"id": "U1", "score": 0.9 + (gain if "colour" in t.columns else 0.0)}, {"id": "U2", "score": 1.0 if "t" in prot else 0.0}]
+    c, ev = selector.select(d, "TOY", tmp_path, labels=labels, scen=scen, utility_fn=util, log=lambda *_: None)
+    tried = {x["candidate"]: x for x in next(x for x in ev["trail"] if x["column"] == "colour")["tried"]}
+    return c["columns"]["t"]["colour"], tried
+
+
+def test_selector_drops_a_column_that_gains_less_than_min_gain_over_drop(tmp_path):
+    from pets_transformer import selector
+    rule, tried = _gain_toy(tmp_path, 0.005)
+    assert abs(tried["kept"]["gain_over_drop"] - 0.005) < 1e-9 and tried["kept"]["ok"] and tried["kept"]["risk"] < selector.RISK_LINE
+    assert rule["pet"] == "drop"
+    assert f"no candidate improves a required task by at least {selector.MIN_GAIN} over drop" in rule["reason"]
+
+
+def test_selector_keeps_a_column_that_gains_more_than_min_gain_over_drop(tmp_path):
+    from pets_transformer import selector
+    rule, tried = _gain_toy(tmp_path, 0.02)
+    assert abs(tried["kept"]["gain_over_drop"] - 0.02) < 1e-9
+    assert rule["pet"] == "keep" and f"by at least {selector.MIN_GAIN} over drop" in rule["reason"]
+
+
+def test_min_gain_does_not_apply_when_drop_breaks_a_required_task():
+    from pets_transformer import selector
+    # ok is set by hand: with one task and TOL 0.05 the main pass cannot make this pair, the repair pass (mean
+    # no worse than the current choice) can
+    tried = [{"candidate": "drop", "scores": {"U1": 0.94}, "ok": False, "risk": 0.0, "distinct": 0},
+             {"candidate": "month", "scores": {"U1": 0.945}, "ok": True, "risk": 0.0, "distinct": 12}]
+    pick, why = selector._decide(tried)
+    assert pick["candidate"] == "month" and why == "line" and abs(pick["gain_over_drop"] - 0.005) < 1e-9
+    assert "drop breaks a required task, so the gain rule does not apply" in selector._chosen_text("month", pick, why, tried=tried).lower()
+
+
+def test_a_single_candidate_is_only_candidate_never_line_not_met():
+    from pets_transformer import selector
+    drop = {"candidate": "drop", "scores": {"U1": 0.9}, "ok": True, "risk": 0.5, "distinct": 0}
+    pick, why = selector._decide([drop])
+    assert pick is drop and why == "only candidate"
+
+
+def test_selector_never_reads_the_menu_order(tmp_path, monkeypatch):
+    from pets_transformer import selector
+    d, labels = _tiny(tmp_path)
+    scen = {"id": "TOY-S1", "recipient": "r", "purpose": "p", "trust_level": "t", "threat_model": "m", "utility_requirements": ["U1"]}
+
+    def util(domain, orig, prot, scen):
+        return [{"id": "U1", "score": 1.0 if "colour" in prot.get("t", pd.DataFrame()).columns else 0.0}]
+
+    def pets_of(c):
+        return {col: (r["pet"], r.get("params")) for col, r in c["columns"]["t"].items()}
+    first, _ = selector.select(d, "TOY-S1", tmp_path, labels=labels, scen=scen, utility_fn=util, log=lambda *_: None)
+    menu = selector.candidates
+    monkeypatch.setattr(selector, "candidates", lambda role, sub: list(reversed(menu(role, sub))))
+    second, _ = selector.select(d, "TOY-S1", tmp_path, labels=labels, scen=scen, utility_fn=util, log=lambda *_: None)
+    assert pets_of(first) == pets_of(second)
+    # size and rec tie on utility and risk under both orders; distinct values decide before the name (drop counts as 0)
+    assert pets_of(second)["size"][0] == "drop" and pets_of(second)["rec"][0] == "drop"
 
 
 def test_hour_block_is_explicit_and_covers_its_hours():

@@ -1,0 +1,1797 @@
+{
+  "scenario": "EDU-S2",
+  "required_tasks": [
+    "EDU-U2",
+    "EDU-U4"
+  ],
+  "tolerance": 0.05,
+  "risk_line": 0.05,
+  "min_gain": 0.01,
+  "k": 5,
+  "knowable_rule": "a kept column the detector labels quasi_identifier (any subtype), or a kept non_sensitive column of subtype CATEGORY with at most 20 distinct values; sensitive attributes, dropped columns, keyed tokens and free text are never knowable",
+  "main_table": "students",
+  "reference_scores": {
+    "EDU-U2": 1.0,
+    "EDU-U4": 1.0
+  },
+  "final_scores_before_repair": {
+    "EDU-U2": 0.9926033981354205,
+    "EDU-U4": 1.0
+  },
+  "final_scores_after_repair": {
+    "EDU-U2": 0.9926033981354205,
+    "EDU-U4": 1.0
+  },
+  "risk_after_repair": {
+    "absences": {
+      "risk": 0.0,
+      "knowable": [],
+      "line_met": true
+    },
+    "course_grades": {
+      "risk": 0.0,
+      "knowable": [
+        "grade_scale"
+      ],
+      "line_met": true
+    },
+    "students": {
+      "risk": 0.0,
+      "knowable": [
+        "status"
+      ],
+      "line_met": true
+    }
+  },
+  "fitness": {
+    "trust_level": "contractual",
+    "k": 5,
+    "tables": {
+      "absences": {
+        "n_rows": 19561,
+        "columns": [
+          "unexcused_hours",
+          "late_arrivals"
+        ],
+        "share_k_below_5": 0.0369
+      },
+      "course_grades": {
+        "n_rows": 152026,
+        "columns": [
+          "grade",
+          "grade_scale"
+        ],
+        "share_k_below_5": 0.0001
+      },
+      "students": {
+        "n_rows": 5161,
+        "columns": [
+          "status"
+        ],
+        "share_k_below_5": 0.0
+      }
+    },
+    "rule": "Share of the released rows whose combination of every kept value (every kept column except keyed tokens and free text) is shared by fewer than 5 rows, on the final release after the k repair. Reported for the fit-for-sharing statement; it decides nothing in selection."
+  },
+  "moved_after_repair": [],
+  "trail": [
+    {
+      "table": "absences",
+      "column": "(table)",
+      "decision": "release",
+      "scores": {
+        "EDU-U2": 0.7159695533050937,
+        "EDU-U4": 0.0
+      }
+    },
+    {
+      "table": "counsellor_notes",
+      "column": "(table)",
+      "decision": "withhold",
+      "scores": {
+        "EDU-U2": 1.0,
+        "EDU-U4": 1.0
+      }
+    },
+    {
+      "table": "course_grades",
+      "column": "(table)",
+      "decision": "release",
+      "scores": {
+        "EDU-U2": 1.0,
+        "EDU-U4": 0.0
+      }
+    },
+    {
+      "table": "matriculation_results",
+      "column": "(table)",
+      "decision": "withhold",
+      "scores": {
+        "EDU-U2": 1.0,
+        "EDU-U4": 1.0
+      }
+    },
+    {
+      "table": "students",
+      "column": "(table)",
+      "decision": "release",
+      "scores": {
+        "EDU-U2": 0.0,
+        "EDU-U4": 1.0
+      }
+    },
+    {
+      "table": "course_grades",
+      "column": "assessed_date",
+      "role": "quasi_identifier",
+      "subtype": "DATE",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "month",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 24,
+          "knowable": [
+            "assessed_date"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "ISO week",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 100,
+          "knowable": [
+            "assessed_date"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "hour of day",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 1,
+          "knowable": [
+            "assessed_date"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "date",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 552,
+          "knowable": [
+            "assessed_date"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "date and hour",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 552,
+          "knowable": [
+            "assessed_date"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "birth_date",
+      "role": "quasi_identifier",
+      "subtype": "BIRTH_DATE",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "20-year age band",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 2,
+          "knowable": [
+            "birth_date"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "10-year age band",
+          "scores": {
+            "EDU-U2": 0.0,
+            "EDU-U4": 1.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 2,
+          "knowable": [
+            "birth_date"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "sex",
+      "role": "quasi_identifier",
+      "subtype": "SEX",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "exact",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 2,
+          "knowable": [
+            "sex"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "home_language",
+      "role": "quasi_identifier",
+      "subtype": "LANGUAGE",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "exact",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 14,
+          "knowable": [
+            "home_language"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "postcode",
+      "role": "quasi_identifier",
+      "subtype": "POSTCODE",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "2-digit postcode area",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 8,
+          "knowable": [
+            "postcode"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "3-digit postcode area",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0007750435962022863,
+          "distinct": 47,
+          "knowable": [
+            "postcode"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "municipality",
+      "role": "quasi_identifier",
+      "subtype": "MUNICIPALITY",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "8 most common, rest other",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 9,
+          "knowable": [
+            "municipality"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "exact",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 27,
+          "knowable": [
+            "municipality"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "school_name",
+      "role": "quasi_identifier",
+      "subtype": "ORG_NAME",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "exact",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 12,
+          "knowable": [
+            "school_name"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "start_date",
+      "role": "quasi_identifier",
+      "subtype": "DATE",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "month",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 5,
+          "knowable": [
+            "start_date"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "ISO week",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 10,
+          "knowable": [
+            "start_date"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "hour of day",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 1,
+          "knowable": [
+            "start_date"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "date",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 40,
+          "knowable": [
+            "start_date"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "date and hour",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 40,
+          "knowable": [
+            "start_date"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "end_date",
+      "role": "quasi_identifier",
+      "subtype": "DATE",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "month",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.004456500678163147,
+          "distinct": 59,
+          "knowable": [
+            "end_date"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "ISO week",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.06568494477814377,
+          "distinct": 205,
+          "knowable": [
+            "end_date"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "hour of day",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 1,
+          "knowable": [
+            "end_date"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "date",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.11296260414648324,
+          "distinct": 503,
+          "knowable": [
+            "end_date"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "date and hour",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.11296260414648324,
+          "distinct": 503,
+          "knowable": [
+            "end_date"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "absences",
+      "column": "student_id",
+      "role": "technical_identifier",
+      "subtype": "RECORD_ID",
+      "chosen": "keyed token",
+      "rule": "line",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 0.6261583489961754,
+            "EDU-U4": 0.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "keyed token",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 5160,
+          "knowable": [],
+          "gain_over_drop": 1.0
+        }
+      ]
+    },
+    {
+      "table": "course_grades",
+      "column": "student_id",
+      "role": "technical_identifier",
+      "subtype": "RECORD_ID",
+      "chosen": "keyed token",
+      "rule": "line",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 0.9860483818180119,
+            "EDU-U4": 0.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "keyed token",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 5151,
+          "knowable": [],
+          "gain_over_drop": 1.0
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "class_group",
+      "role": "technical_identifier",
+      "subtype": "RECORD_ID",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "keyed token",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 268,
+          "knowable": [],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "absences",
+      "column": "excused_hours",
+      "role": "sensitive_attribute",
+      "subtype": "OTHER",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 127,
+          "knowable": [],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "absences",
+      "column": "unexcused_hours",
+      "role": "sensitive_attribute",
+      "subtype": "OTHER",
+      "chosen": "kept",
+      "rule": "line",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 0.6299828877605412,
+            "EDU-U4": 0.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 100,
+          "knowable": [],
+          "gain_over_drop": 1.0
+        }
+      ]
+    },
+    {
+      "table": "absences",
+      "column": "late_arrivals",
+      "role": "sensitive_attribute",
+      "subtype": "OTHER",
+      "chosen": "kept",
+      "rule": "line",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 0.7517790183372142,
+            "EDU-U4": 1.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 29,
+          "knowable": [],
+          "gain_over_drop": 0.24822098166278583
+        }
+      ]
+    },
+    {
+      "table": "course_grades",
+      "column": "period",
+      "role": "sensitive_attribute",
+      "subtype": "OTHER",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 7,
+          "knowable": [],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "course_grades",
+      "column": "credits",
+      "role": "sensitive_attribute",
+      "subtype": "OTHER",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 12,
+          "knowable": [],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "course_grades",
+      "column": "grade",
+      "role": "sensitive_attribute",
+      "subtype": "OTHER",
+      "chosen": "kept",
+      "rule": "line",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 0.9833506325918024,
+            "EDU-U4": 0.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 21,
+          "knowable": [],
+          "gain_over_drop": 1.0
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "finnish_as_second_language",
+      "role": "sensitive_attribute",
+      "subtype": "OTHER",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 2,
+          "knowable": [],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "course_grades",
+      "column": "course_name",
+      "role": "free_text",
+      "subtype": "FREE_TEXT",
+      "chosen": "drop",
+      "rule": "only candidate",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": []
+        }
+      ]
+    },
+    {
+      "table": "absences",
+      "column": "academic_year",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 3,
+          "knowable": [
+            "academic_year"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "absences",
+      "column": "term",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 2,
+          "knowable": [
+            "term"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "absences",
+      "column": "school_code",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 12,
+          "knowable": [
+            "school_code"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "course_grades",
+      "column": "school_code",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 12,
+          "knowable": [
+            "school_code"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "course_grades",
+      "column": "academic_year",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 3,
+          "knowable": [
+            "academic_year"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "course_grades",
+      "column": "course_code",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 347,
+          "knowable": [],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "course_grades",
+      "column": "grade_scale",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "kept",
+      "rule": "line",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 0.5322494857880575
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 4,
+          "knowable": [
+            "grade_scale"
+          ],
+          "gain_over_drop": 0.46775051421194247
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "school_code",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 0.9974845943090113,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 12,
+          "knowable": [
+            "school_code"
+          ],
+          "gain_over_drop": 0.002515405690988737
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "programme",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 0.9963765066719034,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "EDU-U2": 0.9974845943090113,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 15,
+          "knowable": [
+            "programme"
+          ],
+          "gain_over_drop": 0.0011080876371079018
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "special_support",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 0.9926033981354205,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "EDU-U2": 0.9963765066719034,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.00019376089905057158,
+          "distinct": 4,
+          "knowable": [
+            "special_support"
+          ],
+          "gain_over_drop": 0.0037731085364828276
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "status",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "kept",
+      "rule": "line",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 0.0,
+            "EDU-U4": 1.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "EDU-U2": 0.9926033981354205,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 3,
+          "knowable": [
+            "status"
+          ],
+          "gain_over_drop": 0.9926033981354205
+        }
+      ]
+    },
+    {
+      "table": "absences",
+      "column": "absence_id",
+      "role": "record_key",
+      "subtype": "RECORD_ID",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 0.9926033981354205,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "keyed token",
+          "scores": {
+            "EDU-U2": 0.9926033981354205,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 19561,
+          "knowable": [],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "course_grades",
+      "column": "grade_id",
+      "role": "record_key",
+      "subtype": "RECORD_ID",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 0.9926033981354205,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "grade_scale"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "keyed token",
+          "scores": {
+            "EDU-U2": 0.9926033981354205,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 152026,
+          "knowable": [
+            "grade_scale"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "student_id",
+      "role": "record_key",
+      "subtype": "RECORD_ID",
+      "chosen": "keyed token",
+      "rule": "line",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 0.0,
+            "EDU-U4": 1.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "status"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "keyed token",
+          "scores": {
+            "EDU-U2": 0.9926033981354205,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 5161,
+          "knowable": [
+            "status"
+          ],
+          "gain_over_drop": 0.9926033981354205
+        }
+      ]
+    },
+    {
+      "table": "course_grades",
+      "column": "teacher_name",
+      "role": "direct_identifier",
+      "subtype": "PERSON_NAME",
+      "chosen": "drop",
+      "rule": "only candidate",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "grade_scale"
+          ]
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "learner_id",
+      "role": "direct_identifier",
+      "subtype": "STUDENT_ID",
+      "chosen": "drop",
+      "rule": "only candidate",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "status"
+          ]
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "hetu",
+      "role": "direct_identifier",
+      "subtype": "NATIONAL_ID",
+      "chosen": "drop",
+      "rule": "only candidate",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "status"
+          ]
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "first_names",
+      "role": "direct_identifier",
+      "subtype": "PERSON_NAME",
+      "chosen": "drop",
+      "rule": "only candidate",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "status"
+          ]
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "last_name",
+      "role": "direct_identifier",
+      "subtype": "PERSON_NAME",
+      "chosen": "drop",
+      "rule": "only candidate",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "status"
+          ]
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "street_address",
+      "role": "direct_identifier",
+      "subtype": "STREET_ADDRESS",
+      "chosen": "drop",
+      "rule": "only candidate",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "status"
+          ]
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "guardian1_name",
+      "role": "direct_identifier",
+      "subtype": "PERSON_NAME",
+      "chosen": "drop",
+      "rule": "only candidate",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "status"
+          ]
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "guardian1_phone",
+      "role": "direct_identifier",
+      "subtype": "PHONE",
+      "chosen": "drop",
+      "rule": "only candidate",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "status"
+          ]
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "guardian2_name",
+      "role": "direct_identifier",
+      "subtype": "PERSON_NAME",
+      "chosen": "drop",
+      "rule": "only candidate",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "status"
+          ]
+        }
+      ]
+    },
+    {
+      "table": "students",
+      "column": "guardian2_phone",
+      "role": "direct_identifier",
+      "subtype": "PHONE",
+      "chosen": "drop",
+      "rule": "only candidate",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "EDU-U2": 1.0,
+            "EDU-U4": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "status"
+          ]
+        }
+      ]
+    }
+  ]
+}
