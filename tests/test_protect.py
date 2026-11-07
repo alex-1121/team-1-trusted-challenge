@@ -5,7 +5,9 @@ from pets_transformer import contract as ct
 from pets_transformer import protect as pr
 
 C = ct.load(__import__("pathlib").Path(__file__).parent.parent / "contracts" / "HEALTH-S1.json")
-COLS = list(C["columns"]["ed_visits"])
+LABELS = pd.read_csv(__import__("pathlib").Path(__file__).parent.parent / "results" / "detect" / "health_labels.csv", dtype=str)
+ROLES = dict(LABELS[LABELS.table == "ed_visits"][["column", "privacy_role"]].itertuples(index=False))
+COLS = list(ROLES)
 
 
 def frame(n=30):
@@ -19,7 +21,7 @@ def frame(n=30):
 
 
 def run(key=b"k" * 32, df=None):
-    return pr.protect_table("ed_visits", frame() if df is None else df, C, key)
+    return pr.protect_table("ed_visits", frame() if df is None else df, C, key, ROLES)
 
 
 def test_pseudonym_stable_and_keyed():

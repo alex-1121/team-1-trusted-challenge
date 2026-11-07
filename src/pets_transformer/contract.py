@@ -14,9 +14,11 @@ def load(path) -> dict:
         if spec.get("action") not in ("release", "withhold") or not spec.get("reason"):
             raise ValueError(f"table {t}: action must be release or withhold, with a reason")
         if spec["action"] == "release":
-            if "record_id" not in spec or t not in c["columns"]:
-                raise ValueError(f"released table {t} needs record_id and a columns entry")
-            for col, cs in c["columns"][t].items():
+            if "record_id" not in spec or (t not in c["columns"] and t not in c.get("roles", {})):
+                raise ValueError(f"released table {t} needs record_id and a columns or roles entry")
+            rules = {**{f"column {k}": v for k, v in c["columns"].get(t, {}).items()},
+                     **{f"role {k}": v for k, v in c.get("roles", {}).get(t, {}).items()}}
+            for what, cs in rules.items():
                 if cs.get("pet") not in PETS or not cs.get("reason"):
-                    raise ValueError(f"{t}.{col}: unknown pet or missing reason")
+                    raise ValueError(f"{t} {what}: unknown pet or missing reason")
     return c
