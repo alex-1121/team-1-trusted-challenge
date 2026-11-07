@@ -359,7 +359,7 @@ def detect_dataset_report(data_dir: Path, dataset: str, semantic: str | None = N
                 prob_rows.append(dict(dataset=dataset, table=t, column=c, **prow))
     lab = pd.DataFrame(rows, columns=["dataset", "table", "column", "privacy_role", "subtype", "kind"])
     if lab.empty:
-        return lab.drop(columns="kind")
+        return _report(lab.drop(columns="kind"), prob_rows, mode)
 
     # a table's record key is its first sequential prefixed id, else its first unique id; other unique ids are technical
     keys = {}

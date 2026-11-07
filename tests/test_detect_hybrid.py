@@ -141,3 +141,10 @@ def test_person_table_flip_is_protective(tmp_path, stub):
     pd.DataFrame({"town": cyc(TOWNS), "who": cyc(DE)}).to_csv(tmp_path / "visits.csv", index=False)
     assert lab(detect_dataset_report(tmp_path, "x", "lexicon"), "town")[0] == "non_sensitive"
     assert lab(detect_dataset_report(tmp_path, "x", "hybrid"), "town") == ("quasi_identifier", "MUNICIPALITY")
+
+
+def test_empty_dataset_still_gives_a_report(tmp_path):
+    (tmp_path / "nothing").mkdir()
+    report = detect.detect_dataset_report(tmp_path, "nothing", "lexicon")
+    assert isinstance(report, detect.DetectReport)
+    assert report.labels.empty and report.type_probs.empty and report.needs_review.empty
