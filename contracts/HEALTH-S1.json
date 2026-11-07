@@ -32,9 +32,16 @@
   },
   "columns": {
     "ed_visits": {
+      "visit_id": {
+        "pet": "token",
+        "params": {
+          "prefix": "V"
+        },
+        "reason": "Record key, sequential in arrival order: kept as is, sorting by it gives back every arrival date (results/redteam/before-7cf541b.json). A keyed token with the same key as lab_results.visit_id keeps the H-U7 join and carries no order."
+      },
       "patient_hetu": {
-        "pet": "pseudonym",
-        "reason": "Direct identifier; keyed HMAC-SHA256 pseudonym keeps patients linkable for H-U6 revisit analysis while blocking dictionary attack on the national id."
+        "pet": "drop",
+        "reason": "Direct identifier. A keyed pseudonym would link every visit of a patient, and age band, sex, municipality and the set of arrival hours then single out most repeat patients (results/redteam/before-7cf541b.json). No HEALTH-S1 task needs it: H-U6 reads readmit_30d. Trade-off: no patient-level linkage for the researchers."
       },
       "date_of_birth": {
         "pet": "age_band",
@@ -79,9 +86,19 @@
       }
     },
     "lab_results": {
+      "lab_id": {
+        "pet": "token",
+        "params": {
+          "prefix": "L"
+        },
+        "reason": "Record key numbered in visit order: kept as is, the first lab id per visit gives back the arrival order. Keyed token, no order."
+      },
       "visit_id": {
-        "pet": "keep",
-        "reason": "Join key to ed_visits; H-U7 needs the visit-to-lab join."
+        "pet": "token",
+        "params": {
+          "prefix": "V"
+        },
+        "reason": "Join key to ed_visits; same keyed token as ed_visits.visit_id, so H-U7 still joins, and no visit order is left."
       },
       "sampled_ts": {
         "pet": "drop",
@@ -108,8 +125,11 @@
         "reason": "Free text can carry identifying detail; coded fields serve the tasks instead."
       },
       "record_key": {
-        "pet": "keep",
-        "reason": "Record id for the row map and joins; not a person identifier."
+        "pet": "token",
+        "params": {
+          "prefix": "R"
+        },
+        "reason": "Record key: a keyed token keeps it unique for the row map and joins without the order a sequential id carries."
       },
       "non_sensitive": {
         "pet": "keep",
@@ -138,8 +158,11 @@
         "reason": "Free text can carry identifying detail; coded fields serve the tasks instead."
       },
       "record_key": {
-        "pet": "keep",
-        "reason": "Record id for the row map and joins; not a person identifier."
+        "pet": "token",
+        "params": {
+          "prefix": "R"
+        },
+        "reason": "Record key: a keyed token keeps it unique for the row map and joins without the order a sequential id carries."
       },
       "non_sensitive": {
         "pet": "keep",
@@ -150,5 +173,49 @@
         "reason": "Clinical measurement or diagnosis code the study needs; not an identifier at this granularity."
       }
     }
-  }
+  },
+  "k_target": {
+    "table": "ed_visits",
+    "k": 5,
+    "l": 2,
+    "sensitive": "icd10_primary",
+    "columns": [
+      "date_of_birth",
+      "sex",
+      "municipality",
+      "arrival_ts"
+    ],
+    "linked": {
+      "date_of_birth": [
+        "age"
+      ]
+    },
+    "reason": "Every released ed_visits row shares its age band, sex, municipality and arrival hour with at least 4 other rows (k of at least 5, the HEALTH-S1 target), and every such group holds at least 2 distinct primary diagnoses (l of at least 2), so knowing those four facts never singles out a visit or reveals its diagnosis. Only the rows that miss the target are coarsened.",
+    "ladder": {
+      "age20": {
+        "column": "date_of_birth",
+        "op": "widen_band",
+        "width": 20,
+        "reason": "At-risk rows only: 10-year age band widened to 20 years (also in age)."
+      },
+      "town_other": {
+        "column": "municipality",
+        "op": "set",
+        "value": "other",
+        "reason": "At-risk rows only: municipality becomes other."
+      },
+      "hour3": {
+        "column": "arrival_ts",
+        "op": "widen_hour",
+        "block": 3,
+        "reason": "At-risk rows only: arrival hour widened to a 3-hour block."
+      }
+    }
+  },
+  "k_columns": [
+    "date_of_birth",
+    "sex",
+    "municipality",
+    "arrival_ts"
+  ]
 }

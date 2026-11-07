@@ -90,8 +90,10 @@ def run(original, protected, scenario, out, baseline=None, contract=None, pets_e
         texts[n] = (out / n).read_text()
     card = json.loads(texts["scorecard.json"])
     base = json.loads(Path(baseline).read_text()) if baseline else None
-    k_cols = (json.loads(Path(contract).read_text()).get("k_columns") if contract else None) or K_COLUMNS
-    k_own = own_k(pd.read_csv(protected / "ed_visits.csv", dtype=str), k_cols)
+    c = json.loads(Path(contract).read_text()) if contract else {}
+    k_cols = c.get("k_columns") or K_COLUMNS
+    main = (c.get("k_target") or {}).get("table", "ed_visits")
+    k_own = own_k(pd.read_csv(protected / f"{main}.csv", dtype=str), k_cols)
     texts["summary.md"] = build_summary(card, base, k_own, k_cols, scenario)
     for n, t in texts.items():
         (out / n).write_text(rewrite_paths(t, prefixes) if n != "summary.md" else t)

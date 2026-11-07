@@ -2,63 +2,53 @@
 
 Scenario HEALTH-S1: a hospital gives its emergency-department (ED) visits and lab results to a university research group in a research environment (a known recipient, no public release) (`contracts/HEALTH-S1.json`). Every number below is followed by the file it comes from. Scorecard numbers are our self-assessment from the organisers' `pets-eval`, not the official judging score.
 
+## What changed from the release on main at 7cf541b, and why
+
+Our own red team broke the earlier release, although the organisers' scorecard gave it composite 0.9709 and linkage re-identification 0.0 (`results/redteam/before-7cf541b.json`, built by main's own code):
+
+- **The dropped date came back.** The release kept only the hour of arrival, but the visits could be put back in arrival order three ways: the file's own row order (dates rebuilt for 0.9975 of rows), sorting by `visit_id`, which was kept as is and is sequential (1.0), and the first `lab_results.lab_id` per visit (1.0 of the 26209 visits with labs). Wherever the hour goes backwards a new day starts, so every date returns.
+- **News clips then name patients.** With the rebuilt dates, 10 of the 220 shipped news clips single out one visit, and all 10 are the right patient, so the clip's reader learns that patient's diagnosis (share 0.0455).
+- **The patient pseudonym made a fingerprint.** It linked every visit of a patient; age band, sex, municipality and the set of arrival hours were unique for 0.3544 of all patients and 0.8464 of the 9885 patients with more than one visit.
+
+The fixes are in the guarantees below. The red-team gate now runs in every build and blocks `pets_submission/` when an attack succeeds (`src/pets_transformer/redteam.py`).
+
 ## What we guarantee
 
 Each line is a method with its parameters, applied by `protect` from `contracts/HEALTH-S1.json`. The per-column table is `results/health-s1-build/plan.md`.
 
-- **Keyed pseudonym for the patient.** `patient_hetu` (the Finnish national id) is replaced by "P" plus the first 16 hex characters of HMAC-SHA256 over the original value. The key is 32 random bytes, written to `out/health-s1-build/hmac.key` when the output folder is first built, outside the released folder and never committed. The same key serves every table in a run, so a patient keeps one pseudonym and revisits still link. Without the key, a dictionary attack (hashing every possible id and comparing) cannot reverse it.
-- **k measured, and stated.** k is the size of the smallest group of rows sharing the same quasi-identifier values (a quasi-identifier identifies someone only in combination with others). The scorer measures k on ed_visits over the catalogued quasi-identifiers: date_of_birth (now a 10-year age band), sex, municipality (eight largest exact, the rest "other") and arrival hour. arrival_mode, also catalogued, is dropped (see "Checks the scorecard does not run"). Result: k<5 share 0.0779, k<2 share 0.0086, median k 27, min k 1, 3811 groups over 46398 rows (`results/health-s1-build/scorecard.json`). Our own k, over the same four columns, gives the same k<5 share of 0.0779 (`results/health-s1-build/summary.md`).
-- **Hour of day only.** `arrival_ts` keeps only "HH:00". The date is gone (`results/health-s1-build/plan.md`).
-- **Listed columns dropped.** From ed_visits: patient_name, phone, home_address, postcode, arrival_mode, ambulance_unit, chief_complaint, attending_physician_id, attending_physician_name, discharge_ts (`results/health-s1-build/scorecard.json`). date_of_birth is overwritten by the age band. From lab_results: sampled_ts (`results/health-s1-build/plan.md`).
-- **Two tables withheld.** clinical_notes (free text with identifying detail, no task uses it, no redactor in scope) and published_weekly_stats (a second linkage path by week, municipality and age band, no task uses it) are not written at all (`contracts/HEALTH-S1.json`).
-- **No direct identifier pattern left.** The organisers' regex scan found no residual direct identifiers in the 6 files of the output (`results/health-s1-build/check.txt`). The scan is pattern-based: it finds identifier formats, not every identifying fact.
+- **No order in the release.** `visit_id` (in both tables) and `lab_results.lab_id` are replaced by keyed tokens: a prefix ("V", "L") plus the first 16 hex characters of HMAC-SHA256 under a 32-byte random key. The same visit gets the same token in both tables, so the visit-to-lab join (H-U7) still works, but a token says nothing about order. Both tables are written in a random row order drawn from the operating system's cryptographic source, and the row maps follow. Red team after the fix: dates rebuilt for 0.0002 of rows (file order), 0.0002 (sorted by `visit_id`), 0.0003 (first `lab_id` per visit), against a gate of 0.05 (`results/redteam/after.json`).
+- **No person key.** `patient_hetu` is dropped. No HEALTH-S1 task needs it: H-U6 reads `readmit_30d` and scores 0.9641 (`results/health-s1-build/scorecard.json`). The price: researchers cannot link a patient's visits themselves.
+- **k of at least 5 and l of at least 2 on every released row.** k is the size of the smallest group of rows sharing the same quasi-identifier values (a quasi-identifier identifies someone only in combination with others); l is the number of distinct primary diagnoses in that group. Columns: age band (`date_of_birth`, copied to `age`), sex, municipality, arrival hour. Scorer: k<5 share 0.0, min k 5, median k 28, 2681 groups over 46398 rows (`results/health-s1-build/scorecard.json`). Our l-diversity check: no group with fewer than 2 distinct diagnoses; the worst group has 6 rows and 2 diagnoses (`results/checks/l_diversity.json`).
+- **Only the rows at risk were coarsened.** Before the repair, 3613 rows (0.0779) were in a group with k<5 or l<2. The repair coarsened only those, step by step, re-measuring after each step: 3613 rows got a 20-year age band, then 2458 still at risk got municipality "other", then 125 got a 3-hour arrival block, and the last 28 had all four columns suppressed. No row was dropped (`results/health-s1-build/repair_report.json`). The order of the steps was chosen by scoring all 6 orders with the organisers' scorecard (`results/health-s1-build/repair_search.md`).
+- **Hour of day only, dates gone.** `arrival_ts` keeps "HH:00" (a 3-hour block on 125 rows, "suppressed" on 28).
+- **Listed columns dropped.** From ed_visits: patient_hetu, patient_name, phone, home_address, postcode, arrival_mode, ambulance_unit, chief_complaint, attending_physician_id, attending_physician_name, discharge_ts. From lab_results: sampled_ts (`results/health-s1-build/plan.md`).
+- **Two tables withheld.** clinical_notes (free text with identifying detail, no task uses it, no redactor in scope) and published_weekly_stats (a second linkage path, no task uses it) are not written at all (`contracts/HEALTH-S1.json`).
+- **No direct identifier pattern left.** The organisers' regex scan found no residual direct identifiers in the 7 files of the output (`results/health-s1-build/check.txt`). The scan finds identifier formats, not every identifying fact.
 
 ## What we do not guarantee
 
-- **Not every row has k of at least 5.** The scenario's target is k of at least 5 on the named columns (`plans/2026-11-07-health-s1-spec.md`, user story 4). On the scorer's column set the k<5 share is 0.0779 (`results/health-s1-build/summary.md`), so 7.8% of ed_visits rows sit in groups of fewer than 5. The target is not met for all rows. The share fell from the earlier release because we dropped arrival_mode, the finding of the l-diversity check below (before and after table at the end of that section).
-- **Why we did not push k further.** In the sweep, 20-year age bands drop the revisit task H-U6 to 0.0271, and 2- or 3-hour arrival blocks drop the arrival curve H-U8 to 0.0 (`results/sweep/sweep.md`). The chosen cell, 10-year bands and 1-hour blocks, has the best composite, 0.9709 (`results/sweep/sweep.md`). We traded the k<5 share for the research tasks and say so.
-- **Shipped attackers only.** The scorer ran the attacker files that ship with the toolkit. A stronger attacker with more background knowledge or other outside data was not tested (`results/health-s1-build/summary.md`).
-- **No dates, so no seasonality.** A researcher cannot study weekly or seasonal patterns on this release (`contracts/HEALTH-S1.json`).
-- **The linkage result may be optimistic.** Linkage re-identification fell from 0.5697 to 0.0 (`results/health-s1-build/summary.md`). The linkage attacker reads date_of_birth as a date, and a band such as "30-39" does not parse as one, so that attacker may get no age information from it. We have not tested this (`results/health-s1-gate/GATE.md`).
-- **Clinical values are kept as they are.** Diagnosis codes, vital signs and lab values are released unchanged because the study needs them (`results/health-s1-build/plan.md`). Someone who already knows a patient's exact readings could use them. No attack for that was run.
-- **The key is per output folder.** A rerun into the same `out/` folder reuses the key, so pseudonyms stay the same across those runs. A new key needs a new output folder.
+- **An attacker who already knows the diagnosis.** An attacker who knows a visit's diagnosis group, age band, municipality and arrival hour singles out exactly one released row for 0.0981 of the 46398 visits, and 0.9292 of those are the right visit (`results/checks/informed_attacker.json`). The row then shows the vital signs, lab values, length of stay and outcome. On the original tables the same four facts single out 0.2501. Making the diagnosis group part of the k key would put most rows at risk (a scratch run, not committed) and wipe out the diagnosis-mix and lab tasks, so we did not.
+- **Joined tables and exact diagnosis codes.** Joining ed_visits to lab_results and counting the exact diagnosis codes in the key, 0.9521 of the joined rows sit in groups of fewer than 5 visits; over the quasi-identifiers alone it is 0.0978, because only the 26209 visits with labs are in the join (`results/checks/joined_k.json`).
+- **Clinical values are kept as they are.** Diagnosis codes, vital signs and lab values are released unchanged because the study needs them.
+- **Attackers we did not build.** The scorer ran its shipped attacker files; our red team adds the order attack, news-clip linkage with rebuilt dates and the person fingerprint. A stronger attacker with other outside data was not tested.
+- **The linkage attacker and age bands.** The scorer's linkage attacker reads `date_of_birth` as a date, and a band such as "30-39" does not parse as one. Our news-clip linkage does match age bands and finds 0 patients (`results/redteam/after.json`).
+- **No dates, so no seasonality.** A researcher cannot study weekly or seasonal patterns on this release.
+- **The key is per output folder.** A rerun into the same `out/` folder reuses the key, so tokens stay the same across those runs.
 
-## Attacks run
+So the release depends on the research environment and the agreement with a known recipient, as HEALTH-S1 assumes. It is not fit for public release.
 
-From `results/health-s1-build/summary.md`, before and after:
+## Scores
 
-| Attack or check | Before | After |
-|---|---|---|
-| ed_visits: direct identifiers retained | 1.0 | 0.0 |
-| ed_visits: records with k<5 | 1.0 | 0.0779 |
-| ed_visits: linkage re-identification (shipped attacker files) | 0.5697 | 0.0 |
-| ed_visits: free-text identifier leakage | 0.0 | 0.0 |
-| lab_results: direct identifiers retained | 0.0 | 0.0 |
+| Number | Raw (`baseline-scores/health_HEALTH-S1_research-env_raw.json`) | Main at 7cf541b | This release (`results/health-s1-build/scorecard.json`) |
+|---|---|---|---|
+| Privacy | 0.1716 | 0.9533 | 1.0 |
+| Utility | 1.0 | 0.9928 | 0.9666 |
+| Composite | 0.2752 | 0.9709 | 0.9845 |
+| Scorer k<5 share, ed_visits | 1.0 | 0.0779 | 0.0 |
+| H-U4 diagnosis mix, top 8 municipalities | 1.0 | 1.0 | 0.8744 |
+| H-U8 hour-of-day curve | 1.0 | 1.0 | 0.9945 |
+| Red-team gate | - | fail | pass |
 
-Two more checks ran. The dictionary attack on hashed columns is listed as run in `results/health-s1-build/summary.md`; the scorecard JSON gives it no separate number. The direct-identifier pattern scan (`pets-eval check`) ran on the protected output only and found no residual hits (`results/health-s1-build/check.txt`).
-
-Scores before: privacy 0.1716, utility 1.0, composite 0.2752 (`baseline-scores/health_HEALTH-S1_research-env_raw.json`). After: privacy 0.9533, utility 0.9928, composite 0.9709 (`results/health-s1-build/scorecard.json`).
-
-## Checks the scorecard does not run
-
-The organisers' scorecard does not run these three checks, so we wrote them ourselves: `python -m pets_transformer.cli checks`, code in `src/pets_transformer/checks.py`. Each JSON names the command, the columns and the thresholds it used. They hold counts and rates only: no diagnosis, no row-map entry and no value of any group. The first run was on the earlier release, which still kept arrival_mode (`results/checks/` at commit a7c9b76). That run led to one change, dropping arrival_mode (see the first check). `results/checks/` now holds the run on the current release, after that change.
-
-- **Mixed diagnoses (l-diversity).** l-diversity asks whether the rows in a group share one diagnosis or a mix. A group is the set of rows with the same values in the scorer's quasi-identifier columns. icd10_primary is the sensitive attribute, the value an attacker wants to learn, so it is not part of the group key; we count the distinct icd10_primary codes in each group. On the earlier release the groups were age band, sex, municipality, arrival hour and arrival_mode: 0.2787 of the 6810 groups had fewer than 2 distinct diagnoses and 0.4439 fewer than 3. Those groups held 0.0438 and 0.0966 of the rows. The worst group had 4 rows and 1 diagnosis (`results/checks/l_diversity.json` at commit a7c9b76). Fix applied: arrival_mode is dropped from ed_visits by a named rule in `contracts/HEALTH-S1.json`. No HEALTH-S1 task reads it, and wider age bands or hour blocks break H-U6 and H-U8 (`results/sweep/sweep.md`). After the fix the groups are age band, sex, municipality and arrival hour, the scorer's four columns: 0.1128 of the 3811 groups have fewer than 2 distinct diagnoses and 0.2359 have fewer than 3. Those groups hold 0.0100 and 0.0320 of the rows. The worst group is still 4 rows with 1 diagnosis (`results/checks/l_diversity.json`). The finding stands: in about 1 group in 9, knowing a patient's age band, sex, municipality and arrival hour tells you the diagnosis without finding the row.
-- **Informed attacker.** This attacker knows four facts about every one of the 46398 visits in `truth/health__ed_visits.csv`: the diagnosis group (icd10_primary mapped by the toolkit's `diagnosis_group`), the 10-year age band, the home municipality (shown as "other" where the release does not show it) and the arrival hour. The truth file is read locally and never copied. Singled out means exactly one released row matches all four facts. Correct means the row map of that row points at the attacker's own visit. On the protected release, 0.1282 of the attacker rows are singled out (5950 visits), and all of them are correct. With the same four facts on the original tables, 0.2501 are singled out. With exact values on the original (exact code, birth date, municipality and arrival time), 1.0 are singled out (`results/checks/informed_attacker.json`). The fix does not change this attacker, who never uses arrival_mode: the earlier release gave the same numbers (`results/checks/informed_attacker.json` at commit a7c9b76). Correct is always 1.0 here by construction, because the attacker's facts come from the visit's own record, so a single match can only be that visit. 0.1282 is the best case for an attacker who holds exactly these four facts and has them right, counting unique matches only. It is not an upper bound on what such an attacker learns: one who guesses among two or three matching rows is right some of the time, and one who also knows the patient's sex, which the release keeps, can split the groups further. We did not measure either.
-- **k on the joined tables.** We join ed_visits to lab_results on visit_id (130341 joined rows, 26209 visits with lab results). The key is every retained column that the field catalogue marks as a quasi-identifier or a diagnosis code: arrival_ts, date_of_birth, icd10_primary, icd10_secondary, municipality and sex. k is the number of distinct visits in a group, because one visit has several lab rows. 0.9525 of the joined rows sit in groups of fewer than 5 visits (`results/checks/joined_k.json`). Without the two diagnosis columns, over the quasi-identifiers alone, the share is 0.1459. On the earlier release, which also kept arrival_mode, the two shares were 0.9799 and 0.2844 (`results/checks/joined_k.json` at commit a7c9b76). Diagnosis codes are a sensitive attribute, not a quasi-identifier, so k usually leaves them out. We report the 0.9525 anyway because a researcher who already knows a patient's exact diagnosis codes can use them as a key, and adding them pushes almost every joined row below k 5. The 0.1459 is the share for an attacker who knows only the quasi-identifiers. The high share comes from counting the diagnoses; the lab columns add nothing to the key.
-
-Scorecard before and after dropping arrival_mode:
-
-| Number | Earlier release, arrival_mode kept (`results/health-s1-build/scorecard.json` at commit a7c9b76) | Current release (`results/health-s1-build/scorecard.json`) |
-|---|---|---|
-| Privacy | 0.891 | 0.9533 |
-| Utility | 0.9928 | 0.9928 |
-| Composite | 0.9346 | 0.9709 |
-| Scorer k<5 share, ed_visits | 0.1817 | 0.0779 |
-| H-U6 | 0.9642 | 0.9642 |
-
-Every task score is unchanged. The scorer's k<5 share falls because arrival_mode no longer counts in its key. Every other number in this document is from the current release unless it says earlier release.
-
-What this means for the research group release: anyone in the research group who knows when a patient arrived, roughly how old they are, where they live and what kind of illness they had can find that patient's row for about 1 visit in 8. That row shows the exact diagnosis codes, vital signs, lab results and outcome. With the diagnosis codes counted, almost no visit with lab results is hidden in a group of 5. So the release depends on the research environment and the agreement with a known recipient, not on k. It is not fit for public release.
+Main at 7cf541b: `results/health-s1-build/scorecard.json` at commit 7cf541b and `results/redteam/before-7cf541b.json`. The utility cost sits in H-U4: 2458 at-risk rows lost their municipality. Every other task stayed at or above 0.96.
 
 TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0)

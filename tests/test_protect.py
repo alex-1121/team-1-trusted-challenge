@@ -1,3 +1,5 @@
+import copy
+
 import pandas as pd
 import pytest
 
@@ -8,6 +10,9 @@ C = ct.load(__import__("pathlib").Path(__file__).parent.parent / "contracts" / "
 LABELS = pd.read_csv(__import__("pathlib").Path(__file__).parent.parent / "results" / "detect" / "health_labels.csv", dtype=str)
 ROLES = dict(LABELS[LABELS.table == "ed_visits"][["column", "privacy_role"]].itertuples(index=False))
 COLS = list(ROLES)
+# The shipped contract drops patient_hetu (red-team finding); the pseudonym PET itself is still tested on a variant.
+C_PSEUDO = copy.deepcopy(C)
+C_PSEUDO["columns"]["ed_visits"]["patient_hetu"] = {"pet": "pseudonym", "reason": "test variant"}
 
 
 def frame(n=30):
@@ -20,8 +25,8 @@ def frame(n=30):
     return pd.DataFrame(rows)
 
 
-def run(key=b"k" * 32, df=None):
-    return pr.protect_table("ed_visits", frame() if df is None else df, C, key, ROLES)
+def run(key=b"k" * 32, df=None, c=C_PSEUDO):
+    return pr.protect_table("ed_visits", frame() if df is None else df, c, key, ROLES)
 
 
 def test_pseudonym_stable_and_keyed():
@@ -66,3 +71,10 @@ def test_missing_hetu_stays_missing():
     df.loc[[0, 1], "patient_hetu"] = None
     out, _, _ = run(df=df)
     assert out.patient_hetu[:2].isna().all() and out.patient_hetu[2:].notna().all()
+
+
+def test_shipped_contract_drops_patient_key_and_tokenises_visit_id():
+    out, rowmap, _ = run(c=C)
+    assert "patient_hetu" not in out.columns
+    assert out.visit_id.str.fullmatch(r"V[0-9a-f]{16}").all() and out.visit_id.is_unique
+    assert list(rowmap.original_record_id) == [f"V{i}" for i in range(30)]

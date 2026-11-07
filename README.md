@@ -6,7 +6,7 @@ Since AI Hackathon 2026, Turku, 6-8 November. TrustED challenge: protect the dat
 
 We build a working tool that detects what each column and text field of a synthetic dataset contains. It picks a privacy-enhancing transformation (PET) per data type and sharing scenario, and transforms the data. Then it shows, with measured numbers, what risk was removed and what utility remains.
 
-Status: Context pack landed 2026-11-06; dataset, scenario and demo shape are decided together on Friday night; spec and tickets follow in plans/.
+Status (2026-11-07): HEALTH-S1 is the scored scenario; the build detects, protects, repairs, scores and red-teams in one command (`plans/2026-11-07-release-gate.md`).
 
 ## Start here
 
@@ -47,52 +47,56 @@ The same detector labelled the organisers' unlabelled HR export: 26 columns in `
 
 ### 2. PET per type
 
-`results/health-s1-build/plan.md` has one row per column: detected role, PET (privacy-enhancing technique), parameters and the reason. The reasons come from `contracts/HEALTH-S1.json`. One example per PET:
+`results/health-s1-build/plan.md` has one row per column: detected role, PET (privacy-enhancing technique), parameters and the reason, plus one row per repair step with the number of rows it changed. The reasons come from `contracts/HEALTH-S1.json`. One example per PET:
 
 | Column | Detected role | PET | Reason (shortened) |
 |---|---|---|---|
-| ed_visits.patient_hetu | direct_identifier | pseudonym (keyed HMAC-SHA256) | Keeps patients linkable for the revisit task, blocks a dictionary attack on the national id |
-| ed_visits.date_of_birth | quasi_identifier | age_band, width 10 | The scorer counts the band in k; also copied to `age` for the revisit-by-age task |
-| ed_visits.municipality | quasi_identifier | top_n_exact_else_other, n 8 | Eight largest kept for the diagnosis-mix task, the rest become "other" to lift k |
-| ed_visits.arrival_ts | quasi_identifier | hour_of_day | "HH:00" serves the arrival curve; date dropped, so no seasonality study |
-| ed_visits.patient_name | direct_identifier | drop | No required task needs it |
-| ed_visits.icd10_primary | sensitive_attribute | keep | The study needs the diagnosis code |
+| ed_visits.visit_id, lab_results.visit_id, lab_results.lab_id | record_key, technical_identifier | token (keyed HMAC-SHA256) | Sequential keys give back the arrival order; the same token in both tables keeps the visit-to-lab join |
+| ed_visits.patient_hetu | direct_identifier | drop | A pseudonym linked every visit into a fingerprint; H-U6 reads readmit_30d instead |
+| ed_visits.date_of_birth | quasi_identifier | age_band, width 10 (20 on the rows at risk) | The scorer counts the band in k; also copied to `age` for the revisit-by-age task |
+| ed_visits.municipality | quasi_identifier | top_n_exact_else_other, n 8 ("other" on the rows at risk) | Eight largest kept for the diagnosis-mix task |
+| ed_visits.arrival_ts | quasi_identifier | hour_of_day (3-hour block on the rows at risk) | "HH:00" serves the arrival curve; date dropped |
+| ed_visits.icd10_primary | sensitive_attribute | keep | The study needs the diagnosis code; every group holds at least 2 distinct codes |
 | clinical_notes (whole table) | free_text and others | withhold | Free text carries identifying detail; no task uses it, no redactor in scope |
 
-A quasi-identifier is a column that identifies someone only in combination, such as age band plus municipality. k is the size of the smallest group of rows that share the same quasi-identifier values. A pseudonym is a stand-in code: the same national id always gets the same code, and without the secret key the code cannot be turned back into the id.
+A quasi-identifier is a column that identifies someone only in combination, such as age band plus municipality. k is the size of the smallest group of rows that share the same quasi-identifier values; l is the number of distinct diagnoses in that group. A token is a stand-in code: the same value always gets the same token, and without the secret key the token cannot be turned back into the value or put in order.
 
 ### 3. Protected output
 
-`python -m pets_transformer.cli build --scenario HEALTH-S1` writes the protected `ed_visits.csv` and `lab_results.csv` with their row maps into `pets_submission/health/`. No data file is committed: the folder is gitignored except the two label files. `ed_visits` keeps all 46398 rows (`results/health-s1-build/scorecard.json`). The organisers' identifier scan found no residual direct identifiers in the 6 files it scanned (`results/health-s1-build/check.txt`). The video shows the folder live.
+`python -m pets_transformer.cli build --scenario HEALTH-S1` writes the protected `ed_visits.csv` and `lab_results.csv` with their row maps into `pets_submission/health/`, in a random row order, and only when the red-team gate passes. No data file is committed: the folder is gitignored except the two label files. `ed_visits` keeps all 46398 rows (`results/health-s1-build/repair_report.json`). The organisers' identifier scan found no residual direct identifiers in the 7 files it scanned (`results/health-s1-build/check.txt`).
 
 ### 4. Utility before and after
 
-| Task | What it measures | Before | After |
-|---|---|---|---|
-| H-U2 | Median length of stay by triage level | 1.0 | 1.0 |
-| H-U4 | Diagnosis-group mix in the eight largest municipalities | 1.0 | 1.0 |
-| H-U6 | 30-day revisit rate by age band | 1.0 | 0.9642 |
-| H-U7 | CRP vs temperature and CRP by diagnosis group | 1.0 | 1.0 |
-| H-U8 | Hour-of-day arrival curve | 1.0 | 1.0 |
-| Privacy | 1 minus (half the worst risk plus half the mean risk) | 0.1716 | 0.9533 |
-| Utility | Mean of the five task scores | 1.0 | 0.9928 |
-| Composite | Weighted harmonic mean, privacy weight 30, utility weight 25 | 0.2752 | 0.9709 |
+| Task | What it measures | Raw | Main at 7cf541b | This release |
+|---|---|---|---|---|
+| H-U2 | Median length of stay by triage level | 1.0 | 1.0 | 1.0 |
+| H-U4 | Diagnosis-group mix in the eight largest municipalities | 1.0 | 1.0 | 0.8744 |
+| H-U6 | 30-day revisit rate by age band | 1.0 | 0.9642 | 0.9641 |
+| H-U7 | CRP vs temperature and CRP by diagnosis group | 1.0 | 1.0 | 1.0 |
+| H-U8 | Hour-of-day arrival curve | 1.0 | 1.0 | 0.9945 |
+| Privacy | 1 minus (half the worst risk plus half the mean risk) | 0.1716 | 0.9533 | 1.0 |
+| Utility | Mean of the five task scores | 1.0 | 0.9928 | 0.9666 |
+| Composite | Weighted harmonic mean, privacy weight 30, utility weight 25 | 0.2752 | 0.9709 | 0.9845 |
 
-Before: `baseline-scores/health_HEALTH-S1_research-env_raw.json`. After: `results/health-s1-build/scorecard.json`, also in `results/health-s1-build/summary.md`. For comparison, the organisers' B2-k baseline reaches utility 0.40 on HEALTH-S1 (`data/proving-ground/docs/BENCHMARK.md`, in the restored proving ground).
+Raw: `baseline-scores/health_HEALTH-S1_research-env_raw.json`. Main at 7cf541b: `results/health-s1-build/scorecard.json` at that commit. This release: `results/health-s1-build/scorecard.json`. For comparison, the organisers' B2-k baseline reaches utility 0.40 on HEALTH-S1 (`data/proving-ground/docs/BENCHMARK.md`, in the restored proving ground).
 
-### 5. The scenario and residual risk
+### 5. The scenario, the red team and residual risk
 
 HEALTH-S1: a hospital gives its emergency-department visits and lab results to a university research group in a research environment. The group studies crowding and revisits, so the five tasks above must still work (`contracts/HEALTH-S1.json`).
 
-Residual risk, from `results/health-s1-build/summary.md`: in ed_visits, the share of records with k<5 is 0.0779. That means 7.8% of the records share their quasi-identifier combination with fewer than 5 rows, so an attacker who knows those attributes about a person can narrow the match to a handful of rows or one. The share is lower than in the earlier release because we dropped arrival_mode, the finding of the l-diversity check below. Attacker model: the toolkit's shipped attackers only. Attacks run: linkage re-identification with the shipped attacker files, a dictionary attack on hashed columns, a direct-identifier pattern scan, and k over the quasi-identifiers in the field catalogue. We did not test stronger attackers (more background knowledge, other outside data).
+**Our red team broke the earlier release, which the scorecard rated 0.9709** (`results/redteam/before-7cf541b.json`):
 
-Checks the scorecard does not run (`python -m pets_transformer.cli checks`):
+| Attack the scorecard does not run | Main at 7cf541b | This release | Gate |
+|---|---|---|---|
+| Order attack: share of rows whose dropped date is rebuilt from row order, `visit_id` or `lab_id` | 1.0 | 0.0002 | at most 0.05 |
+| News-clip linkage with rebuilt dates: share of the 220 clips that name the right patient | 0.0455 (10 clips) | 0.0 | 0 |
+| Person fingerprint: share of patients unique by age band, sex, municipality and their set of arrival hours | 0.3544 | not applicable (no person key) | at most 0.05 |
 
-- l-diversity (how mixed the diagnoses, the sensitive attribute, are inside each group of rows that share the scorer's quasi-identifiers: age band, sex, municipality and arrival hour): 0.1128 of the groups have only one distinct diagnosis (`results/checks/l_diversity.json`). In the earlier release, which also kept arrival_mode, it was 0.2787 (`results/checks/l_diversity.json` at commit a7c9b76). That finding is why arrival_mode, which no task reads, is now dropped; every task score stayed the same and the scores in the table above are the release after the drop.
-- An attacker who knows a visit's diagnosis group, age band, municipality and arrival hour singles out exactly one row for 0.1282 of the 46398 visits, always the right one, against 0.2501 with the same facts on the original tables (`results/checks/informed_attacker.json`). "Always the right one" holds by construction, because the facts come from the visit's own record. 0.1282 counts unique matches only: it is not an upper bound, since an attacker who guesses among a few matching rows, or also knows the patient's sex (kept in the release), can do better. We did not measure that.
-- Joining ed_visits to lab_results and counting the diagnosis codes as part of the key, 0.9525 of the joined rows sit in groups of fewer than 5 visits; over the quasi-identifiers alone it is 0.1459 (`results/checks/joined_k.json`). k usually leaves diagnoses out; we report the 0.9525 because a researcher who knows a patient's exact diagnosis codes can use them to find the row.
+Source for this release: `results/redteam/after.json`. The gate runs in every build; when an attack passes its threshold, the build stops and `pets_submission/` is not written.
 
-What we guarantee and what we do not: `docs/guarantee-and-residual-risk.md`.
+**The repair.** After the fixes, 3613 rows (0.0779) were still in a group with k<5 or l<2. Only those were coarsened, one step at a time, re-measuring after each step; the order of the steps was picked by scoring all 6 orders (`results/health-s1-build/repair_search.md`). Now every row has k of at least 5 and every group at least 2 distinct diagnoses (`results/health-s1-build/scorecard.json`, `results/checks/l_diversity.json`). A global setting cannot do this: 20-year bands for every row drop H-U6 to 0.0271 (`results/sweep/sweep.md`), while 20-year bands on the 3613 rows at risk keep it at 0.9641.
+
+**Residual risk** (`docs/guarantee-and-residual-risk.md`): an attacker who already knows a visit's diagnosis group, age band, municipality and arrival hour singles out one row for 0.0981 of the visits, 0.9292 of them correctly (`results/checks/informed_attacker.json`), and sees that visit's clinical values. Joined with lab results and keyed on exact diagnosis codes, 0.9521 of joined rows sit in groups of fewer than 5 visits (`results/checks/joined_k.json`). The release relies on the research environment and the agreement with a known recipient; it is not fit for public release.
 
 ## How to run
 
@@ -104,14 +108,15 @@ One command does everything for the health scenario:
 python -m pets_transformer.cli build --scenario HEALTH-S1
 ```
 
-It runs four steps: the detector labels every column of the health tables and of the unseen HR export; `protect` applies `contracts/HEALTH-S1.json` using those labels; `score` runs the organisers' scorecard and identifier check against the raw baseline; the result is assembled into `pets_submission/`. Options `--original`, `--out`, `--results`, `--submission` and `--pets-eval` override the defaults (the `pets-eval` default is `.venv/bin/pets-eval` at the repo root; the data default is `data/proving-ground`; the baseline is read from `baseline-scores/`).
+It runs these steps: the detector labels every column of the health tables and of the unseen HR export; the repair search applies `contracts/HEALTH-S1.json` with every order of the repair ladder and scores each; `protect` writes the release with the chosen order (tokens, shuffled rows, repair); `score` runs the organisers' scorecard and identifier check against the raw baseline; `checks` and the red team run the attacks the scorecard does not run; only if the red-team gate passes is the result assembled into `pets_submission/`. `python -m pets_transformer.cli redteam` runs the red team on any release. Options `--original`, `--out`, `--results`, `--submission` and `--pets-eval` override the defaults (the `pets-eval` default is `.venv/bin/pets-eval` at the repo root; the data default is `data/proving-ground`; the baseline is read from `baseline-scores/`).
 
 What comes out:
 
 - `results/health-s1-build/` (scorecards only, no labels): `scorecard.json` and `scorecard.html` (the organisers' scorecard), `check.txt` (identifier scan), `summary.md` (before and after per task and risk, k-anonymity, residual risk in plain words), `plan.md` (one row per column: detected role, PET, parameters, reason, and a note where a named rule overrides the detected role; tables not in the contract are listed as not released).
 - `pets_submission/health/`: the protected tables and their row maps. Never committed, never published.
 - `pets_submission/unseen_field_labels.csv` and `pets_submission/health_field_labels.csv`: the detector's labels for the unseen export and for the health tables. These are the only committed files in that folder.
-- `out/health-s1-build/hmac.key`: the random key behind the pseudonyms. Never committed.
+- `results/health-s1-build/repair_search.md` and `repair_report.json`: every repair order scored, and how many rows each step changed. `results/redteam/`: the red-team gate before (main at 7cf541b) and after.
+- `out/health-s1-build/hmac.key`: the random key behind the tokens. Never committed.
 
 Where the numbers come from: every number is read from `scorecard.json`, written by the organisers' `pets-eval` (a self-assessment, not the official judging score). The "before" figures come from the committed raw baselines in `baseline-scores/`.
 
@@ -120,7 +125,7 @@ Where the numbers come from: every number is read from `scorecard.json`, written
 | Path | What it holds |
 |---|---|
 | `contracts/` | One JSON contract per scenario: recipient, purpose, role rules (by detected role) and named column rules, each with a reason |
-| `src/pets_transformer/` | The code: `detect`, `protect`, `score`, `build` and the command line |
+| `src/pets_transformer/` | The code: `detect`, `protect`, `repair`, `score`, `checks`, `redteam`, `build` and the command line |
 | `results/` | Committed evidence: detector results, gate runs, and the output of each build |
 | `pets_submission/` | What goes to the organisers on request; only the two label files are committed |
 

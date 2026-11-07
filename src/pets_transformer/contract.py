@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 REQUIRED = ("recipient", "purpose", "trust_level", "threat_model", "required_tasks", "tables", "columns")
-PETS = {"pseudonym", "drop", "hour_of_day", "age_band", "top_n_exact_else_other", "keep"}
+PETS = {"pseudonym", "token", "drop", "hour_of_day", "age_band", "top_n_exact_else_other", "keep"}
 
 
 def load(path) -> dict:
@@ -21,4 +21,12 @@ def load(path) -> dict:
             for what, cs in rules.items():
                 if cs.get("pet") not in PETS or not cs.get("reason"):
                     raise ValueError(f"{t} {what}: unknown pet or missing reason")
+    kt = c.get("k_target")
+    if kt:
+        for need in ("table", "k", "columns", "ladder", "reason"):
+            if need not in kt:
+                raise ValueError(f"k_target missing {need}")
+        for name, step in kt["ladder"].items():
+            if step.get("op") not in ("widen_band", "widen_hour", "set") or step.get("column") not in kt["columns"] or not step.get("reason"):
+                raise ValueError(f"k_target ladder step {name}: op, a k column and a reason are required")
     return c

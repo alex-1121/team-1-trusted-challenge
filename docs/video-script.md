@@ -16,35 +16,45 @@ Hospitals hold data researchers need. Hand it over as it is and you expose patie
 
 Our scenario is HEALTH-S1. A university research group studies crowding and revisits in an emergency department. Five analyses must still work.
 
-**The tool's three verbs (50 s)**
+**The twist: the official score was wrong (25 s)**
+
+[results/redteam/before-7cf541b.json next to the earlier scorecard]
+
+Our first release scored 0.97 on the organisers' scorecard, with linkage risk zero. Then we attacked it ourselves. We had dropped the arrival date and kept only the hour. But the visit numbers run in arrival order. Sort by them, start a new day whenever the hour goes back, and every date returns. With those dates, ten patients from local news were named, each one correctly, with their diagnosis.
+
+**The tool (40 s)**
 
 [Terminal: python -m pets_transformer.cli build --scenario HEALTH-S1]
 
-One command runs three steps.
+So the tool now attacks its own output before it ships anything. One command.
 
-[Label file scrolling, then the detector score table]
+[Label file, detector score table]
 
-Detect. The tool labels every column from its values alone. It never reads column names. On the health tables it never saw while tuning, it scores macro-F1 0.81 against the organisers' labels.
+Detect. It labels every column from its values alone, macro-F1 0.81 on health tables it never saw while tuning.
 
-[plan.md table, highlight patient_hetu, date_of_birth, arrival_ts, clinical_notes]
+[plan.md table]
 
-Protect. A written contract picks one technique per column, with a reason. The national id becomes a keyed HMAC pseudonym, so revisits still link. Birth dates become ten-year age bands. Arrival time keeps only the hour. We drop names, phones, addresses and postcodes. Lab results keep their visit link, so the lab analysis still joins. We do not release clinical notes at all.
+Protect. A contract picks one technique per column, with a reason. Visit numbers become keyed tokens, so labs still join but no order is left, and rows are shuffled. The patient code is dropped. Age becomes ten-year bands, arrival keeps only the hour.
 
-[pets_submission/health folder, then check.txt]
+[repair_search.md]
 
-Score. Then we run the organisers' scorecard and identifier scan on the result. The scan finds no direct identifiers left.
+Repair. Only the rows still at risk are coarsened, until every group has at least five visits and two diagnoses. The tool tries every order and keeps the best score.
 
-**Before and after (25 s)**
+[results/redteam/after.json: gate pass]
 
-[scorecard.html, before and after columns]
+Then the red team runs again. Dates rebuilt: zero. Patients named: zero. Only then is the release written.
 
-Before, privacy is 0.17. After, it is 0.95. Utility moves from 1.0 to 0.99. Four of five tasks are perfect, and the revisit task scores 0.96. The composite rises from 0.28 to 0.97. For comparison, the organisers' k-anonymity baseline keeps utility at only 0.40 here.
+**Before and after (20 s)**
 
-**Honest limits (15 s)**
+[scorecard.html]
 
-[Residual-risk paragraph from summary.md]
+Privacy goes from 0.17 raw to 1.0. Utility stays at 0.97. The composite rises from 0.28 to 0.98, above our own earlier 0.97, and now the number is true.
 
-Eight percent of visits still sit in groups smaller than five. We tested only the shipped attackers, and the linkage attacker may not read our age bands, so its zero could be optimistic. Without dates, nobody can study seasons.
+**Honest limits (10 s)**
+
+[docs/guarantee-and-residual-risk.md]
+
+Someone who already knows a patient's diagnosis can still find one visit in ten. This release is for a trusted research environment, not for the public.
 
 **Close (5 s)**
 
@@ -55,11 +65,13 @@ TrustED PETs Proving Ground 2026, synthetic data by Since AI ry, CC BY 4.0.
 ## Sources of the spoken numbers
 
 - Five analyses: `contracts/HEALTH-S1.json` (required_tasks).
+- Earlier release 0.97 (composite 0.9709), linkage zero: `results/health-s1-build/scorecard.json` at commit 7cf541b.
+- Every date returns (share_rows_date_rebuilt 1.0), ten patients named correctly (10 of 220 clips): `results/redteam/before-7cf541b.json`.
 - macro-F1 0.81 (0.8086): `results/detect/health.json`.
-- No direct identifiers left: `results/health-s1-build/check.txt`.
-- Privacy 0.17 before (0.1716), utility 1.0 before, composite 0.28 before (0.2752): `baseline-scores/health_HEALTH-S1_research-env_raw.json`.
-- Privacy 0.95 after (0.9533), utility 0.99 after (0.9928), composite 0.97 after (0.9709), revisit task 0.96 (H-U6 0.9642): `results/health-s1-build/scorecard.json`.
-- Baseline utility 0.40 (B2-k): `data/proving-ground/docs/BENCHMARK.md` (organiser file in the restored proving ground).
-- Eight percent (k<5 share 0.0779) and the linkage zero (0.0): `results/health-s1-build/summary.md`; why it may be optimistic: `results/health-s1-gate/GATE.md`.
+- At least five visits and two diagnoses per group: `results/health-s1-build/scorecard.json` (min k 5), `results/checks/l_diversity.json`.
+- Dates rebuilt zero (0.0002), patients named zero: `results/redteam/after.json`.
+- Privacy 0.17 raw (0.1716), composite 0.28 raw (0.2752): `baseline-scores/health_HEALTH-S1_research-env_raw.json`.
+- Privacy 1.0, utility 0.97 (0.9666), composite 0.98 (0.9845): `results/health-s1-build/scorecard.json`.
+- One visit in ten (0.0981): `results/checks/informed_attacker.json`.
 
 Numbers are rounded for speech; the screen shows the full values. The scorecard is our own self-assessment and is separate from the official judging score.

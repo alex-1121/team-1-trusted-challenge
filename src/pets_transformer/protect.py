@@ -1,9 +1,13 @@
+import json
 import os
+import secrets
 from pathlib import Path
 
 import pandas as pd
 
-from . import detect, pets
+import numpy as np
+
+from . import detect, pets, repair
 
 
 def _plan_row(table, column, role, pet, params, reason, note=""):
@@ -17,6 +21,7 @@ EXPECTED_ROLES = {
     "hour_of_day": {"quasi_identifier"},
     "top_n_exact_else_other": {"quasi_identifier"},
     "keep": {"technical_identifier", "record_key"},
+    "token": {"technical_identifier", "record_key"},
 }
 
 
@@ -47,6 +52,8 @@ def protect_table(name, df, contract, key, roles=None):
         pet, params = cs["pet"], cs.get("params", {})
         if pet == "pseudonym":
             out[col] = pets.hmac_pseudonym(df[col], key)
+        elif pet == "token":
+            out[col] = pets.token(df[col], key, params.get("prefix", "T"))
         elif pet == "drop":
             out = pets.drop(out, col)
         elif pet == "hour_of_day":
@@ -69,8 +76,20 @@ def load_key(path: Path) -> bytes:
     return path.read_bytes()
 
 
-def protect_folder(contract, original, out, key, labels=None):
-    """labels: detect labels frame (table, column, privacy_role); default runs detect on the original folder in memory."""
+def shuffle(df, rowmap, seed=None):
+    """Random row order, so the file order cannot give back the original order (arrival order, for example).
+    seed=None draws the permutation from the operating system's cryptographic source."""
+    rng = np.random.default_rng(secrets.randbits(128) if seed is None else seed)
+    perm = rng.permutation(len(df))
+    out = df.iloc[perm].reset_index(drop=True)
+    rm = pd.DataFrame({"protected_row": range(len(out)), "original_record_id": rowmap["original_record_id"].iloc[perm].values})
+    return out, rm
+
+
+def protect_folder(contract, original, out, key, labels=None, repair_order=None, seed=None):
+    """labels: detect labels frame (table, column, privacy_role); default runs detect on the original folder in memory.
+    repair_order: order of the contract's k_target ladder steps (list of step names); None skips the repair.
+    Every released table is shuffled (seed only for tests)."""
     original, out = Path(original), Path(out)
     out.mkdir(parents=True, exist_ok=True)
     if labels is None:
@@ -83,6 +102,14 @@ def protect_folder(contract, original, out, key, labels=None):
             plan += [_plan_row(name, c, roles.get(c, ""), "withhold", None, spec["reason"]) for c in pets.withhold(df.columns)]
             continue
         prot, rowmap, rows = protect_table(name, df, contract, key, roles)
+        target = contract.get("k_target")
+        if repair_order is not None and target and target["table"] == name:
+            prot, keep, report = repair.apply(prot, target, repair_order)
+            rowmap = rowmap[keep.values].reset_index(drop=True)
+            prot = prot.reset_index(drop=True)
+            rows += repair.plan_rows(name, target, report)
+            (out / "repair_report.json").write_text(json.dumps(report, indent=2) + "\n")
+        prot, rowmap = shuffle(prot, rowmap, seed)
         prot.to_csv(out / f"{name}.csv", index=False)
         rowmap.to_csv(out / f"rowmap_{name}.csv", index=False)
         plan += rows

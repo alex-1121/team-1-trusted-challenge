@@ -1,0 +1,69 @@
+{
+  "release": "main at 7cf541b (release built by main's own code)",
+  "table": "ed_visits",
+  "time_column": "arrival_ts",
+  "gate": "fail",
+  "rule": "every attack at or below its threshold; thresholds are our choice, stated here",
+  "attacks": {
+    "order_attack": {
+      "metric": "share_rows_date_rebuilt",
+      "value": 1.0,
+      "detail": {
+        "orderings_tried": [
+          {
+            "ordering": "file order",
+            "rows": 46398,
+            "share_dates_rebuilt": 0.9975
+          },
+          {
+            "ordering": "sorted by ed_visits.visit_id",
+            "rows": 46398,
+            "share_dates_rebuilt": 1.0
+          },
+          {
+            "ordering": "first lab_results.lab_id per visit_id",
+            "rows": 26209,
+            "share_dates_rebuilt": 1.0
+          }
+        ],
+        "best_ordering": "sorted by ed_visits.visit_id",
+        "share_rows_date_rebuilt": 1.0
+      },
+      "threshold": 0.05,
+      "pass": false
+    },
+    "news_linkage": {
+      "metric": "share_clips_reidentified",
+      "value": 0.0455,
+      "detail": {
+        "clips": 220,
+        "clips_with_date_and_hour": 25,
+        "singled_out": 10,
+        "correct": 10,
+        "share_clips_reidentified": 0.0455
+      },
+      "threshold": 0.0,
+      "pass": false
+    },
+    "person_fingerprint": {
+      "metric": "share_persons_unique",
+      "value": 0.3544,
+      "detail": {
+        "applicable": true,
+        "person_column": "patient_hetu",
+        "fingerprint": [
+          "date_of_birth",
+          "sex",
+          "municipality",
+          "arrival_ts"
+        ],
+        "persons": 25955,
+        "persons_with_2plus_rows": 9885,
+        "share_persons_unique": 0.3544,
+        "share_repeat_persons_unique": 0.8464
+      },
+      "threshold": 0.05,
+      "pass": false
+    }
+  }
+}

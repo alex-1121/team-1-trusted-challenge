@@ -1,11 +1,13 @@
-"""One command: detect, protect, score, and assemble pets_submission/ for a scenario."""
+"""One command: detect, search the repair order, protect, score, run the checks and the red team, and assemble
+pets_submission/ only when the red-team gate passes."""
+import json
 import shutil
 from pathlib import Path
 
 import pandas as pd
 
 from . import contract as ct
-from . import detect, protect, score
+from . import checks, detect, protect, redteam, repair, score
 
 ROOT = score.ROOT
 PG = ROOT / "data" / "proving-ground"
@@ -32,10 +34,25 @@ def run(scenario, original=None, out=None, results=None, submission=None, pets_e
     protected = out / original.name
     # The key sits beside, not inside, the protected folder: that folder is the release.
     key = protect.load_key(out / "hmac.key")
-    plan = protect.protect_folder(contract, original, protected, key, labels)
+    cpath = ROOT / "contracts" / f"{scenario}.json"
+    order = None
+    if contract.get("k_target"):
+        best = repair.search(contract, original, out, results, key, labels,
+                             lambda prot, res: score.run(original, prot, scenario, res, None, cpath, pets_eval))
+        order = best["order"]
+    plan = protect.protect_folder(contract, original, protected, key, labels, repair_order=order)
     shutil.copy(protected / "plan.md", results / "plan.md")
+    if (protected / "repair_report.json").exists():
+        shutil.copy(protected / "repair_report.json", results / "repair_report.json")
 
-    score.run(original, protected, scenario, results, baseline, ROOT / "contracts" / f"{scenario}.json", pets_eval)
+    score.run(original, protected, scenario, results, baseline, cpath, pets_eval)
+    checks.run(protected, original, ROOT / "results" / "checks", PG / "truth", ["checks", "--protected", str(protected.relative_to(ROOT) if protected.is_relative_to(ROOT) else protected),
+               "--original", "data/proving-ground/data/" + original.name, "--truth", "data/proving-ground/truth", "--out", "results/checks"])
+    gate = redteam.run(protected, original, contract, results, PG / "truth", PG / "adversary", label=f"{scenario} build")
+    redteam.write(gate, ROOT / "results" / "redteam" / "after.json")
+    if gate["gate"] != "pass":
+        failed = [k for k, r in gate["attacks"].items() if r["pass"] is False]
+        raise SystemExit(f"red-team gate FAILED ({', '.join(failed)}): pets_submission/ not written. See results/redteam/after.json")
 
     health = submission / original.name
     health.mkdir(parents=True, exist_ok=True)

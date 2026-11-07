@@ -10,6 +10,12 @@ def hmac_pseudonym(s: pd.Series, key: bytes) -> pd.Series:
     return s.map(lambda x: "P" + hmac.new(key, str(x).encode(), hashlib.sha256).hexdigest()[:16], na_action="ignore")
 
 
+def token(s: pd.Series, key: bytes, prefix: str = "T") -> pd.Series:
+    """Keyed token for a record key or join key: the same key and value give the same token in every table,
+    so joins survive, while the token carries no order (a sequential id would give back arrival order)."""
+    return s.map(lambda x: prefix + hmac.new(key, b"token:" + str(x).encode(), hashlib.sha256).hexdigest()[:16], na_action="ignore")
+
+
 def drop(df: pd.DataFrame, col: str) -> pd.DataFrame:
     return df.drop(columns=[col])
 

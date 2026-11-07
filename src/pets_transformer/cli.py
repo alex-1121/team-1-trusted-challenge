@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from . import build, checks, contract, protect, score
+from . import build, checks, contract, protect, redteam, score
 
 
 def main(argv=None):
@@ -38,6 +38,14 @@ def main(argv=None):
     k.add_argument("--original", required=True)
     k.add_argument("--out", required=True)
     k.add_argument("--truth", help="truth/ folder; attacker rows are the visits in health__ed_visits.csv (default: every original visit)")
+    r = sub.add_parser("redteam", help="attacks the scorecard does not run, with a pass/fail gate")
+    r.add_argument("--protected", required=True)
+    r.add_argument("--original", required=True)
+    r.add_argument("--contract", required=True)
+    r.add_argument("--out", required=True, help="JSON file to write")
+    r.add_argument("--truth", help="truth/ folder (for the news-clip linkage score)")
+    r.add_argument("--adversary", help="adversary/ folder (for the news-clip linkage)")
+    r.add_argument("--label", default="")
     a = ap.parse_args(argv)
     if a.cmd == "protect":
         c = contract.load(a.contract)
@@ -53,6 +61,10 @@ def main(argv=None):
     elif a.cmd == "checks":
         checks.run(a.protected, a.original, a.out, a.truth, sys.argv[1:] if argv is None else argv)
         print(f"wrote checks to {a.out}")
+    elif a.cmd == "redteam":
+        rep = redteam.run(a.protected, a.original, contract.load(a.contract), Path(a.out).parent, a.truth, a.adversary, a.label)
+        redteam.write(rep, a.out)
+        print(f"gate {rep['gate']}: " + ", ".join(f"{k} {v['value']}" for k, v in rep["attacks"].items()))
     else:
         score.run(a.original, a.protected, a.scenario, a.out, a.baseline, a.contract, a.pets_eval, a.proving_ground)
         print(f"wrote score results to {a.out}")
