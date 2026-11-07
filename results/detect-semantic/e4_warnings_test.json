@@ -1,0 +1,109 @@
+{
+ "commit": "68aa116f236e89f95937299a17b6fdc96c875cc3",
+ "uncommitted_changes": false,
+ "encoder": "intfloat/multilingual-e5-small",
+ "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+ "head_created": "2026-11-07T19:05:03Z",
+ "temperature": 2.6,
+ "thresholds": {
+  "decide": {
+   "conf": 0.8,
+   "risk": 0.2
+  },
+  "combine": {
+   "agree": 0.3,
+   "conf": 0.8
+  }
+ },
+ "created": "2026-11-07T19:29:16Z",
+ "split": "test",
+ "proving_ground": {
+  "health": {
+   "columns": 53,
+   "model_read": 29,
+   "needs_review": 3,
+   "share": 0.0566,
+   "by_flag": {
+    "disagree": 2,
+    "unclear": 1
+   },
+   "columns_flagged": [
+    "clinical_notes.language (disagree)",
+    "ed_visits.triage (unclear)",
+    "ed_visits.chief_complaint (disagree)"
+   ]
+  },
+  "public_admin": {
+   "columns": 37,
+   "model_read": 18,
+   "needs_review": 1,
+   "share": 0.027,
+   "by_flag": {
+    "disagree": 1
+   },
+   "columns_flagged": [
+    "service_requests.language (disagree)"
+   ]
+  },
+  "customer_service": {
+   "columns": 39,
+   "model_read": 22,
+   "needs_review": 1,
+   "share": 0.0256,
+   "by_flag": {
+    "disagree": 1
+   },
+   "columns_flagged": [
+    "turns.speaker (disagree)"
+   ]
+  }
+ },
+ "eu_tables": {
+  "cs_CZ": {
+   "columns": 22,
+   "model_read": 13,
+   "needs_review": 1,
+   "share": 0.0455,
+   "by_flag": {
+    "disagree": 1
+   },
+   "columns_flagged": [
+    "customers.full_address (disagree)"
+   ]
+  },
+  "hu_HU": {
+   "columns": 22,
+   "model_read": 14,
+   "needs_review": 2,
+   "share": 0.0909,
+   "by_flag": {
+    "disagree": 2
+   },
+   "columns_flagged": [
+    "customers.street_address (disagree)",
+    "customers.full_address (disagree)"
+   ]
+  },
+  "pt_PT": {
+   "columns": 22,
+   "model_read": 15,
+   "needs_review": 4,
+   "share": 0.1818,
+   "by_flag": {
+    "disagree": 3,
+    "unclear": 1
+   },
+   "columns_flagged": [
+    "customers.phone (unclear)",
+    "customers.street_address (disagree)",
+    "customers.full_address (disagree)",
+    "customers.occupation (disagree)"
+   ]
+  }
+ },
+ "proving_ground_total": {
+  "columns": 129,
+  "needs_review": 5,
+  "share": 0.0388
+ }
+}
