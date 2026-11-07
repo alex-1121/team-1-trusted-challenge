@@ -3,9 +3,9 @@ c01,record_key,RECORD_ID
 c02,technical_identifier,RECORD_ID
 c03,non_sensitive,CATEGORY
 c04,direct_identifier,PERSON_NAME
-c05,non_sensitive,CATEGORY
+c05,direct_identifier,NATIONAL_ID
 c06,quasi_identifier,BIRTH_DATE
-c07,free_text,FREE_TEXT
+c07,direct_identifier,STREET_ADDRESS
 c08,direct_identifier,PHONE
 c09,direct_identifier,EMAIL
 c10,direct_identifier,IBAN

@@ -31,6 +31,8 @@ LANGUAGES = _lexicon("languages.txt")
 
 RX = {k: re.compile(v) for k, v in {
     "hetu": r"\d{6}[-+A-FU-Y]\d{3}[0-9A-Y]",
+    "hetu_nosign": r"(?:0[1-9]|[12]\d|3[01])(?:0[1-9]|1[0-2])\d{5}[0-9A-Y]",
+    "full_address": r"[A-ZÅÄÖ][a-zåäöéü-]+(?: [A-ZÅÄÖ]?[a-zåäöéü-]+)? \d+[a-z]?(?: ?[A-Z] ?\d*)?, \d{5} [^\W\d_][\w -]*",
     "iban": r"[A-Z]{2}\d{2}(?: ?[0-9A-Z]{2,4}){3,8}",
     "email": r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+",
     "url": r"https?://\S+",
@@ -59,6 +61,7 @@ RX = {k: re.compile(v) for k, v in {
 }.items()}
 ORG = re.compile(r"\b(?:oy|oyj|ab|tmi|ky|ry|ltd|inc|gmbh|school|college|centre|center|hospital|clinic|isp|"
                  r"ravintola|kiinteistöt|säätiö|yhdistys)\b", re.I)
+HETU_CHECK = "0123456789ABCDEFHJKLMNPRSTUVWXY"
 SEX = {"f", "m", "x", "n", "female", "male", "other", "nainen", "mies", "unknown", "u", "t"}
 
 
@@ -107,7 +110,10 @@ def classify(s: pd.Series) -> tuple[str, str, str]:
     low = v.str.lower()
     compact = v.str.replace(r"[\s\-()]", "", regex=True)
 
-    if _rate(v, "hetu") >= T:
+    # a HETU may arrive without its century sign; there the checksum keeps plain 10-digit codes out
+    nosign = v.str.fullmatch(RX["hetu_nosign"])
+    nosign[nosign] = v[nosign].map(lambda x: HETU_CHECK[int(x[:9]) % 31] == x[9])
+    if (v.str.fullmatch(RX["hetu"]) | nosign).mean() >= T:
         return "direct_identifier", "NATIONAL_ID", ""
     if _rate(v, "iban") >= T and compact.str.len().between(15, 34).mean() >= T:
         return "direct_identifier", "IBAN", ""
@@ -155,6 +161,8 @@ def classify(s: pd.Series) -> tuple[str, str, str]:
         return "technical_identifier", "HOSTNAME", ""
     if _rate(v, "employee_id") >= T and ratio >= 0.9:
         return "direct_identifier", "EMPLOYEE_ID", ""
+    if _rate(v, "full_address") >= T:
+        return "direct_identifier", "STREET_ADDRESS", ""
     if _rate(v, "address") >= T and ratio >= 0.5:
         return "direct_identifier", "STREET_ADDRESS", ""
     if low.isin(MUNICIPALITIES).mean() >= 0.7:

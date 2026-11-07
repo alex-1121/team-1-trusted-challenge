@@ -19,6 +19,20 @@ def test_hetu_including_900_range():
     assert label(hetus) == ("direct_identifier", "NATIONAL_ID")
 
 
+def test_hetu_without_century_sign():
+    check = "0123456789ABCDEFHJKLMNPRSTUVWXY"
+    bases = [f"{d:02d}{m:02d}{y:02d}{i:03d}" for d, m, y, i in
+             zip(range(1, 29), [1 + k % 12 for k in range(28)], range(50, 78), range(2, 900, 31))]
+    assert label([b + check[int(b) % 31] for b in bases]) == ("direct_identifier", "NATIONAL_ID")
+    # same shape with wrong check characters is not a HETU
+    assert label([b + check[(int(b) + 1) % 31] for b in bases]) != ("direct_identifier", "NATIONAL_ID")
+
+
+def test_address_with_postcode_and_city_repeats():
+    addrs = [f"Koivutie {i % 7 + 1} A {i % 3 + 1}, 2{i % 2}100 Turku" for i in range(N)]
+    assert label(addrs) == ("direct_identifier", "STREET_ADDRESS")
+
+
 def test_iban():
     ibans = [f"FI{i % 100:02d} {i * 7 % 10000:04d} {i * 13 % 10000:04d} {i * 31 % 10000:04d} {i % 100:02d}" for i in range(N)]
     assert label(ibans) == ("direct_identifier", "IBAN")
