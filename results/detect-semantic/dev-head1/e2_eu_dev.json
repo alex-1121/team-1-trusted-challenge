@@ -1,0 +1,1344 @@
+{
+ "commit": "f3fad467e4a3aab7d2f30575b96ddfad2267c5aa",
+ "uncommitted_changes": true,
+ "encoder": "intfloat/multilingual-e5-small",
+ "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+ "head_created": "2026-11-07T18:44:37Z",
+ "temperature": 2.75,
+ "thresholds": {
+  "decide": {
+   "conf": 0.8,
+   "risk": 0.2
+  },
+  "combine": {
+   "agree": 0.3,
+   "conf": 0.8
+  }
+ },
+ "created": "2026-11-07T18:53:47Z",
+ "split": "dev",
+ "countries": {
+  "de_DE": {
+   "lexicon": {
+    "n_fields": 22,
+    "n_predicted": 22,
+    "accuracy": 0.4091,
+    "macro_f1": 0.5444,
+    "sensitive_recall": 0.5263,
+    "subtype_accuracy": 0.4091,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 0.2,
+      "f1": 0.3333,
+      "support": 10
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.4286,
+      "f1": 0.6,
+      "support": 7
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 0.3333,
+      "recall": 1.0,
+      "f1": 0.5,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6667,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "non_sensitive": {
+      "precision": 0.1,
+      "recall": 0.5,
+      "f1": 0.1667,
+      "support": 2
+     }
+    },
+    "model_types": {
+     "columns": 11,
+     "role_correct": 2,
+     "harmless": 8,
+     "harmless_columns": [
+      "full_name (PERSON_NAME -> CATEGORY)",
+      "first_name (PERSON_NAME -> CATEGORY)",
+      "last_name (PERSON_NAME -> CATEGORY)",
+      "street_address (STREET_ADDRESS -> CATEGORY)",
+      "city (MUNICIPALITY -> CATEGORY)",
+      "sex (SEX -> CATEGORY)",
+      "occupation (OCCUPATION -> CATEGORY)",
+      "employer (ORG_NAME -> CATEGORY)"
+     ]
+    },
+    "other_columns": {
+     "columns": 11,
+     "role_correct": 7,
+     "wrong": [
+      "phone: direct_identifier PHONE -> non_sensitive CATEGORY",
+      "national_id: direct_identifier NATIONAL_ID -> technical_identifier RECORD_ID",
+      "licence_plate: direct_identifier LICENSE_PLATE -> technical_identifier HOSTNAME",
+      "items_in_cart: non_sensitive MEASUREMENT -> sensitive_attribute OTHER"
+     ]
+    }
+   },
+   "hybrid": {
+    "n_fields": 22,
+    "n_predicted": 22,
+    "accuracy": 0.8182,
+    "macro_f1": 0.7761,
+    "sensitive_recall": 1.0,
+    "subtype_accuracy": 0.7727,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 0.7,
+      "f1": 0.8235,
+      "support": 10
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 7
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 0.3333,
+      "recall": 1.0,
+      "f1": 0.5,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6667,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "non_sensitive": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6667,
+      "support": 2
+     }
+    },
+    "model_types": {
+     "columns": 11,
+     "role_correct": 10,
+     "harmless": 0,
+     "harmless_columns": []
+    },
+    "other_columns": {
+     "columns": 11,
+     "role_correct": 8,
+     "wrong": [
+      "national_id: direct_identifier NATIONAL_ID -> technical_identifier RECORD_ID",
+      "licence_plate: direct_identifier LICENSE_PLATE -> technical_identifier HOSTNAME",
+      "items_in_cart: non_sensitive MEASUREMENT -> sensitive_attribute OTHER"
+     ]
+    }
+   },
+   "gate_harmless_at_most_1": true
+  },
+  "es_ES": {
+   "lexicon": {
+    "n_fields": 22,
+    "n_predicted": 22,
+    "accuracy": 0.4091,
+    "macro_f1": 0.5747,
+    "sensitive_recall": 0.5789,
+    "subtype_accuracy": 0.4091,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 0.2,
+      "f1": 0.3333,
+      "support": 10
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.4286,
+      "f1": 0.6,
+      "support": 7
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 0.2,
+      "recall": 1.0,
+      "f1": 0.3333,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "non_sensitive": {
+      "precision": 0.1111,
+      "recall": 0.5,
+      "f1": 0.1818,
+      "support": 2
+     }
+    },
+    "model_types": {
+     "columns": 11,
+     "role_correct": 2,
+     "harmless": 5,
+     "harmless_columns": [
+      "full_name (PERSON_NAME -> CATEGORY)",
+      "first_name (PERSON_NAME -> CATEGORY)",
+      "last_name (PERSON_NAME -> CATEGORY)",
+      "city (MUNICIPALITY -> CATEGORY)",
+      "sex (SEX -> CATEGORY)"
+     ]
+    },
+    "other_columns": {
+     "columns": 11,
+     "role_correct": 7,
+     "wrong": [
+      "phone: direct_identifier PHONE -> non_sensitive MEASUREMENT",
+      "national_id: direct_identifier NATIONAL_ID -> non_sensitive CATEGORY",
+      "licence_plate: direct_identifier LICENSE_PLATE -> non_sensitive CATEGORY",
+      "items_in_cart: non_sensitive MEASUREMENT -> sensitive_attribute OTHER"
+     ]
+    }
+   },
+   "hybrid": {
+    "n_fields": 22,
+    "n_predicted": 22,
+    "accuracy": 0.7273,
+    "macro_f1": 0.7484,
+    "sensitive_recall": 0.9474,
+    "subtype_accuracy": 0.5909,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 0.7,
+      "f1": 0.8235,
+      "support": 10
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.7143,
+      "f1": 0.8333,
+      "support": 7
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 0.2,
+      "recall": 1.0,
+      "f1": 0.3333,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "non_sensitive": {
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1": 0.5,
+      "support": 2
+     }
+    },
+    "model_types": {
+     "columns": 11,
+     "role_correct": 7,
+     "harmless": 0,
+     "harmless_columns": []
+    },
+    "other_columns": {
+     "columns": 11,
+     "role_correct": 9,
+     "wrong": [
+      "phone: direct_identifier PHONE -> non_sensitive MEASUREMENT",
+      "items_in_cart: non_sensitive MEASUREMENT -> sensitive_attribute OTHER"
+     ]
+    }
+   },
+   "gate_harmless_at_most_1": true
+  },
+  "fi_FI": {
+   "lexicon": {
+    "n_fields": 22,
+    "n_predicted": 22,
+    "accuracy": 0.8636,
+    "macro_f1": 0.8722,
+    "sensitive_recall": 0.8947,
+    "subtype_accuracy": 0.8636,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.7143,
+      "f1": 0.8333,
+      "support": 7
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "non_sensitive": {
+      "precision": 0.3333,
+      "recall": 0.5,
+      "f1": 0.4,
+      "support": 2
+     }
+    },
+    "model_types": {
+     "columns": 11,
+     "role_correct": 9,
+     "harmless": 2,
+     "harmless_columns": [
+      "city (MUNICIPALITY -> CATEGORY)",
+      "occupation (OCCUPATION -> CATEGORY)"
+     ]
+    },
+    "other_columns": {
+     "columns": 11,
+     "role_correct": 10,
+     "wrong": [
+      "items_in_cart: non_sensitive MEASUREMENT -> sensitive_attribute OTHER"
+     ]
+    }
+   },
+   "hybrid": {
+    "n_fields": 22,
+    "n_predicted": 22,
+    "accuracy": 0.9545,
+    "macro_f1": 0.9444,
+    "sensitive_recall": 1.0,
+    "subtype_accuracy": 0.9545,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 7
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "non_sensitive": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6667,
+      "support": 2
+     }
+    },
+    "model_types": {
+     "columns": 11,
+     "role_correct": 11,
+     "harmless": 0,
+     "harmless_columns": []
+    },
+    "other_columns": {
+     "columns": 11,
+     "role_correct": 10,
+     "wrong": [
+      "items_in_cart: non_sensitive MEASUREMENT -> sensitive_attribute OTHER"
+     ]
+    }
+   },
+   "gate_harmless_at_most_1": true
+  },
+  "fr_FR": {
+   "lexicon": {
+    "n_fields": 22,
+    "n_predicted": 22,
+    "accuracy": 0.4091,
+    "macro_f1": 0.5303,
+    "sensitive_recall": 0.5789,
+    "subtype_accuracy": 0.4091,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 0.2,
+      "f1": 0.3333,
+      "support": 10
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.4286,
+      "f1": 0.6,
+      "support": 7
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6667,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 0.25,
+      "recall": 1.0,
+      "f1": 0.4,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "non_sensitive": {
+      "precision": 0.1111,
+      "recall": 0.5,
+      "f1": 0.1818,
+      "support": 2
+     }
+    },
+    "model_types": {
+     "columns": 11,
+     "role_correct": 2,
+     "harmless": 7,
+     "harmless_columns": [
+      "full_name (PERSON_NAME -> CATEGORY)",
+      "first_name (PERSON_NAME -> CATEGORY)",
+      "last_name (PERSON_NAME -> CATEGORY)",
+      "city (MUNICIPALITY -> CATEGORY)",
+      "sex (SEX -> CATEGORY)",
+      "occupation (OCCUPATION -> CATEGORY)",
+      "employer (ORG_NAME -> CATEGORY)"
+     ]
+    },
+    "other_columns": {
+     "columns": 11,
+     "role_correct": 7,
+     "wrong": [
+      "phone: direct_identifier PHONE -> free_text FREE_TEXT",
+      "national_id: direct_identifier NATIONAL_ID -> technical_identifier RECORD_ID",
+      "licence_plate: direct_identifier LICENSE_PLATE -> non_sensitive CATEGORY",
+      "items_in_cart: non_sensitive MEASUREMENT -> sensitive_attribute OTHER"
+     ]
+    }
+   },
+   "hybrid": {
+    "n_fields": 22,
+    "n_predicted": 22,
+    "accuracy": 0.7273,
+    "macro_f1": 0.727,
+    "sensitive_recall": 1.0,
+    "subtype_accuracy": 0.6818,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 0.8571,
+      "recall": 0.6,
+      "f1": 0.7059,
+      "support": 10
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.8571,
+      "f1": 0.9231,
+      "support": 7
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6667,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 0.25,
+      "recall": 1.0,
+      "f1": 0.4,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "non_sensitive": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6667,
+      "support": 2
+     }
+    },
+    "model_types": {
+     "columns": 11,
+     "role_correct": 8,
+     "harmless": 0,
+     "harmless_columns": []
+    },
+    "other_columns": {
+     "columns": 11,
+     "role_correct": 8,
+     "wrong": [
+      "phone: direct_identifier PHONE -> free_text FREE_TEXT",
+      "national_id: direct_identifier NATIONAL_ID -> technical_identifier RECORD_ID",
+      "items_in_cart: non_sensitive MEASUREMENT -> sensitive_attribute OTHER"
+     ]
+    }
+   },
+   "gate_harmless_at_most_1": true
+  },
+  "it_IT": {
+   "lexicon": {
+    "n_fields": 22,
+    "n_predicted": 22,
+    "accuracy": 0.4091,
+    "macro_f1": 0.5833,
+    "sensitive_recall": 0.5263,
+    "subtype_accuracy": 0.4091,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 0.2,
+      "f1": 0.3333,
+      "support": 10
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.4286,
+      "f1": 0.6,
+      "support": 7
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 0.25,
+      "recall": 1.0,
+      "f1": 0.4,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "non_sensitive": {
+      "precision": 0.1,
+      "recall": 0.5,
+      "f1": 0.1667,
+      "support": 2
+     }
+    },
+    "model_types": {
+     "columns": 11,
+     "role_correct": 2,
+     "harmless": 6,
+     "harmless_columns": [
+      "full_name (PERSON_NAME -> CATEGORY)",
+      "first_name (PERSON_NAME -> CATEGORY)",
+      "last_name (PERSON_NAME -> CATEGORY)",
+      "city (MUNICIPALITY -> CATEGORY)",
+      "sex (SEX -> CATEGORY)",
+      "occupation (OCCUPATION -> CATEGORY)"
+     ]
+    },
+    "other_columns": {
+     "columns": 11,
+     "role_correct": 7,
+     "wrong": [
+      "phone: direct_identifier PHONE -> non_sensitive MEASUREMENT",
+      "national_id: direct_identifier NATIONAL_ID -> non_sensitive CATEGORY",
+      "licence_plate: direct_identifier LICENSE_PLATE -> non_sensitive CATEGORY",
+      "items_in_cart: non_sensitive MEASUREMENT -> sensitive_attribute OTHER"
+     ]
+    }
+   },
+   "hybrid": {
+    "n_fields": 22,
+    "n_predicted": 22,
+    "accuracy": 0.7727,
+    "macro_f1": 0.7744,
+    "sensitive_recall": 0.9474,
+    "subtype_accuracy": 0.6818,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 0.7,
+      "f1": 0.8235,
+      "support": 10
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.8571,
+      "f1": 0.9231,
+      "support": 7
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 0.25,
+      "recall": 1.0,
+      "f1": 0.4,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "non_sensitive": {
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1": 0.5,
+      "support": 2
+     }
+    },
+    "model_types": {
+     "columns": 11,
+     "role_correct": 8,
+     "harmless": 0,
+     "harmless_columns": []
+    },
+    "other_columns": {
+     "columns": 11,
+     "role_correct": 9,
+     "wrong": [
+      "phone: direct_identifier PHONE -> non_sensitive MEASUREMENT",
+      "items_in_cart: non_sensitive MEASUREMENT -> sensitive_attribute OTHER"
+     ]
+    }
+   },
+   "gate_harmless_at_most_1": true
+  },
+  "mixed_EU": {
+   "lexicon": {
+    "n_fields": 22,
+    "n_predicted": 22,
+    "accuracy": 0.4091,
+    "macro_f1": 0.5192,
+    "sensitive_recall": 0.5789,
+    "subtype_accuracy": 0.4091,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 0.2,
+      "f1": 0.3333,
+      "support": 10
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.4286,
+      "f1": 0.6,
+      "support": 7
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 0.3333,
+      "recall": 1.0,
+      "f1": 0.5,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 0.3333,
+      "recall": 1.0,
+      "f1": 0.5,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "non_sensitive": {
+      "precision": 0.1111,
+      "recall": 0.5,
+      "f1": 0.1818,
+      "support": 2
+     }
+    },
+    "model_types": {
+     "columns": 11,
+     "role_correct": 2,
+     "harmless": 7,
+     "harmless_columns": [
+      "full_name (PERSON_NAME -> CATEGORY)",
+      "first_name (PERSON_NAME -> CATEGORY)",
+      "last_name (PERSON_NAME -> CATEGORY)",
+      "street_address (STREET_ADDRESS -> CATEGORY)",
+      "city (MUNICIPALITY -> CATEGORY)",
+      "sex (SEX -> CATEGORY)",
+      "occupation (OCCUPATION -> CATEGORY)"
+     ]
+    },
+    "other_columns": {
+     "columns": 11,
+     "role_correct": 7,
+     "wrong": [
+      "phone: direct_identifier PHONE -> non_sensitive CATEGORY",
+      "national_id: direct_identifier NATIONAL_ID -> technical_identifier RECORD_ID",
+      "licence_plate: direct_identifier LICENSE_PLATE -> technical_identifier HOSTNAME",
+      "items_in_cart: non_sensitive MEASUREMENT -> sensitive_attribute OTHER"
+     ]
+    }
+   },
+   "hybrid": {
+    "n_fields": 22,
+    "n_predicted": 22,
+    "accuracy": 0.7727,
+    "macro_f1": 0.7355,
+    "sensitive_recall": 1.0,
+    "subtype_accuracy": 0.7273,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 0.7,
+      "f1": 0.8235,
+      "support": 10
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.8571,
+      "f1": 0.9231,
+      "support": 7
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 0.3333,
+      "recall": 1.0,
+      "f1": 0.5,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 0.3333,
+      "recall": 1.0,
+      "f1": 0.5,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "non_sensitive": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6667,
+      "support": 2
+     }
+    },
+    "model_types": {
+     "columns": 11,
+     "role_correct": 9,
+     "harmless": 0,
+     "harmless_columns": []
+    },
+    "other_columns": {
+     "columns": 11,
+     "role_correct": 8,
+     "wrong": [
+      "national_id: direct_identifier NATIONAL_ID -> technical_identifier RECORD_ID",
+      "licence_plate: direct_identifier LICENSE_PLATE -> technical_identifier HOSTNAME",
+      "items_in_cart: non_sensitive MEASUREMENT -> sensitive_attribute OTHER"
+     ]
+    }
+   },
+   "gate_harmless_at_most_1": true
+  },
+  "nl_NL": {
+   "lexicon": {
+    "n_fields": 22,
+    "n_predicted": 22,
+    "accuracy": 0.4091,
+    "macro_f1": 0.5514,
+    "sensitive_recall": 0.4737,
+    "subtype_accuracy": 0.4091,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 0.4,
+      "f1": 0.5714,
+      "support": 10
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.1429,
+      "f1": 0.25,
+      "support": 7
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6667,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6667,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "non_sensitive": {
+      "precision": 0.0909,
+      "recall": 0.5,
+      "f1": 0.1538,
+      "support": 2
+     }
+    },
+    "model_types": {
+     "columns": 11,
+     "role_correct": 4,
+     "harmless": 6,
+     "harmless_columns": [
+      "full_name (PERSON_NAME -> CATEGORY)",
+      "first_name (PERSON_NAME -> CATEGORY)",
+      "last_name (PERSON_NAME -> CATEGORY)",
+      "city (MUNICIPALITY -> CATEGORY)",
+      "sex (SEX -> CATEGORY)",
+      "occupation (OCCUPATION -> CATEGORY)"
+     ]
+    },
+    "other_columns": {
+     "columns": 11,
+     "role_correct": 5,
+     "wrong": [
+      "phone: direct_identifier PHONE -> non_sensitive CATEGORY",
+      "national_id: direct_identifier NATIONAL_ID -> technical_identifier RECORD_ID",
+      "licence_plate: direct_identifier LICENSE_PLATE -> non_sensitive CATEGORY",
+      "postcode: quasi_identifier POSTCODE -> non_sensitive CATEGORY",
+      "birth_date: quasi_identifier BIRTH_DATE -> non_sensitive CATEGORY",
+      "items_in_cart: non_sensitive MEASUREMENT -> sensitive_attribute OTHER"
+     ]
+    }
+   },
+   "hybrid": {
+    "n_fields": 22,
+    "n_predicted": 22,
+    "accuracy": 0.7727,
+    "macro_f1": 0.7641,
+    "sensitive_recall": 1.0,
+    "subtype_accuracy": 0.6818,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 0.8182,
+      "recall": 0.9,
+      "f1": 0.8571,
+      "support": 10
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.5714,
+      "f1": 0.7273,
+      "support": 7
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6667,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6667,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "non_sensitive": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6667,
+      "support": 2
+     }
+    },
+    "model_types": {
+     "columns": 11,
+     "role_correct": 10,
+     "harmless": 0,
+     "harmless_columns": []
+    },
+    "other_columns": {
+     "columns": 11,
+     "role_correct": 7,
+     "wrong": [
+      "national_id: direct_identifier NATIONAL_ID -> technical_identifier RECORD_ID",
+      "postcode: quasi_identifier POSTCODE -> direct_identifier STREET_ADDRESS",
+      "birth_date: quasi_identifier BIRTH_DATE -> direct_identifier STREET_ADDRESS",
+      "items_in_cart: non_sensitive MEASUREMENT -> sensitive_attribute OTHER"
+     ]
+    }
+   },
+   "gate_harmless_at_most_1": true
+  },
+  "pl_PL": {
+   "lexicon": {
+    "n_fields": 22,
+    "n_predicted": 22,
+    "accuracy": 0.3636,
+    "macro_f1": 0.5019,
+    "sensitive_recall": 0.5263,
+    "subtype_accuracy": 0.3636,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 0.2,
+      "f1": 0.3333,
+      "support": 10
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.2857,
+      "f1": 0.4444,
+      "support": 7
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6667,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 0.25,
+      "recall": 1.0,
+      "f1": 0.4,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "non_sensitive": {
+      "precision": 0.1,
+      "recall": 0.5,
+      "f1": 0.1667,
+      "support": 2
+     }
+    },
+    "model_types": {
+     "columns": 11,
+     "role_correct": 2,
+     "harmless": 6,
+     "harmless_columns": [
+      "full_name (PERSON_NAME -> CATEGORY)",
+      "first_name (PERSON_NAME -> CATEGORY)",
+      "last_name (PERSON_NAME -> CATEGORY)",
+      "city (MUNICIPALITY -> CATEGORY)",
+      "sex (SEX -> CATEGORY)",
+      "occupation (OCCUPATION -> CATEGORY)"
+     ]
+    },
+    "other_columns": {
+     "columns": 11,
+     "role_correct": 6,
+     "wrong": [
+      "phone: direct_identifier PHONE -> non_sensitive MEASUREMENT",
+      "national_id: direct_identifier NATIONAL_ID -> technical_identifier RECORD_ID",
+      "licence_plate: direct_identifier LICENSE_PLATE -> non_sensitive CATEGORY",
+      "postcode: quasi_identifier POSTCODE -> non_sensitive CATEGORY",
+      "items_in_cart: non_sensitive MEASUREMENT -> sensitive_attribute OTHER"
+     ]
+    }
+   },
+   "hybrid": {
+    "n_fields": 22,
+    "n_predicted": 22,
+    "accuracy": 0.6818,
+    "macro_f1": 0.6843,
+    "sensitive_recall": 0.9474,
+    "subtype_accuracy": 0.6364,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 0.8571,
+      "recall": 0.6,
+      "f1": 0.7059,
+      "support": 10
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.7143,
+      "f1": 0.8333,
+      "support": 7
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6667,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 0.25,
+      "recall": 1.0,
+      "f1": 0.4,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "non_sensitive": {
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1": 0.5,
+      "support": 2
+     }
+    },
+    "model_types": {
+     "columns": 11,
+     "role_correct": 8,
+     "harmless": 0,
+     "harmless_columns": []
+    },
+    "other_columns": {
+     "columns": 11,
+     "role_correct": 7,
+     "wrong": [
+      "phone: direct_identifier PHONE -> non_sensitive MEASUREMENT",
+      "national_id: direct_identifier NATIONAL_ID -> technical_identifier RECORD_ID",
+      "postcode: quasi_identifier POSTCODE -> direct_identifier STREET_ADDRESS",
+      "items_in_cart: non_sensitive MEASUREMENT -> sensitive_attribute OTHER"
+     ]
+    }
+   },
+   "gate_harmless_at_most_1": true
+  },
+  "sv_SE": {
+   "lexicon": {
+    "n_fields": 22,
+    "n_predicted": 22,
+    "accuracy": 0.6818,
+    "macro_f1": 0.7955,
+    "sensitive_recall": 0.6842,
+    "subtype_accuracy": 0.6818,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 0.7,
+      "f1": 0.8235,
+      "support": 10
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 0.5714,
+      "f1": 0.7273,
+      "support": 7
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "non_sensitive": {
+      "precision": 0.1429,
+      "recall": 0.5,
+      "f1": 0.2222,
+      "support": 2
+     }
+    },
+    "model_types": {
+     "columns": 11,
+     "role_correct": 6,
+     "harmless": 5,
+     "harmless_columns": [
+      "first_name (PERSON_NAME -> CATEGORY)",
+      "last_name (PERSON_NAME -> CATEGORY)",
+      "city (MUNICIPALITY -> CATEGORY)",
+      "sex (SEX -> CATEGORY)",
+      "occupation (OCCUPATION -> CATEGORY)"
+     ]
+    },
+    "other_columns": {
+     "columns": 11,
+     "role_correct": 9,
+     "wrong": [
+      "licence_plate: direct_identifier LICENSE_PLATE -> non_sensitive CATEGORY",
+      "items_in_cart: non_sensitive MEASUREMENT -> sensitive_attribute OTHER"
+     ]
+    }
+   },
+   "hybrid": {
+    "n_fields": 22,
+    "n_predicted": 22,
+    "accuracy": 0.9545,
+    "macro_f1": 0.9444,
+    "sensitive_recall": 1.0,
+    "subtype_accuracy": 0.9091,
+    "per_role": {
+     "direct_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+     },
+     "quasi_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 7
+     },
+     "sensitive_attribute": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+     },
+     "technical_identifier": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "free_text": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "record_key": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+     },
+     "non_sensitive": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6667,
+      "support": 2
+     }
+    },
+    "model_types": {
+     "columns": 11,
+     "role_correct": 11,
+     "harmless": 0,
+     "harmless_columns": []
+    },
+    "other_columns": {
+     "columns": 11,
+     "role_correct": 10,
+     "wrong": [
+      "items_in_cart: non_sensitive MEASUREMENT -> sensitive_attribute OTHER"
+     ]
+    }
+   },
+   "gate_harmless_at_most_1": true
+  }
+ },
+ "summary": {
+  "lexicon": {
+   "de_DE": 0.5444,
+   "es_ES": 0.5747,
+   "fi_FI": 0.8722,
+   "fr_FR": 0.5303,
+   "it_IT": 0.5833,
+   "mixed_EU": 0.5192,
+   "nl_NL": 0.5514,
+   "pl_PL": 0.5019,
+   "sv_SE": 0.7955
+  },
+  "hybrid": {
+   "de_DE": 0.7761,
+   "es_ES": 0.7484,
+   "fi_FI": 0.9444,
+   "fr_FR": 0.727,
+   "it_IT": 0.7744,
+   "mixed_EU": 0.7355,
+   "nl_NL": 0.7641,
+   "pl_PL": 0.6843,
+   "sv_SE": 0.9444
+  }
+ },
+ "gate_all_countries": true
+}
