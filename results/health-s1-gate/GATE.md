@@ -28,10 +28,10 @@ v1: k is computed by the scorer over sex, municipality, arrival_ts and arrival_m
 ## Commands run
 
 ```
-/Users/ardasarikaya/Desktop/Business/team-1-trusted/.venv/bin/python /Users/ardasarikaya/Desktop/Business/team-1-trusted/scripts/prototypes/health_s1_gate.py hour
-cd /Users/ardasarikaya/Desktop/Business/team-1-trusted/data/proving-ground
-/Users/ardasarikaya/Desktop/Business/team-1-trusted/.venv/bin/pets-eval scorecard --original /Users/ardasarikaya/Desktop/Business/team-1-trusted/data/proving-ground/data/health --protected /Users/ardasarikaya/Desktop/Business/team-1-trusted/out/health-s1-gate/health --scenario HEALTH-S1 --out /Users/ardasarikaya/Desktop/Business/team-1-trusted/results/health-s1-gate/hour
-/Users/ardasarikaya/Desktop/Business/team-1-trusted/.venv/bin/pets-eval check /Users/ardasarikaya/Desktop/Business/team-1-trusted/out/health-s1-gate/health
+<repo>/.venv/bin/python <repo>/scripts/prototypes/health_s1_gate.py hour
+cd <repo>/data/proving-ground
+<repo>/.venv/bin/pets-eval scorecard --original <repo>/data/proving-ground/data/health --protected <repo>/out/health-s1-gate/health --scenario HEALTH-S1 --out <repo>/results/health-s1-gate/hour
+<repo>/.venv/bin/pets-eval check <repo>/out/health-s1-gate/health
 ```
 
 ## pets-eval check
