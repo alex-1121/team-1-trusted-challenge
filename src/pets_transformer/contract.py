@@ -1,13 +1,18 @@
 import json
 from pathlib import Path
 
-REQUIRED = ("recipient", "purpose", "trust_level", "threat_model", "required_tasks", "tables", "columns")
+REQUIRED = ("scenario", "recipient", "purpose", "trust_level", "threat_model", "required_tasks", "tables", "columns")
 PETS = {"pseudonym", "token", "drop", "hour_of_day", "age_band", "top_n_exact_else_other", "keep",
         "month", "week", "day", "date_hour", "duration", "round_decimals", "prefix"}
 
 
 def load(path) -> dict:
-    c = json.loads(Path(path).read_text())
+    return parse(Path(path).read_bytes())
+
+
+def parse(data) -> dict:
+    """A contract from its bytes, so a caller can hash and parse one read."""
+    c = json.loads(data)
     missing = [k for k in REQUIRED if k not in c]
     if missing:
         raise ValueError(f"contract missing keys: {missing}")

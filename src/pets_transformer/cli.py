@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from . import build, checks, contract, protect, redteam, score, selector
+from . import build, checks, contract, policy, protect, redteam, score, selector
 
 
 def main(argv=None):
@@ -86,9 +86,11 @@ def main(argv=None):
                 Path(path).write_text(json.dumps(obj, indent=2, ensure_ascii=False) + "\n")
         print(f"wrote {a.out}")
     elif a.cmd == "redteam":
-        rep = redteam.run(a.protected, a.original, contract.load(a.contract), Path(a.out).parent, a.truth, a.adversary, a.label, a.attack_specs)
+        c = contract.load(a.contract)
+        rep = redteam.run(a.protected, a.original, c, Path(a.out).parent, policy.load(c["scenario"])["attack_thresholds"],
+                          a.truth, a.adversary, a.label, a.attack_specs)
         redteam.write(rep, a.out)
-        print(f"gate {rep['gate']}: " + ", ".join(f"{k} {v['value']}" for k, v in rep["attacks"].items()))
+        print(f"gate {rep['gate']}: " + ", ".join(f"{k} {redteam.shown(v)}" for k, v in rep["attacks"].items()))
     else:
         score.run(a.original, a.protected, a.scenario, a.out, a.baseline, a.contract, a.pets_eval, a.proving_ground)
         print(f"wrote score results to {a.out}")

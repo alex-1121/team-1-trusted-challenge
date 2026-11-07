@@ -1,0 +1,32 @@
+{
+  "scenario": "ENERGY-S3",
+  "owner_role": "energy company data steward",
+  "recipient": "University research group (controlled research environment)",
+  "purpose": "Relate heating type, payment problems and winter consumption.",
+  "agreement_ref": "none: ENERGY-S3 is a synthetic proving-ground scenario, no real agreement exists",
+  "recipient_duties": [
+    "No re-identification of any person in the release.",
+    "No linkage with public_directory."
+  ],
+  "enforced_after_release": "none",
+  "attack_thresholds": {
+    "order_attack": 0.05,
+    "news_linkage": 0.0,
+    "person_fingerprint": 0.05,
+    "scorer_linkage_band_aware": 0.01,
+    "plain_hash": 0.0
+  },
+  "utility_floor": 0.5,
+  "k_min": 5,
+  "l_min": 1,
+  "no_k_target": null,
+  "required_tasks": [
+    "ENERGY-U3",
+    "ENERGY-U4",
+    "ENERGY-U7"
+  ],
+  "attacker_assumption": "default",
+  "allowed_contracts": {
+    "default": "2ff8e58208e7d3c37c7438e98be9ea61cb91fd5bf1d1995647968ffd17e4eb66"
+  }
+}

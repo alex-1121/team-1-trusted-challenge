@@ -1,6 +1,6 @@
 # Demo video script (under 2 minutes)
 
-English narration, first person plural, about 260 spoken words. Screen cues are in brackets and are not spoken. Every number is followed, below the script, by the file it comes from.
+English narration, first person plural, about 300 spoken words. Screen cues are in brackets and are not spoken. Every number is followed, below the script, by the file it comes from.
 
 ## Script
 
@@ -22,6 +22,10 @@ Our first release scored 0.97 on the organisers' scorecard, with linkage risk ze
 
 So now the tool picks its own protection and attacks its own output before anything ships. One command.
 
+[policy/HEALTH-S1.policy.json and its signature, then the build refusing after one threshold is changed]
+
+The hospital's data steward signs the policy that sets the risk limits. Change one number and the build stops.
+
 [Detector labels]
 
 [`demo/the-er-register.html`: the blue scan redacts the sheet]
@@ -38,7 +42,7 @@ Protect and repair. Visit numbers become keyed tokens, rows are shuffled. Then o
 
 [results/health-s1-build/redteam.json: gate pass]
 
-Attack. Five attacks run again. Dates rebuilt: zero. Patients named: zero. Only then is the release written. Keep a patient key, as the organisers suggest, and the gate refuses: a third of patients are unique by their visit pattern.
+Attack. Our attacks run again. Dates rebuilt: almost none. Patients named: zero. Only then is the release written. Keep a patient key, as the organisers suggest, and the gate refuses: a third of patients are unique by their visit pattern.
 
 **Before and after (20 s)**
 
@@ -50,7 +54,7 @@ Privacy goes from 0.17 raw to 1.0. The composite rises from 0.28 to 0.99, above 
 
 [docs/guarantee-and-residual-risk.md]
 
-Someone who already knows a patient's diagnosis can still find one visit in ten. This release is for a trusted research environment, not for the public.
+Someone who already knows a patient's diagnosis can still find one visit in ten. This release is for a trusted research environment, not for the public. The signature shows which policy was used. Nobody independent has checked our work, and nothing controls the data after it leaves.
 
 **Close (5 s)**
 
@@ -65,7 +69,7 @@ TrustED PETs Proving Ground 2026, synthetic data by Since AI ry, CC BY 4.0.
 - macro-F1 0.82 (0.8202): `results/detect/health.json`. Not a clean held-out score: the wide-sample rule was narrowed after seeing held-out results (`results/detect/RESULTS.md`).
 - Month and week break the arrival curve (H-U8 0.0), hour of day keeps it (1.0): `contracts/HEALTH-S1.json` (arrival_ts reason), `results/selection/HEALTH-S1.json`.
 - At least five visits and two diagnoses per group: `results/health-s1-build/scorecard.json` (min k 5), `results/health-s1-build/checks/l_diversity.json`.
-- Dates rebuilt zero (0.0002), patients named zero: `results/health-s1-build/redteam.json`.
+- Dates rebuilt almost none (0.0003), patients named zero: `results/health-s1-build/redteam.json`.
 - A third of patients unique with a patient key (0.2935): `results/health-s1-pseudonym-build/redteam.json`.
 - Privacy 0.17 raw (0.1716), composite 0.28 raw (0.2752): `baseline-scores/health_HEALTH-S1_research-env_raw.json`.
 - Privacy 1.0, composite 0.99 (0.9866): `results/health-s1-build/scorecard.json`.

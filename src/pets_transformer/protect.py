@@ -145,6 +145,8 @@ def protect_folder(contract, original, out, key, labels=None, repair_order=None,
         roles = dict(labels[labels.table == name][["column", "privacy_role"]].itertuples(index=False))
         if spec["action"] == "withhold":
             plan += [_plan_row(name, c, roles.get(c, ""), "withhold", None, spec["reason"]) for c in pets.withhold(df.columns)]
+            for f in (f"{name}.csv", f"rowmap_{name}.csv"):  # the folder may hold an earlier build of this table
+                (out / f).unlink(missing_ok=True)
             continue
         prot, rowmap, rows = protect_table(name, df, contract, key, roles)
         target = contract.get("k_target")
