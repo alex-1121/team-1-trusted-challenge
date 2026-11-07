@@ -24,3 +24,6 @@ __pycache__/
 # Secrets never belong here
 .env
 .env.*
+# Submission folder: only the unseen-field labels are committed; the protected tables and row maps are handed over by hand
+pets_submission/*
+!pets_submission/unseen_field_labels.csv

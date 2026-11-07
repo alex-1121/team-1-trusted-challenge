@@ -27,6 +27,38 @@ Status: Context pack landed 2026-11-06; dataset, scenario and demo shape are dec
 | `decisions.md` | Team decision log |
 | `AGENTS.md` | Rules for every teammate's coding agent |
 
+## How to run
+
+Install once, from the repo root, into the existing virtual environment (`pip install -e .`). The organisers' `pets-eval` tool and the proving-ground data must be in place (`data/README.md`).
+
+One command does everything for the health scenario:
+
+```
+python -m pets_transformer.cli build --scenario HEALTH-S1
+```
+
+It runs four steps: the detector labels every column of the health tables and of the unseen HR export; `protect` applies `contracts/HEALTH-S1.json` using those labels; `score` runs the organisers' scorecard and identifier check against the raw baseline; the result is assembled into `pets_submission/`. Options `--original`, `--out`, `--results` and `--submission` override the default folders.
+
+What comes out:
+
+- `results/health-s1-build/`: `scorecard.json` and `scorecard.html` (the organisers' scorecard), `check.txt` (identifier scan), `summary.md` (before and after per task and risk, k-anonymity, residual risk in plain words), `plan.md` (one row per column: detected role, PET, parameters, reason, and a note where a named rule overrides the detected role; tables not in the contract are listed as not released).
+- `pets_submission/health/`: the protected tables and their row maps. Never committed, never published.
+- `pets_submission/unseen_field_labels.csv`: the detector's labels for the unseen export. This is the only committed file in that folder.
+- `out/health-s1-build/hmac.key`: the random key behind the pseudonyms. Never committed.
+
+Where the numbers come from: every number is read from `scorecard.json`, written by the organisers' `pets-eval` (a self-assessment, not the official judging score). The "before" figures come from the committed raw baselines in `baseline-scores/`.
+
+## What is where
+
+| Path | What it holds |
+|---|---|
+| `contracts/` | One JSON contract per scenario: recipient, purpose, role rules (by detected role) and named column rules, each with a reason |
+| `src/pets_transformer/` | The code: `detect`, `protect`, `score`, `build` and the command line |
+| `results/` | Committed evidence: detector results, gate runs, and the output of each build |
+| `pets_submission/` | What goes to the organisers on request; only the labels file is committed |
+
+TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0).
+
 ## Rules we hold ourselves to
 
 The rules live in `AGENTS.md` (data, claims, writing). Short version: synthetic or allowed data only, no privacy claim without method and parameters, every number from a committed scorecard, nothing from truth/, holdout/ or rowmap_*.csv in git or the zip.
