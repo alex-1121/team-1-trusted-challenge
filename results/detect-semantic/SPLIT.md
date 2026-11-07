@@ -44,4 +44,4 @@ The test split is not rerun.
 
 ## Changed after the test run
 
-None yet.
+- 2026-11-07 20:55, advisor mode (zray's decision after the E1 miss): the default with the model installed is now `advisor`, which keeps every word-list label and only flags columns where the model would choose a different treatment (flag `suggest`, besides `disagree` and `unclear`). The model and thresholds are unchanged. `hybrid` stays available. `advisor.json` measures the flags on dev and test data at once; it was made after the test run, so it is not a held-out result, and no setting was tuned on it.

@@ -14,6 +14,7 @@ What each file here is. The model and its rules: `plans/2026-11-07-eu-column-typ
 | `e3_calibration_<split>.json` | ECE, accuracy and reliability table of the model on columns of its own types: corpus columns (`calib` or `locked`) and the EU test tables | `evaluate.py --split` |
 | `e4_warnings_<split>.json` | Needs-review count and share per dataset and in total | `evaluate.py --split` |
 | `e5_cost.json` | Seconds for detect on all nine proving-ground datasets in both modes on zray's laptop (CPU) | `evaluate.py --cost` |
+| `advisor.json` | Advisor mode on every dataset: labels equal to word lists only (checked), each flag with its verdict (catch = the word-list role was wrong, false alarm = it was right), and the word-list errors not flagged. Made after the test run (`SPLIT.md`) | `evaluate.py --advisor` |
 | `dev-head1/` | The development-split run of the first head, kept after retrain 2 replaced it, with that head's `meta.json` and `train_report.json`. Its JSONs show `uncommitted_changes: true` and an older commit because `evaluate.py` was not yet committed when it ran | `evaluate.py --split dev` |
 
 Synthetic data: the EU tables and corpus are fake (Faker 40.44.0 and Featherless word lists). Proving-ground scores: TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0).
