@@ -14,7 +14,7 @@ from pets_eval.check import scan_path
 from pets_transformer import build, cli, contract as ct, policy, protect, redteam, repair, score
 
 ROOT = Path(__file__).parent.parent
-SHIPPED = policy.load(ROOT / "policy", "HEALTH-S1")
+SHIPPED = policy.load("HEALTH-S1")
 T = SHIPPED["attack_thresholds"]
 
 
@@ -242,14 +242,15 @@ def test_health_clips_are_not_applicable_to_other_data_even_with_an_hour_column(
     assert a["status"] == "not_applicable" and "health" in a["reason"]
 
 
-def test_not_applicable_reads_as_not_applicable_in_json_and_on_screen(tmp_path, capsys):
+def test_not_applicable_reads_as_not_applicable_in_json_and_on_screen(tmp_path, capsys, monkeypatch):
     c, original, prot, specs, truth, adversary = _toy(tmp_path, "toy", {"pet": "month"})
     cpath, out, pdir = tmp_path / "c.json", tmp_path / "redteam.json", tmp_path / "policies"
     cpath.write_text(json.dumps(c))
     pdir.mkdir()
     (pdir / "TOY-S1.policy.json").write_text(json.dumps(toy_policy(cpath.read_bytes())))
+    monkeypatch.setattr(policy, "POLICY_DIR", pdir)
     cli.main(["redteam", "--protected", str(prot), "--original", str(original), "--contract", str(cpath), "--out", str(out),
-              "--truth", str(truth), "--adversary", str(adversary), "--attack-specs", str(specs), "--policy-dir", str(pdir)])
+              "--truth", str(truth), "--adversary", str(adversary), "--attack-specs", str(specs)])
     printed = capsys.readouterr().out
     rep = json.loads(out.read_text())
     assert rep["gate"] == "pass" and rep["attacks"]["plain_hash"]["status"] == "pass"
@@ -381,6 +382,7 @@ def world(tmp_path, monkeypatch, keys):
     signers.parent.mkdir()
     signers.write_text(f'{policy.PRINCIPAL} namespaces="{policy.NAMESPACE}" {(keys / "steward.pub").read_text()}')
     monkeypatch.setattr(policy, "ALLOWED_SIGNERS", signers)
+    monkeypatch.setattr(policy, "POLICY_DIR", pdir)  # stands in for the repo's fixed policy/
     sign(pfile, keys / "steward")
 
     def scorecard(original, protected, scenario, out, baseline=None, contract=None, pets_eval=None):
@@ -392,7 +394,7 @@ def world(tmp_path, monkeypatch, keys):
     out, results, submission = tmp_path / "o", tmp_path / "r", tmp_path / "s"
 
     def go(contract_path=cpath):
-        return build.run("TOY-S1", out=out, results=results, submission=submission, contract_path=contract_path, policy_dir=pdir)
+        return build.run("TOY-S1", out=out, results=results, submission=submission, contract_path=contract_path)
     return SimpleNamespace(go=go, out=out, results=results, submission=submission, pdir=pdir, pfile=pfile, cpath=cpath, contract=contract,
                            root=tmp_path, signers=signers)
 
@@ -579,10 +581,13 @@ def test_record_hashes_match_the_files_and_it_says_what_stays_at_risk(world):
     world.go()
     rec = json.loads((world.submission / "release_record.json").read_text())
     assert rec == json.loads((world.results / "release_record.json").read_text())
-    assert sorted(rec["files_sha256"]) == ["toy/rowmap_t.csv", "toy/t.csv", "toy_field_labels.csv", "unseen_field_labels.csv"]
+    assert sorted(rec["files_for_recipient"]) == ["toy/t.csv", "toy_field_labels.csv", "unseen_field_labels.csv"]
+    assert sorted(rec["files_for_organiser_scoring_only"]) == ["toy/rowmap_t.csv"] and "never to the recipient" in rec["row_maps"]
+    assert "files_sha256" not in rec
+    hashed = {**rec["files_for_recipient"], **rec["files_for_organiser_scoring_only"]}
     on_disk = {str(f.relative_to(world.submission)) for f in world.submission.rglob("*") if f.is_file()} - {"release_record.json"}
-    assert on_disk == set(rec["files_sha256"])
-    for name, digest in rec["files_sha256"].items():
+    assert on_disk == set(hashed)
+    for name, digest in hashed.items():
         assert policy.sha256((world.submission / name).read_bytes()) == digest
     assert rec["policy_sha256"] == policy.sha256(world.pfile.read_bytes()) and rec["signature_file"] == "TOY-S1.policy.json.sig"
     assert rec["contract_sha256"] == policy.sha256(world.cpath.read_bytes())
@@ -598,7 +603,9 @@ def test_record_carries_the_results_of_the_checks():
     ev = clean()
     ev["check_results"]["informed_attacker.json"] = {"result": {"protected": {"correct_rate": 0.09}}}
     ev["report"] = {"gate": "pass", "attacks": {"person_fingerprint": {"status": "not_applicable", "reason": "no person key"}, "plain_hash": {"status": "pass"}}}
-    r = policy.record(ev["policy"], "p", "s", "f", "c", {}, ev["check_results"], ev["report"])["residual_risks"]
+    rec = policy.record(ev["policy"], "p", "s", "f", "c", {"h/v.csv": "1", "h/rowmap_v.csv": "2", "unseen_field_labels.csv": "3"}, ev["check_results"], ev["report"])
+    assert rec["files_for_recipient"] == {"h/v.csv": "1", "unseen_field_labels.csv": "3"} and rec["files_for_organiser_scoring_only"] == {"h/rowmap_v.csv": "2"}
+    r = rec["residual_risks"]
     assert r["checks"]["informed_attacker"]["protected"]["correct_rate"] == 0.09
     assert r["checks"]["joined_k"]["labs"]["result"]["min_k"] == 1 and r["checks"]["l_diversity"]["worst_group"]["distinct"] == 2
     assert r["attacks_not_applicable"] == {"person_fingerprint": "no person key"}
@@ -690,13 +697,13 @@ def test_redteam_run_takes_its_thresholds_from_the_argument(tmp_path):
     assert a["threshold"] == -1.0 and a["status"] == "fail"
 
 
-def test_cli_redteam_needs_the_scenarios_policy(tmp_path):
+def test_cli_redteam_needs_the_scenarios_policy(tmp_path, monkeypatch):
     c, original, prot, specs, truth, adversary = _toy(tmp_path, "toy", {"pet": "month"})
     cpath = tmp_path / "c.json"
     cpath.write_text(json.dumps(c))
+    monkeypatch.setattr(policy, "POLICY_DIR", tmp_path / "no-policies")
     with pytest.raises(SystemExit, match="no policy file"):
-        cli.main(["redteam", "--protected", str(prot), "--original", str(original), "--contract", str(cpath), "--out", str(tmp_path / "r.json"),
-                  "--policy-dir", str(tmp_path)])
+        cli.main(["redteam", "--protected", str(prot), "--original", str(original), "--contract", str(cpath), "--out", str(tmp_path / "r.json")])
 
 
 def test_a_contract_must_name_its_scenario(tmp_path):
@@ -722,25 +729,37 @@ def test_repair_search_uses_the_higher_of_its_floor_and_the_policys(tmp_path, po
     assert json.loads((tmp_path / "r" / "repair_search.json").read_text())["floor"] == used
 
 
-def test_a_policy_folder_cannot_bring_its_own_allowed_signers(world, keys, tmp_path):
-    evil = tmp_path / "evil"
-    evil.mkdir()
-    (evil / "allowed_signers").write_text(f'{policy.PRINCIPAL} namespaces="{policy.NAMESPACE}" {(keys / "intruder.pub").read_text()}')
-    (evil / "TOY-S1.policy.json").write_text(json.dumps(toy_policy(world.cpath.read_bytes(), utility_floor=0.0)))
-    sign(evil / "TOY-S1.policy.json", keys / "intruder")
-    with pytest.raises(SystemExit, match="does not verify"):
-        build.run("TOY-S1", out=world.out, results=world.results, submission=world.submission, contract_path=world.cpath, policy_dir=evil)
-    assert not world.submission.exists()
+def test_an_older_signed_policy_kept_outside_policy_is_never_read(world, keys, tmp_path, monkeypatch):
+    # the steward signed an older policy that allowed an older contract with a laxer floor; both still verify
+    old = tmp_path / "old-commit"
+    old.mkdir()
+    old_contract = old / "toy.json"
+    old_contract.write_text(json.dumps({**world.contract, "purpose": "the earlier contract"}))
+    (old / "TOY-S1.policy.json").write_text(json.dumps(toy_policy(old_contract.read_bytes(), utility_floor=0.0)))
+    sign(old / "TOY-S1.policy.json", keys / "steward")
+    (old / "allowed_signers").write_text(world.signers.read_text())
+    assert policy.verify.__code__.co_argcount == 1  # the scenario only: no folder can be passed in
+    opened = []
+    real = Path.read_bytes
+    monkeypatch.setattr(Path, "read_bytes", lambda self: opened.append(self) or real(self))
+    with pytest.raises(SystemExit, match="is not the one allowed"):
+        world.go(old_contract)
+    assert not [f for f in opened if old in f.parents and f != old_contract]
+    for cmd in (["build", "--scenario", "TOY-S1"], ["redteam", "--protected", "p", "--original", "o", "--contract", "c", "--out", "r"]):
+        with pytest.raises(SystemExit) as e:
+            cli.main(cmd + ["--policy-dir", str(old)])
+        assert e.value.code == 2  # argparse: no such option
 
 
-def test_no_argument_or_flag_can_move_allowed_signers(capsys):
-    assert policy.ALLOWED_SIGNERS == ROOT / "policy" / "allowed_signers"
-    assert not [n for n in inspect.signature(build.run).parameters if "signer" in n]
-    assert not [n for n in inspect.signature(policy.verify).parameters if "signer" in n]
+def test_no_argument_or_flag_can_move_the_policy_or_allowed_signers(capsys):
+    assert policy.POLICY_DIR == ROOT / "policy" and policy.ALLOWED_SIGNERS == ROOT / "policy" / "allowed_signers"
+    for f in (build.run, policy.verify, policy.load):
+        assert not [n for n in inspect.signature(f).parameters if "signer" in n or "policy" in n or n.endswith("dir")]
     for cmd in ("build", "redteam"):
         with pytest.raises(SystemExit):
             cli.main([cmd, "--help"])
-        assert "--allowed" not in capsys.readouterr().out
+        help_text = capsys.readouterr().out
+        assert "--allowed" not in help_text and "--policy" not in help_text
 
 
 def test_record_names_the_signing_keys_fingerprint(world, keys):
@@ -772,7 +791,7 @@ def test_the_policy_is_parsed_from_the_bytes_that_verified(world, monkeypatch):
         world.pfile.write_text(json.dumps(toy_policy(world.cpath.read_bytes(), utility_floor=0.0)))
         return r
     monkeypatch.setattr(policy.subprocess, "run", swap_after_verifying)
-    assert policy.verify(world.pdir, "TOY-S1")[0]["utility_floor"] == 0.5
+    assert policy.verify("TOY-S1")[0]["utility_floor"] == 0.5
 
 
 def test_a_refusal_at_signature_time_removes_the_earlier_verdict(world):
@@ -922,7 +941,7 @@ SCENARIOS = {"HEALTH-S1": {"default": "HEALTH-S1.json", "informed": "HEALTH-S1-i
 
 @pytest.mark.parametrize("scenario", SCENARIOS)
 def test_shipped_policy_holds_todays_values_and_pins_the_committed_contracts(scenario):
-    p = policy.load(ROOT / "policy", scenario)
+    p = policy.load(scenario)
     assert p["attack_thresholds"] == {"order_attack": 0.05, "news_linkage": 0.0, "person_fingerprint": 0.05, "scorer_linkage_band_aware": 0.01, "plain_hash": 0.0}
     assert p["utility_floor"] == 0.5 and p["enforced_after_release"] == "none" and p["attacker_assumption"] == "default"
     assert len(p["recipient_duties"]) == 2 and "re-identification" in p["recipient_duties"][0] and "linkage" in p["recipient_duties"][1]
@@ -957,7 +976,7 @@ def test_verdict_over_the_committed_results(run):
     check_results = {f.name: json.loads(f.read_text()) for f in (res / "checks").glob("*.json")}
     # the folder is not committed; the scorecard's list of extra tables is what it recorded about it
     csvs = redteam.expected_files(contract) + [f"{t}.csv" for t in card["extra_protected_files"]]
-    limits = policy.load(ROOT / "policy", contract["scenario"])
+    limits = policy.load(contract["scenario"])
     v = redteam.evaluate(limits, contract, json.loads((res / "redteam.json").read_text()), card, check_results, scan, csvs,
                          card["scenario"]["utility_requirements"])
     if fails_on is None:

@@ -66,11 +66,11 @@ def report_review(reports: list[detect.DetectReport], results: Path) -> str:
     return detect.review_warning(review, with_dataset=True)
 
 
-def run(scenario, original=None, out=None, results=None, submission=None, pets_eval=score.PETS_EVAL, contract_path=None, policy_dir=None,
+def run(scenario, original=None, out=None, results=None, submission=None, pets_eval=score.PETS_EVAL, contract_path=None,
         semantic=None):
     """scenario names the contract (contracts/<scenario>.json) unless contract_path is given; the organisers'
     scenario id used for scoring and for the policy is the contract's "scenario" key. Refuses unless the scenario's
-    signed policy in policy_dir verifies and allows the contract. semantic picks the detector mode ("lexicon",
+    signed policy in the repo's policy/ folder verifies and allows the contract. semantic picks the detector mode ("lexicon",
     "advisor" or "hybrid"; None: env PETS_SEMANTIC, else advisor when the model is installed)."""
     reports = {}
 
@@ -98,7 +98,7 @@ def run(scenario, original=None, out=None, results=None, submission=None, pets_e
     for need, ok in ((original, original.is_dir()), (unseen_dir, unseen_dir.is_dir() and any(unseen_dir.glob("*.csv"))), (BASELINE_DIR / f"{original.name}_{scenario}_*_raw.json", baseline)):
         if not ok:
             raise FileNotFoundError(f"build needs {need}")
-    pol, pol_sha, signature, fingerprint = policy.verify(policy_dir or policy.DEFAULT_DIR, scenario)
+    pol, pol_sha, signature, fingerprint = policy.verify(scenario)
     if contract:
         contract_sha = policy.check_contract(pol, raw)
     else:

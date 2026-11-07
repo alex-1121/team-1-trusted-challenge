@@ -29,7 +29,6 @@ def main(argv=None):
                    help="detector: word lists only; word lists with the model flagging columns for review (advisor); or "
                         "word lists then the model labels the rest (hybrid). Default: env PETS_SEMANTIC, else advisor "
                         "when the model is installed")
-    b.add_argument("--policy-dir", default=policy.DEFAULT_DIR, help="folder with <scenario>.policy.json and its .sig (default: policy/); allowed_signers is always policy/allowed_signers")
     q = sub.add_parser("score", help="run the organisers' scorecard and check, write a summary")
     q.add_argument("--original", required=True)
     q.add_argument("--protected", required=True)
@@ -54,7 +53,6 @@ def main(argv=None):
     r.add_argument("--adversary", help="adversary/ folder (for the news-clip linkage)")
     r.add_argument("--label", default="")
     r.add_argument("--attack-specs", help="metadata/attack_specs.json (for the band-aware scorer linkage)")
-    r.add_argument("--policy-dir", default=policy.DEFAULT_DIR, help="folder with <scenario>.policy.json, for the thresholds (default: policy/)")
     s = sub.add_parser("select", help="write a scenario contract from detected labels and the scenario's required tasks (ablation)")
     s.add_argument("--scenario", required=True)
     s.add_argument("--original", help="dataset folder (default: the scenario's dataset in the proving ground)")
@@ -71,7 +69,7 @@ def main(argv=None):
         plan = protect.protect_folder(c, a.original, a.out, key, labels)
         print(f"wrote {len(plan)} plan rows to {a.out}")
     elif a.cmd == "build":
-        plan = build.run(a.scenario, a.original, a.out, a.results, a.submission, a.pets_eval, a.contract, a.policy_dir,
+        plan = build.run(a.scenario, a.original, a.out, a.results, a.submission, a.pets_eval, a.contract,
                          semantic=a.semantic)
         print(f"built {a.scenario}: {len(plan)} plan rows, results in {a.results or 'results/' + a.scenario.lower() + '-build'}")
     elif a.cmd == "checks":
@@ -89,7 +87,7 @@ def main(argv=None):
         print(f"wrote {a.out}")
     elif a.cmd == "redteam":
         c = contract.load(a.contract)
-        rep = redteam.run(a.protected, a.original, c, Path(a.out).parent, policy.load(a.policy_dir, c["scenario"])["attack_thresholds"],
+        rep = redteam.run(a.protected, a.original, c, Path(a.out).parent, policy.load(c["scenario"])["attack_thresholds"],
                           a.truth, a.adversary, a.label, a.attack_specs)
         redteam.write(rep, a.out)
         print(f"gate {rep['gate']}: " + ", ".join(f"{k} {redteam.shown(v)}" for k, v in rep["attacks"].items()))

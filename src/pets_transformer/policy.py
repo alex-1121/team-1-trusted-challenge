@@ -2,8 +2,9 @@
 policy whose signature verifies, with a contract the policy allows. Nothing here falls back to a default: every failure
 is a refusal.
 
-The principal and the allowed_signers file are fixed here, never read from the policy or from --policy-dir: a signed
-file, or a folder that brings its own allowed_signers, must not choose who may sign it.
+The principal, the policy folder and the allowed_signers file are fixed here, never read from the policy or from an
+argument: a signed file must not choose who may sign it, and an older signed policy kept anywhere else must never be
+read, because its signature still verifies.
 """
 import hashlib
 import json
@@ -14,10 +15,10 @@ from pathlib import Path
 from .redteam import ATTACKS, _number
 from .score import ROOT
 
-DEFAULT_DIR = ROOT / "policy"
+POLICY_DIR = ROOT / "policy"
 NAMESPACE = "pets-policy"
 PRINCIPAL = "data-steward"
-ALLOWED_SIGNERS = DEFAULT_DIR / "allowed_signers"
+ALLOWED_SIGNERS = POLICY_DIR / "allowed_signers"
 VERIFY_TIMEOUT = 30  # seconds
 FIELDS = ("scenario", "owner_role", "recipient", "purpose", "agreement_ref", "recipient_duties", "enforced_after_release", "attack_thresholds",
           "utility_floor", "k_min", "l_min", "no_k_target", "required_tasks", "attacker_assumption", "allowed_contracts")
@@ -59,22 +60,22 @@ def parse(data, scenario):
     return p
 
 
-def _file(policy_dir, scenario):
-    return Path(policy_dir) / f"{scenario}.policy.json"
+def _file(scenario):
+    return POLICY_DIR / f"{scenario}.policy.json"
 
 
-def load(policy_dir, scenario):
+def load(scenario):
     """The limits without the signature, for measuring only (`cli redteam`). `build` uses verify."""
-    f = _file(policy_dir, scenario)
+    f = _file(scenario)
     if not f.exists():
         refuse(f"no policy file {f}")
     return parse(f.read_bytes(), scenario)
 
 
-def verify(policy_dir, scenario):
+def verify(scenario):
     """Returns (policy, its sha256, the signature's file name, the signing key's fingerprint as ssh-keygen reports it).
     The bytes checked are the bytes parsed: read once, verified on stdin, parsed from the same buffer."""
-    f = _file(policy_dir, scenario)
+    f = _file(scenario)
     sig = f.with_name(f.name + ".sig")
     for need in (f, sig, ALLOWED_SIGNERS):
         if not need.exists():
@@ -104,11 +105,16 @@ def check_contract(policy, data):
 
 
 def record(policy, policy_sha, signature, fingerprint, contract_sha, files, check_results, report):
-    """release_record.json: what left, under which signed policy, and what stays at risk. files: path -> sha256."""
+    """release_record.json: what left, under which signed policy, and what stays at risk. files: path -> sha256 of every
+    file in the submission folder; the row maps are listed apart, because they are for the organisers' scoring only."""
+    rowmaps = {f: h for f, h in files.items() if Path(f).name.startswith("rowmap_")}
     checks = {n.removesuffix(".json"): o.get("per_join") or o["result"] for n, o in check_results.items()}
     return {"scenario": policy["scenario"], "gate": report["gate"], "policy_sha256": policy_sha, "signature_file": signature,
             "signing_key_fingerprint": fingerprint,
-            "attacker_assumption": policy["attacker_assumption"], "contract_sha256": contract_sha, "files_sha256": files,
+            "attacker_assumption": policy["attacker_assumption"], "contract_sha256": contract_sha,
+            "files_for_recipient": {f: h for f, h in files.items() if f not in rowmaps},
+            "files_for_organiser_scoring_only": rowmaps,
+            "row_maps": "The row maps link each released row to its original record: they go to the organisers for scoring only and never to the recipient.",
             "recipient": policy["recipient"], "purpose": policy["purpose"], "agreement_ref": policy["agreement_ref"],
             "recipient_duties": policy["recipient_duties"], "enforced_after_release": policy["enforced_after_release"],
             "residual_risks": {"checks": checks or f"not run: {policy['no_k_target']}",
