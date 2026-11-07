@@ -41,7 +41,7 @@ The detector labels every column from its values alone; it never reads column na
 | public_admin | 0.7241 (`results/detect/public_admin.json`) | 0.8108 (`results/detect/public_admin.json`) | 0.8519 (`results/detect/public_admin.json`) |
 | customer_service | 0.7821 (`results/detect/customer_service.json`) | 0.7692 (`results/detect/customer_service.json`) | 0.9565 (`results/detect/customer_service.json`) |
 
-The target was macro-F1 above 0.65, the organisers' rule baseline B1 (`results/detect/SPLIT.md`). One caveat: eight rules were added after reading public_admin's errors, so its 0.7241 is not a clean held-out score. Before those rules it was 0.5431 (`results/detect/RESULTS.md`). The health score did not change (`results/detect/RESULTS.md`).
+The target was macro-F1 above 0.65, the organisers' rule baseline B1 (`results/detect/SPLIT.md`). macro-F1 is the F1 score (a balance of missed and wrong labels) worked out per privacy role and then averaged, so rare roles count as much as common ones; 1.0 is perfect. One caveat: eight rules were added after reading public_admin's errors and the held-out label rows, so public_admin's 0.7241 and customer_service's 0.7821 are not clean held-out scores. Before those rules they were 0.5431 and 0.7462 (`results/detect/RESULTS.md`). The health score did not change (`results/detect/RESULTS.md`).
 
 The same detector labelled the organisers' unlabelled HR export: 26 columns in `results/detect/unseen_field_labels.csv`, format `column,privacy_role,subtype`. The organisers hold the answers, so we have no score for it.
 
@@ -59,7 +59,7 @@ The same detector labelled the organisers' unlabelled HR export: 26 columns in `
 | ed_visits.icd10_primary | sensitive_attribute | keep | The study needs the diagnosis code |
 | clinical_notes (whole table) | free_text and others | withhold | Free text carries identifying detail; no task uses it, no redactor in scope |
 
-A quasi-identifier is a column that identifies someone only in combination, such as age band plus municipality. k is the size of the smallest group of rows that share the same quasi-identifier values.
+A quasi-identifier is a column that identifies someone only in combination, such as age band plus municipality. k is the size of the smallest group of rows that share the same quasi-identifier values. A pseudonym is a stand-in code: the same national id always gets the same code, and without the secret key the code cannot be turned back into the id.
 
 ### 3. Protected output
 
@@ -90,7 +90,7 @@ What we guarantee and what we do not: `docs/guarantee-and-residual-risk.md`.
 
 ## How to run
 
-Install once, from the repo root, into the existing virtual environment (`pip install -e .`). The organisers' `pets-eval` tool and the proving-ground data must be in place (`data/README.md`).
+Install once, from the repo root: create `.venv` at the repo root, install the organisers' `pets-eval` into it (`uv pip install --python .venv/bin/python -e data/proving-ground/toolkit`, see `context/pets-eval-howto.md`), then install this package into it with `pip install -e .`. The proving-ground data must be in place (`data/README.md`).
 
 One command does everything for the health scenario:
 

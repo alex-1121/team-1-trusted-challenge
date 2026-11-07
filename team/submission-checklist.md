@@ -11,7 +11,7 @@ Status filled 2026-11-07 by the deliverables ticket (issue #19). Each line: done
 - [ ] Description (5,000 characters): data types identified, PET choices, protected output, measured before/after utility, one realistic sharing scenario, honest limitations - missing as form text. Who: team. Raw material: `../README.md` ("The demo in five items") and `../docs/guarantee-and-residual-risk.md`.
 - [x] Built with (tech chips, five show on the vote card) - done as a pick: Python, pandas, HMAC-SHA256, k-anonymity, pets-eval (`../docs/deck-outline.md`). Who: team enters them in the form.
 - [ ] Repository link (public, no data files, no secrets, no `rowmap_*.csv`, `truth/` or `holdout/`) - missing. Who: team makes the repo public after the last merge. `.gitignore` blocks data, row maps, `truth/`, `holdout/`, `out/` and the key.
-- [ ] Demo video: public or unlisted YouTube link, ideally under two minutes, English narration recommended. YouTube is the only accepted format - missing. Script done (`../docs/video-script.md`, about 250 spoken words). Who: team records, uploads and pastes the link.
+- [ ] Demo video: public or unlisted YouTube link, ideally under two minutes, English narration recommended. YouTube is the only accepted format - missing. Script done (`../docs/video-script.md`, 260 spoken words). Who: team records, uploads and pastes the link.
 - [ ] Source code zip, up to 100 MB, without node_modules or data files - missing. Who: team, built from a fresh clone so no gitignored file slips in.
 
 ## Optional

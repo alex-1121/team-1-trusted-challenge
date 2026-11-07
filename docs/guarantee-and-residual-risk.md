@@ -37,6 +37,6 @@ From `results/health-s1-build/summary.md`, before and after:
 
 Two more checks ran. The dictionary attack on hashed columns is listed as run in `results/health-s1-build/summary.md`; the scorecard JSON gives it no separate number. The direct-identifier pattern scan (`pets-eval check`) ran on the protected output only and found no residual hits (`results/health-s1-build/check.txt`).
 
-Scores: privacy 0.1716 before (`baseline-scores/health_HEALTH-S1_research-env_raw.json`) and 0.891 after; utility 1.0 before and 0.9928 after; composite 0.2752 before and 0.9346 after (`results/health-s1-build/scorecard.json`).
+Scores before: privacy 0.1716, utility 1.0, composite 0.2752 (`baseline-scores/health_HEALTH-S1_research-env_raw.json`). After: privacy 0.891, utility 0.9928, composite 0.9346 (`results/health-s1-build/scorecard.json`).
 
 TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0)
