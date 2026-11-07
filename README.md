@@ -29,7 +29,7 @@ Status: Context pack landed 2026-11-06; dataset, scenario and demo shape are dec
 
 ## The demo in five items
 
-Every number below is copied from the file named after it in brackets. Scorecard numbers come from the organisers' `pets-eval` and are our self-assessment, not the official judging score.
+Every number below is copied from the file named after it in brackets. Scorecard numbers come from the organisers' `pets-eval`. They are our self-assessment and are separate from the official judging score.
 
 ### 1. Types found
 
@@ -84,7 +84,7 @@ Before: `baseline-scores/health_HEALTH-S1_research-env_raw.json`. After: `result
 
 HEALTH-S1: a hospital gives its emergency-department visits and lab results to a university research group in a research environment. The group studies crowding and revisits, so the five tasks above must still work (`contracts/HEALTH-S1.json`).
 
-Residual risk, from `results/health-s1-build/summary.md`: ed_visits, records with k<5, is 0.1817: 18.2% of the records share their quasi-identifier combination with fewer than 5 rows, so an attacker who knows those attributes about a person can narrow the match to a handful of rows or one. Attacker model: the toolkit's shipped attackers only. Attacks run: linkage re-identification with the shipped attacker files, a dictionary attack on hashed columns, a direct-identifier pattern scan, and k over the quasi-identifiers in the field catalogue. Stronger attackers (more background knowledge, other outside data) were not tested.
+Residual risk, from `results/health-s1-build/summary.md`: in ed_visits, the share of records with k<5 is 0.1817. That means 18.2% of the records share their quasi-identifier combination with fewer than 5 rows, so an attacker who knows those attributes about a person can narrow the match to a handful of rows or one. Attacker model: the toolkit's shipped attackers only. Attacks run: linkage re-identification with the shipped attacker files, a dictionary attack on hashed columns, a direct-identifier pattern scan, and k over the quasi-identifiers in the field catalogue. We did not test stronger attackers (more background knowledge, other outside data).
 
 What we guarantee and what we do not: `docs/guarantee-and-residual-risk.md`.
 

@@ -8,7 +8,7 @@ English narration, first person plural, about 260 spoken words. Screen cues are 
 
 [Title card: TrustED PETs Transformer]
 
-Hospitals hold data researchers need. Handing it over as it is exposes patients. Blanking everything kills the research.
+Hospitals hold data researchers need. Hand it over as it is and you expose patients. Blank everything and the research dies.
 
 **The scenario (10 s)**
 
@@ -28,17 +28,17 @@ Detect. The tool labels every column from its values alone. It never reads colum
 
 [plan.md table, highlight patient_hetu, date_of_birth, arrival_ts, clinical_notes]
 
-Protect. A written contract picks one technique per column, with a reason. The national id becomes a keyed HMAC pseudonym, so revisits still link. Birth dates become ten-year age bands. Arrival time keeps only the hour. Names, phones, addresses and postcodes are dropped. Lab results keep their visit link, so the lab analysis still joins. Clinical notes are not released at all.
+Protect. A written contract picks one technique per column, with a reason. The national id becomes a keyed HMAC pseudonym, so revisits still link. Birth dates become ten-year age bands. Arrival time keeps only the hour. We drop names, phones, addresses and postcodes. Lab results keep their visit link, so the lab analysis still joins. We do not release clinical notes at all.
 
 [pets_submission/health folder, then check.txt]
 
-Score. The organisers' scorecard and identifier scan run on the result. The scan finds no direct identifiers left.
+Score. Then we run the organisers' scorecard and identifier scan on the result. The scan finds no direct identifiers left.
 
 **Before and after (25 s)**
 
 [scorecard.html, before and after columns]
 
-Before, privacy is 0.17. After, it is 0.89. Utility moves from 1.0 to 0.99. Four of five tasks are perfect, the revisit task scores 0.96. The composite rises from 0.28 to 0.93. The organisers' k-anonymity baseline keeps only utility 0.40 here.
+Before, privacy is 0.17. After, it is 0.89. Utility moves from 1.0 to 0.99. Four of five tasks are perfect, and the revisit task scores 0.96. The composite rises from 0.28 to 0.93. For comparison, the organisers' k-anonymity baseline keeps utility at only 0.40 here.
 
 **Honest limits (15 s)**
 
@@ -62,4 +62,4 @@ TrustED PETs Proving Ground 2026, synthetic data by Since AI ry, CC BY 4.0.
 - Baseline utility 0.40 (B2-k): `data/proving-ground/docs/BENCHMARK.md` (organiser file in the restored proving ground).
 - Eighteen percent (k<5 share 0.1817) and the linkage zero (0.0): `results/health-s1-build/summary.md`; why it may be optimistic: `results/health-s1-gate/GATE.md`.
 
-Numbers are rounded for speech; the screen shows the full values. The scorecard is our self-assessment, not the official judging score.
+Numbers are rounded for speech; the screen shows the full values. The scorecard is our own self-assessment and is separate from the official judging score.

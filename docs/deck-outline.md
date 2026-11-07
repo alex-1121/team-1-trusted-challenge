@@ -1,9 +1,9 @@
 # Pitch deck outline
 
-One line per slide: title - what it says - the one number or picture it carries (source file). Scorecard numbers are our self-assessment from the organisers' `pets-eval`, not the official judging score.
+One line per slide: title - what it says - the one number or picture it carries (source file). Scorecard numbers are our self-assessment from the organisers' `pets-eval` and are separate from the official judging score.
 
 1. **TrustED PETs Transformer** - one tool: detect, protect, score - picture: the one build command (`README.md`, "How to run").
-2. **The problem** - raw ED data re-identifies patients, blanking it kills the research - number: raw linkage re-identification 0.5697 (`results/health-s1-build/summary.md`, "Before" column).
+2. **The problem** - raw emergency-department (ED) data re-identifies patients, and blanking it kills the research - number: raw linkage re-identification 0.5697 (`results/health-s1-build/summary.md`, "Before" column).
 3. **The scenario: HEALTH-S1** - research group in a research environment, five analyses must still work - picture: recipient, purpose and the five tasks (`contracts/HEALTH-S1.json`). Demo item 5.
 4. **Detect: types found from values alone** - never reads column names - number: health held-out macro-F1 0.8086 against the B1 target 0.65 (`results/detect/health.json`, `results/detect/SPLIT.md`); plus 26 unseen columns labelled (`results/detect/unseen_field_labels.csv`). Demo item 1.
 5. **Protect: one PET per type, with a reason** - picture: seven rows of the plan table, one per PET: pseudonym, age_band, top_n_exact_else_other, hour_of_day, drop, keep, withhold (`results/health-s1-build/plan.md`). Demo item 2.
