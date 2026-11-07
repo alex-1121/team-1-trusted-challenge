@@ -6,7 +6,7 @@ English narration, first person plural, about 260 spoken words. Screen cues are 
 
 **The problem (10 s)**
 
-[Title card: TrustED PETs Transformer]
+[Title card: TrustED PETs Transformer, then `demo/the-er-register.html`: the raw sheet of patient records]
 
 Hospitals hold data researchers need. Hand it over as it is and you expose patients. Blank everything and the research dies.
 
@@ -24,7 +24,9 @@ So now the tool picks its own protection and attacks its own output before anyth
 
 [Detector labels]
 
-Detect. It labels every column from its values alone, macro-F1 0.81 on health tables it never saw while tuning.
+[`demo/the-er-register.html`: the blue scan redacts the sheet]
+
+Detect. It labels every column from its values alone, macro-F1 0.82 on the held-out health tables.
 
 [contracts/HEALTH-S1.json, one reason line]
 
@@ -52,7 +54,7 @@ Someone who already knows a patient's diagnosis can still find one visit in ten.
 
 **Close (5 s)**
 
-[Attribution card]
+[`demo/the-er-register.html`: the folded release is addressed, postmarked and sent; end card. Then the attribution card]
 
 TrustED PETs Proving Ground 2026, synthetic data by Since AI ry, CC BY 4.0.
 
@@ -60,7 +62,7 @@ TrustED PETs Proving Ground 2026, synthetic data by Since AI ry, CC BY 4.0.
 
 - Earlier release 0.97 (composite 0.9709), linkage zero: `results/health-s1-build/scorecard.json` at commit 7cf541b.
 - Every date returns (share_rows_date_rebuilt 1.0), ten patients named correctly (10 of 220 clips): `results/redteam/before-7cf541b.json`.
-- macro-F1 0.81 (0.8086): `results/detect/health.json`.
+- macro-F1 0.82 (0.8202): `results/detect/health.json`. Not a clean held-out score: the wide-sample rule was narrowed after seeing held-out results (`results/detect/RESULTS.md`).
 - Month and week break the arrival curve (H-U8 0.0), hour of day keeps it (1.0): `contracts/HEALTH-S1.json` (arrival_ts reason), `results/selection/HEALTH-S1.json`.
 - At least five visits and two diagnoses per group: `results/health-s1-build/scorecard.json` (min k 5), `results/health-s1-build/checks/l_diversity.json`.
 - Dates rebuilt zero (0.0002), patients named zero: `results/health-s1-build/redteam.json`.

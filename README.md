@@ -31,6 +31,7 @@ One row per top-level file and folder. Files inside `context/` and `team/` are l
 | `results/` | Committed evidence: detector results (`detect/`), the selector's evidence (`selection/`), the red-team gate on the earlier release (`redteam/`), the repair sweep (`sweep/`), early gate runs, and one `<scenario>-build/` folder per build (scorecard, repair search, checks, red team), including the HEALTH-S1 variants |
 | `baseline-scores/` | "Before" scorecards: every original table scored unprotected, one HTML + JSON pair per scenario, named `<dataset>_<SCENARIO>_<recipient>_raw` |
 | `pets_submission/` | What goes to the organisers on request; only the two label files are committed |
+| `demo/` | `the-er-register.html`: the demo-video sequence. A printed sheet of patient records is redacted in blue halftone, shuffled, stamped, folded, addressed and sent; it ends on the HEALTH-S1 numbers. One self-contained HTML file, no build step |
 | `docs/` | Pitch deck outline, demo video script, what HEALTH-S1 guarantees and its residual risk, and the `pets_submission/` handover |
 | `attack_analysis.md` | What `pets-eval` actually measures: risk checks, utility tasks, how the score is aggregated, blind spots |
 | `decisions.md` | Team decision log |
@@ -134,6 +135,10 @@ Source for this release: `results/health-s1-build/redteam.json`. The gate runs i
 **Open for the team** (details and costs in `plans/2026-11-07-release-gate.md`): keep the lab join flag (0.9866, every visit with labs in a group of at least 5 such visits) or drop it (0.992, 0.055 of those visits in smaller groups, `results/health-s1-noflag-build/checks/joined_k.json`); ship the informed contract for a less trusted recipient; the gate thresholds are our choice. The hand-written contract scores 0.0011 higher than the selected one but leaves 0.121 of visits with labs in groups of fewer than 5 and lets the informed attacker single out 0.1599 of visits (`results/health-s1-handwritten-build/checks/`).
 
 **Residual risk** (`docs/guarantee-and-residual-risk.md`): an attacker who already knows a visit's diagnosis group, age band, municipality and arrival hour singles out one row for 0.0971 of the visits, 0.9294 of them correctly (`results/health-s1-build/checks/informed_attacker.json`), and sees that visit's length of stay, temperature and lab values. `contracts/HEALTH-S1-informed.json` closes this (0.0) at composite 0.9647 (`results/health-s1-informed-build/`); the default relies on the research environment and the agreement with a known recipient instead. Neither is fit for public release.
+
+## Demo video sequence
+
+`demo/the-er-register.html` is the visual for the video. Open it in a browser, press Play and screen-record the 16:9 stage (about 16 seconds). It shows, on a sheet of 13 made-up patient records in the shape of the synthetic export: every field labelled, identifiers removed and the rest coarsened (birth date to age band, arrival to the hour, visit number to a keyed token), the rows shuffled, the release stamp, the fold, the address stamp and postmark, and the send-off. The figures it shows come from committed results: 46,398 visits and 3,746 coarsened (`results/health-s1-build/repair_report.json`), privacy 1.0 and utility 0.971 (`results/health-s1-build/scorecard.json`), 5 of 5 attacks failed (`results/health-s1-build/redteam.json`). `#autoplay` after the file name plays it on load; `#scrub=12000` freezes it at 12 seconds, for checking single frames. It needs no install; it loads the Newsreader and IBM Plex Mono fonts from Google Fonts and falls back to system fonts offline.
 
 ## How to run
 

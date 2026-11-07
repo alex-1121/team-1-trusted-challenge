@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Demo-video sequence for HEALTH-S1. Open in a browser and press Play; record the 16:9 stage.
+     #autoplay plays on load; #scrub=<ms> freezes the sequence at that moment (for checking single frames). -->
+<title>The ER Register</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a 16:9 stage for screen recording. A printed export of patient records is redacted in blue halftone, shuffled, stamped, folded in thirds and slid into an envelope. */
+:root{
+  --desk:#D6D3CB; --paper:#EEEDE8; --paper-back:#E4E2DB; --ink:#1A1A1A; --ink-2:#55534E; --blue:#1F3FD6; --rule:rgba(26,26,26,.18);
+  --env:#E3DDCF; --env-2:#D8D1C1;
+  --serif:"Newsreader","Iowan Old Style",Georgia,serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{background:var(--desk);color:var(--ink)}
+body{margin:0;font-family:var(--serif);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.bar{max-width:1280px;margin:0 auto 12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+.bar b{color:var(--ink);font-weight:500}
+.ctrls{display:flex;gap:8px;flex-wrap:wrap}
+.ctrls button{font:500 12px/1 var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--ink);background:var(--paper);border:1px solid rgba(26,26,26,.25);padding:9px 12px;border-radius:2px;cursor:pointer}
+.ctrls button.main{background:var(--blue);color:#fff;border-color:var(--blue)}
+.ctrls button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.stage{position:relative;max-width:1280px;margin:0 auto;aspect-ratio:16/9;overflow:hidden;container-type:inline-size;border-radius:4px;
+  background:radial-gradient(90% 80% at 50% 25%,#E2DFD8,#C4C0B7);box-shadow:0 20px 60px -30px rgba(0,0,0,.4)}
+.stage::after{content:"";position:absolute;inset:0;pointer-events:none;background-image:var(--grain);opacity:.05;mix-blend-mode:multiply}
+
+/* ---- the printed export (flat while it is read and redacted) ---- */
+.sheet{position:absolute;left:32cqw;top:2.4cqw;width:36cqw;height:51cqw;background:var(--paper);box-shadow:0 .6cqw 1.6cqw -0.6cqw rgba(0,0,0,.35),0 0 0 .05cqw rgba(0,0,0,.06);transition:opacity .2s}
+.doc{position:absolute;inset:0;padding:1.7cqw 1.8cqw;overflow:hidden}
+.dhead{display:flex;justify-content:space-between;align-items:flex-end;gap:1cqw;border-bottom:.12cqw solid var(--ink);padding-bottom:.6cqw}
+.dhead h1{font-family:var(--serif);font-weight:400;font-size:1.9cqw;letter-spacing:-.02em;line-height:1;margin:0}
+.dhead .m{font-family:var(--mono);font-size:.5cqw;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);text-align:right;line-height:1.5}
+.cols{display:grid;grid-template-columns:5.2cqw 1fr 7.4cqw;gap:.8cqw;font-family:var(--mono);font-size:.46cqw;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);padding:.5cqw 0 .35cqw;border-bottom:.05cqw solid var(--ink)}
+.rows{position:relative}
+.row{position:relative;display:grid;grid-template-columns:5.2cqw 1fr 7.4cqw;gap:.8cqw;padding:.38cqw 0;border-bottom:.05cqw solid var(--rule);background:var(--paper)}
+.row .vid{font-family:var(--mono);font-size:.56cqw;color:var(--ink-2);padding-top:.12cqw}
+.row .who{min-width:0}
+.row .l1{font-size:.8cqw;line-height:1.25;white-space:nowrap}
+.row .l1 .nm{font-weight:500}
+.row .l2{font-family:var(--mono);font-size:.52cqw;line-height:1.5;color:var(--ink-2);white-space:nowrap;overflow:hidden}
+.row .clin{font-family:var(--mono);font-size:.5cqw;line-height:1.55;text-align:right;white-space:nowrap}
+.row .clin b{font-family:var(--serif);font-weight:500;font-size:.78cqw}
+.row .note{display:block;font-family:var(--mono);font-size:.44cqw;color:var(--blue);letter-spacing:.06em;text-transform:uppercase;height:0;overflow:hidden;opacity:0;transition:opacity .4s,height .4s}
+.row.rare .note.on{height:.7cqw;opacity:1}
+.foot{position:absolute;left:1.8cqw;right:1.8cqw;bottom:1.3cqw;display:flex;justify-content:space-between;font-family:var(--mono);font-size:.46cqw;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);border-top:.05cqw solid var(--ink);padding-top:.4cqw}
+/* sensitive values */
+.s{position:relative;display:inline-block}
+.s .to{display:none;color:var(--blue);font-style:italic}
+.s::after{content:"";position:absolute;left:-.08cqw;right:-.08cqw;top:.08em;bottom:.04em;background-image:var(--dither);background-size:.42cqw .42cqw;image-rendering:pixelated;transform:scaleX(0);transform-origin:0 50%;transition:transform .42s cubic-bezier(.6,0,.2,1)}
+.s.hit::after{transform:scaleX(1)}
+.s.swap .from{display:none}.s.swap .to{display:inline}
+.s.swap.gen::after{transform-origin:100% 50%;transform:scaleX(0)}
+.s.gone .from{color:transparent}
+.scan{position:absolute;left:-1cqw;right:-1cqw;height:2.2cqw;top:-3cqw;background-image:var(--dither-soft);background-size:.42cqw .42cqw;image-rendering:pixelated;opacity:0;mix-blend-mode:multiply;pointer-events:none}
+.scan.on{opacity:.6}
+.stamp{position:absolute;right:2.2cqw;top:16cqw;transform:rotate(-7deg) scale(1.7);opacity:0;transition:transform .32s cubic-bezier(.3,1.6,.5,1),opacity .15s;font-family:var(--mono);color:var(--blue);border:.22cqw solid var(--blue);padding:.55cqw .85cqw;text-transform:uppercase;letter-spacing:.1em;text-align:center;background:rgba(238,237,232,.6);pointer-events:none}
+.stamp b{display:block;font-size:1.5cqw;letter-spacing:.14em}
+.stamp span{display:block;font-size:.56cqw;margin-top:.18cqw}
+.stamp.on{opacity:.93;transform:rotate(-7deg) scale(1)}
+
+/* ---- the fold (built from the finished sheet) ----
+   Each folding third is two hinged segments, so the paper bends a little as it turns instead of flipping like a board.
+   The back of each segment shows the print faintly mirrored, as thin paper does. */
+.fold{position:absolute;left:32cqw;top:2.4cqw;width:36cqw;height:51cqw;perspective:420cqw;perspective-origin:50% 50%;display:none}
+.fold.on{display:block}
+.fp{position:absolute;left:0;width:100%;height:33.334%;transform-style:preserve-3d}
+.f0{top:0;transform-origin:50% 100%;z-index:3}
+.f1{top:33.333%;z-index:1}
+.f2{top:66.666%;transform-origin:50% 0;z-index:2}
+.seg{position:absolute;left:0;width:100%;height:50%;transform-style:preserve-3d;will-change:transform}
+.f2>.seg{top:0}.f2 .seg .seg{top:100%;height:100%;transform-origin:50% 0}
+.f0>.seg{top:50%}.f0 .seg .seg{top:-100%;height:100%;transform-origin:50% 100%}
+.side{position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;background-color:var(--paper)}
+.side.rear{transform:rotateX(180deg)}
+.side .clone{position:absolute;left:0;width:100%}
+.ghostimg{position:absolute;inset:0;background-image:var(--ghost);background-repeat:no-repeat;opacity:.07;pointer-events:none}
+.side .sh{position:absolute;inset:0;background:rgb(84,64,38);opacity:0;pointer-events:none}
+.f1 .side{position:absolute;inset:0}
+.side::after,.paper3d::after{content:"";position:absolute;inset:0;background-image:var(--grain);opacity:.05;mix-blend-mode:multiply;pointer-events:none}
+.fold .lift{position:absolute;left:2%;right:2%;top:34%;height:32%;box-shadow:0 .5cqw 1.2cqw -.4cqw rgba(60,45,25,.28);opacity:0}
+
+/* ---- the address stamp and postmark, inked onto the folded packet (the packet is the middle third of the fold) ---- */
+.tag,.pm{position:absolute;z-index:6;color:var(--blue);font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em;mix-blend-mode:multiply;opacity:0;pointer-events:none}
+.tag{left:2.6cqw;top:calc(33.333% + 3.4cqw);border:.2cqw solid var(--blue);padding:.7cqw 1cqw .8cqw;font-size:.58cqw;line-height:1.6;transform:rotate(-2.5deg) scale(1.7)}
+.tag .k{display:block;font-size:.52cqw;letter-spacing:.2em}
+.tag b{display:block;font-family:var(--serif);font-weight:500;font-size:1.45cqw;letter-spacing:-.01em;text-transform:none;line-height:1.15;margin:.15cqw 0 .2cqw}
+.tag span{display:block}
+.pm{right:3cqw;top:calc(33.333% + 3cqw);width:9cqw;height:9cqw;border-radius:50%;border:.2cqw solid var(--blue);display:grid;place-items:center;text-align:center;font-size:.56cqw;line-height:1.5;transform:rotate(14deg) scale(1.7)}
+.pm::before{content:"";position:absolute;inset:.5cqw;border-radius:50%;border:.08cqw solid var(--blue)}
+.pm b{display:block;font-size:1.5cqw;letter-spacing:.04em;text-transform:none}
+.tag.on,.pm.on{opacity:.88;transition:transform .28s cubic-bezier(.3,1.5,.5,1),opacity .12s}
+.tag.on{transform:rotate(-2.5deg) scale(1)}
+.pm.on{transform:rotate(14deg) scale(1)}
+
+/* ---- envelope: one 3D space shared with the letter. The camera sits above, the front pocket is hinged at its bottom edge,
+   so there is a real opening to look into; the browser sorts every layer by depth. ---- */
+@property --dim{syntax:"<number>";inherits:true;initial-value:0}
+.scene{position:absolute;inset:0;perspective:85cqw;perspective-origin:50% 6%;transform-style:preserve-3d;pointer-events:none}
+.mail{position:absolute;left:30cqw;top:76cqw;width:40cqw;height:19.6cqw;transform-style:preserve-3d;transform:translate3d(0,0,-.08cqw)}
+.mail>*{position:absolute}
+.e-back{inset:0;background:linear-gradient(180deg,#D2CAB8,#DDD6C6 40%,#D8D0BF);border-radius:.25cqw;box-shadow:0 1.2cqw 2cqw -1cqw rgba(60,45,25,.38)}
+.e-back::after{content:"";position:absolute;left:0;right:0;top:0;height:.08cqw;background:rgba(80,62,35,.18)}
+.e-shade{left:0;right:0;top:0;height:60%;transform:translateZ(.02cqw);background:linear-gradient(180deg,rgba(60,45,22,.30),rgba(60,45,22,.12) 45%,rgba(60,45,22,0));border-radius:.25cqw .25cqw 0 0}
+.e-flap{left:0;right:0;top:0;height:56%;transform-origin:50% 0;transform:translateZ(-.03cqw) rotateX(180deg);clip-path:polygon(0 0,100% 0,50% 100%);background:linear-gradient(0deg,#DAD3C3,#E6E0D2 70%,#EAE5D8);border-radius:.25cqw .25cqw 0 0}
+.e-front{inset:0;transform-origin:50% 100%;transform:translateZ(.16cqw);clip-path:polygon(0 0,50% 52%,100% 0,100% 100%,0 100%);background:linear-gradient(180deg,#F2EDE2,var(--env) 55%,#D9D2C2);border-radius:.25cqw}
+.e-front::before{content:"";position:absolute;inset:0;background:linear-gradient(152deg,transparent 49.7%,rgba(0,0,0,.1) 50%,transparent 50.4%),linear-gradient(28deg,transparent 49.7%,rgba(0,0,0,.1) 50%,transparent 50.4%)}
+.e-front::after{content:"";position:absolute;left:0;right:0;top:0;height:54%;clip-path:polygon(0 0,50% 96%,100% 0,100% 5%,50% 100%,0 5%);background:rgba(255,255,255,.7)}
+.paper3d{position:absolute;width:36cqw;height:17cqw;background:var(--paper);overflow:hidden;display:grid;place-items:center;visibility:hidden}
+.paper3d .dimmer{position:absolute;inset:0;background:linear-gradient(180deg,rgba(35,25,10,.05) 0%,rgba(35,25,10,.38) 100%);opacity:var(--dim,0)}
+
+.paper3d span{font-family:var(--mono);font-size:.6cqw;letter-spacing:.24em;color:rgba(26,26,26,.38);text-transform:uppercase}
+.letter{left:32cqw;top:15cqw;transform:translateZ(0);box-shadow:0 .2cqw .6cqw rgba(60,45,25,.18)}
+.mletter{left:2cqw;top:1.3cqw;transform:translateZ(.08cqw);--dim:1}
+.addr{position:absolute;left:3.4cqw;bottom:2.6cqw;font-family:var(--mono);font-size:.78cqw;line-height:1.55;color:var(--ink)}
+.addr b{display:block;font-family:var(--serif);font-weight:500;font-size:1.35cqw;letter-spacing:-.01em}
+.post{position:absolute;right:3cqw;bottom:2.4cqw;width:8.2cqw;height:8.2cqw;border-radius:50%;border:.2cqw solid var(--blue);color:var(--blue);display:grid;place-items:center;text-align:center;font-family:var(--mono);font-size:.56cqw;letter-spacing:.08em;text-transform:uppercase;opacity:0;transform:rotate(12deg) scale(1.6);transition:opacity .2s,transform .35s cubic-bezier(.3,1.6,.5,1)}
+.post b{display:block;font-size:1.2cqw}
+.post.on{opacity:.9;transform:rotate(12deg) scale(1)}
+.seal{left:50%;top:55%;width:3.4cqw;height:3.4cqw;margin:-1.7cqw 0 0 -1.7cqw;border-radius:50%;background-image:var(--dither);background-size:.36cqw .36cqw;image-rendering:pixelated;opacity:0;transform:translateZ(.4cqw) scale(2.2);transition:opacity .2s,transform .35s cubic-bezier(.3,1.6,.5,1)}
+.seal.on{opacity:1;transform:translateZ(.4cqw) scale(1)}
+
+.cap{position:absolute;left:2cqw;bottom:1.5cqw;font-family:var(--mono);font-size:.82cqw;letter-spacing:.06em;color:var(--ink-2);text-transform:uppercase;transition:opacity .4s;max-width:28cqw}
+.cap b{color:var(--blue);font-weight:500}
+.end{position:absolute;inset:0;display:grid;place-items:center;text-align:center;opacity:0;transition:opacity .8s;pointer-events:none}
+.end.on{opacity:1}
+.end .k{font-family:var(--mono);font-size:.85cqw;letter-spacing:.16em;text-transform:uppercase;color:var(--blue)}
+.end h4{font-family:var(--serif);font-weight:400;font-size:3.4cqw;letter-spacing:-.02em;margin:.6cqw 0 1cqw;line-height:1.05}
+.end .nums{display:flex;gap:2.4cqw;justify-content:center;font-family:var(--mono);font-size:.8cqw;color:var(--ink-2);text-transform:uppercase;letter-spacing:.08em}
+.end .nums b{display:block;font-family:var(--serif);font-weight:400;font-size:2.6cqw;color:var(--ink);letter-spacing:-.02em;text-transform:none}
+.end .src{font-family:var(--mono);font-size:.7cqw;color:var(--ink-2);margin-top:1.4cqw}
+.note2{max-width:1280px;margin:12px auto 0;font-family:var(--mono);font-size:11.5px;color:var(--ink-2);line-height:1.5}
+</style>
+</head>
+<body>
+
+<div class="bar"><div><b>The ER Register</b> · demo-video sequence · press Play, record the 16:9 stage</div>
+  <div class="ctrls"><button type="button" class="main" id="play">Play</button><button type="button" id="hold">Stop after redaction</button><button type="button" id="reset">Reset</button></div></div>
+
+<div class="stage" id="stage">
+  <div class="sheet" id="sheet"><div class="doc" id="doc"></div><div class="scan" id="scan"></div>
+    <div class="stamp" id="stamp"><b>Released</b><span>k ≥ 5 · no direct identifiers</span><span>5 of 5 attacks failed</span></div></div>
+  <div class="fold" id="fold">
+    <div class="lift" id="lift"></div>
+    <div class="fp f1"><div class="side face"><div class="clone" style="top:-100%;height:300%"></div></div></div>
+    <div class="fp f2" id="f2"><div class="seg" data-s="4"><div class="side face"></div><div class="side rear"></div><div class="seg" data-s="5"><div class="side face"></div><div class="side rear"></div></div></div></div>
+    <div class="tag" id="tag"><span class="k">To</span><b>University research group</b><span>ED crowding and revisits study</span><span>Secure research environment · HEALTH-S1</span></div>
+    <div class="pm" id="pm"><div><b>k≥5</b>Released<br>0 identifiers</div></div>
+    <div class="fp f0" id="f0"><div class="seg" data-s="1"><div class="side face"></div><div class="side rear"></div><div class="seg" data-s="0"><div class="side face"></div><div class="side rear"></div></div></div></div>
+  </div>
+  <div class="end" id="end"><div><div class="k">Release sent</div><h4>Useful to the researchers.<br>Useless to anyone hunting a name.</h4>
+    <div class="nums"><div><b>1.0</b>privacy</div><div><b>0.971</b>utility</div><div><b>46,398</b>visits released</div><div><b>3,746</b>coarsened</div></div>
+    <div class="src">results/health-s1-build/scorecard.json · repair_report.json · redteam.json</div></div></div>
+  <div class="cap" id="cap"></div>
+</div>
+<p class="note2">The patients on the sheet are made-up examples in the shape of the synthetic HEALTH-S1 export. The figures in the stamp and the end card are our measured HEALTH-S1 results. TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0).</p>
+
+<script>
+(() => {
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const B=[[0,32,8,40,2,34,10,42],[48,16,56,24,50,18,58,26],[12,44,4,36,14,46,6,38],[60,28,52,20,62,30,54,22],[3,35,11,43,1,33,9,41],[51,19,59,27,49,17,57,25],[15,47,7,39,13,45,5,37],[63,31,55,23,61,29,53,21]];
+function dither(level){const c=document.createElement('canvas');c.width=c.height=8;const x=c.getContext('2d');x.fillStyle='#1F3FD6';for(let i=0;i<8;i++)for(let j=0;j<8;j++)if(B[i][j]/64<level)x.fillRect(j,i,1,1);return`url(${c.toDataURL()})`}
+const R=document.documentElement.style;R.setProperty('--dither',dither(.72));R.setProperty('--dither-soft',dither(.3));
+try{const g=document.createElement('canvas');g.width=g.height=120;const x=g.getContext('2d');const im=x.createImageData(120,120);for(let i=0;i<im.data.length;i+=4){const v=Math.random()*255;im.data[i]=im.data[i+1]=im.data[i+2]=v;im.data[i+3]=255}x.putImageData(im,0,0);R.setProperty('--grain',`url(${g.toDataURL()})`)}catch(e){}
+
+/* made-up patients in the shape of the export: name, id, birth, sex, address, postcode, town, phone, arrival, triage, dx, complaint, los */
+const P=[
+ ['Aino Virtanen','140387-128K','14.03.1987','F','Vanha Turuntie 12 B 4','21600','Kaarina','040 123 4567','09.12. 14:27',2,'J18.9','pressure in the chest',192,'30–39','14:00',1],
+ ['Juhani Mäkelä','020455-317H','02.04.1955','M','Puistokatu 3 A 9','20100','Turku','050 662 1840','09.12. 14:41',3,'S72.0','fell on the stairs',311,'70–79','14:00',1],
+ ['Eveliina Koski','281101A905T','28.11.2001','F','Rantatie 44','21200','Raisio','044 718 2293','09.12. 15:02',4,'J06.9','sore throat, fever',96,'20–29','15:00',1],
+ ['Matti Salonen','170968-541U','17.09.1968','M','Koulukatu 8 C 21','20500','Turku','040 559 0712','09.12. 15:18',1,'I21.4','left arm numb',428,'50–59','15:00',1],
+ ['Sanna Heikkilä','050779-226B','05.07.1979','F','Myllytie 2','21100','Naantali','050 311 9045','09.12. 15:33',3,'R07.4','chest pain on exertion',174,'40–49','15:00',1],
+ ['Onni Laaksonen','300614A538S','30.06.2014','M','Kuusitie 17','21250','Masku','041 902 6618','09.12. 15:50',4,'S52.5','fell off a bike',138,'10–19','15:00',0],
+ ['Leena Rantanen','111148-093D','11.11.1948','F','Linnankatu 40 B','20100','Turku','02 431 5507','09.12. 16:04',2,'J44.1','short of breath',356,'70–79','16:00',1],
+ ['Tapani Nieminen','230792-761M','23.07.1992','M','Aurakatu 15 A 2','20100','Turku','045 120 8834','09.12. 16:20',5,'L03.1','swollen finger',61,'30–39','16:00',1],
+ ['Helmi Lehtonen','080863-414A','08.08.1963','F','Kirkkotie 6','21500','Paimio','040 877 2019','09.12. 16:37',3,'K35.8','pain, lower right',265,'60–69','16:00',0],
+ ['Väinö Järvinen','151143-209X','15.11.1943','M','Satamakatu 1','21100','Naantali','050 994 3176','10.12. 03:12',2,'N39.0','confused since evening',244,'80+','03:00 to 05:59',0,'rare'],
+ ['Kaisa Turunen','190586-635F','19.05.1986','F','Lemminkäisenkatu 22','20520','Turku','044 562 7781','10.12. 07:58',3,'O26.8','pregnant, cramping',118,'30–39','07:00',1],
+ ['Ilmari Hakala','010477-852E','01.04.1977','M','Pyhän Katariinan tie 9','21420','Lieto','040 330 4429','10.12. 08:15',4,'S93.4','twisted ankle',87,'40–49','08:00',1],
+ ['Ronja Saarinen','270999-147C','27.09.1999','F','Itäinen Pitkäkatu 61','20810','Turku','045 781 0093','10.12. 08:44',2,'T78.2','swelling after nuts',143,'20–29','08:00',1]];
+const tok=s=>{let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return'T'+(h>>>0).toString(16).padStart(8,'0')+((h*31)>>>0).toString(16).slice(0,4)};
+function S(cls,id,from,to){return`<span class="s ${to!=null?'gen':''}" data-id="${id}"><span class="from">${from}</span>${to!=null?`<span class="to">${to}</span>`:''}</span>`}
+function render(){
+  const rows=P.map((p,i)=>{const [nm,hetu,born,sex,addr,pc,town,ph,arr,tri,dx,cc,los,band,hour,top8,rare]=p;const id=`V-100${4532+i*7}`;
+    const townTo=rare||!top8?'other':null;
+    return`<div class="row${rare?' rare':''}" data-i="${i}"><div class="vid">${S('','v'+i,id,tok(id))}</div>
+      <div class="who"><div class="l1">${S('','n'+i,`<span class="nm">${nm}</span>`)} · ${S('','h'+i,hetu)} · ${S('','b'+i,'b. '+born,'age '+band)} · ${S('','x'+i,sex)}</div>
+      <div class="l2">${S('','a'+i,addr+', '+pc)} ${townTo?S('','t'+i,town,townTo):town} · ${S('','p'+i,'tel. '+ph)} · ${S('','c'+i,'“'+cc+'”')}</div>
+      <span class="note">rare combination · widened until 5 share it</span></div>
+      <div class="clin">${S('','r'+i,'arr. '+arr,'arr. '+hour)}<br>tri ${tri} · <b>${dx}</b> · ${los}′</div></div>`}).join('');
+  document.getElementById('doc').innerHTML=`<div class="dhead"><h1>Emergency department<br>visits export</h1><div class="m">ed_visits.csv · 46,398 rows<br>printed for release review<br>sheet 1 · 13 visits shown</div></div>
+   <div class="cols"><span>Visit</span><span>Patient · contact · complaint</span><span style="text-align:right">Arrival · clinical</span></div><div class="rows" id="rows">${rows}</div>
+   <div class="foot"><span>Southwest region · emergency department · stay in minutes (′)</span><span>Confidential until released</span></div>`;
+}
+
+const $=id=>document.getElementById(id);
+const stage=$('stage'),sheet=$('sheet'),scan=$('scan'),stamp=$('stamp'),fold=$('fold'),cap=$('cap'),end=$('end');
+let timers=[],anims=[],hold=false;
+const k=location.hash==='#slow'?8:RM?.15:1;   // #slow: eight times slower, for checking frames
+const SCRUB=(location.hash.match(/^#scrub=(\d+)/)||[])[1];let clock=0,events=[];
+const at=(ms,f)=>SCRUB?events.push([ms*k,f]):timers.push(setTimeout(f,ms*k));
+const A=(el,kf,o)=>{const a=el.animate(kf,{fill:'forwards',...o,duration:o.duration*k,delay:(o.delay||0)*k});a._t0=clock;anims.push(a);if(SCRUB){a.pause();a.currentTime=0}return a};
+const advance=t=>anims.forEach(a=>{a.pause();a.currentTime=Math.max(0,t-a._t0)});
+const caption=h=>{cap.innerHTML=h};
+function reset(){timers.forEach(clearTimeout);timers=[];anims.forEach(a=>a.cancel());anims=[];
+  render();sheet.style.opacity='';scan.classList.remove('on');scan.style.transition='none';scan.style.top='-3cqw';stamp.classList.remove('on');
+  fold.classList.remove('on');$('tag').classList.remove('on');$('pm').classList.remove('on');end.classList.remove('on');cap.style.opacity=1;
+  caption('Raw export · <b>ed_visits.csv</b> · 46,398 visits')}
+
+function shuffleRows(){
+  const box=$('rows');const els=[...box.children];const first=new Map(els.map(e=>[e,e.getBoundingClientRect().top]));
+  const order=els.map((e,i)=>[e,Math.sin(i*12.9898+4.1)*43758.5453%1]).sort((a,b)=>a[1]-b[1]).map(x=>x[0]);order.forEach(e=>box.appendChild(e));
+  order.forEach((e,i)=>{const dy=first.get(e)-e.getBoundingClientRect().top;if(!dy)return;
+    A(e,[{transform:`translateY(${dy}px)`},{transform:'translateY(0)'}],{duration:1000,delay:i*28,easing:'cubic-bezier(.6,0,.25,1)',fill:'none'})});
+}
+
+function ghostBitmap(){
+  const sr=sheet.getBoundingClientRect(),W=720,H=Math.round(W*sr.height/sr.width),sx=W/sr.width,sy=H/sr.height;
+  const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  const box=(r,col)=>{const y=(r.top-sr.top)*sy,h=r.height*sy*.62;x.fillStyle=col;x.fillRect((r.left-sr.left)*sx,H-(y+r.height*sy*.8),r.width*sx,h)};
+  x.filter='blur(1.2px)';
+  const walk=n=>{if(n.nodeType===3&&n.textContent.trim()){const rg=document.createRange();rg.selectNodeContents(n);for(const r of rg.getClientRects())if(r.width>0)box(r,'#2a2a2a');return}
+    if(n.nodeType!==1)return;const cs=getComputedStyle(n);if(cs.display==='none'||cs.visibility==='hidden'||cs.opacity==='0')return;
+    if(n.classList&&n.classList.contains('s')&&!n.classList.contains('swap')){box(n.getBoundingClientRect(),'#26315e');return}
+    n.childNodes.forEach(walk)};
+  walk($('doc'));
+  sheet.querySelectorAll('.dhead,.cols,.foot').forEach(e=>{const r=e.getBoundingClientRect();x.fillStyle='#2a2a2a';const yb=(e.classList.contains('foot')?r.top:r.bottom)-sr.top;x.fillRect((r.left-sr.left)*sx,H-yb*sy-1,r.width*sx,1.6)});
+  return c.toDataURL();
+}
+function buildFold(){
+  document.documentElement.style.setProperty('--ghost',`url(${ghostBitmap()})`);
+  const html=sheet.innerHTML;
+  const fill=(el,top,h)=>{const c=document.createElement('div');c.className='clone';c.style.top=top;c.style.height=h;c.innerHTML=html;c.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));el.appendChild(c)};
+  fold.querySelectorAll('.side').forEach(x=>x.innerHTML='');
+  fill(fold.querySelector('.f1 .side'),'-100%','300%');
+  fold.querySelectorAll('.seg').forEach(seg=>{const k=+seg.dataset.s;const [face,rear]=seg.querySelectorAll(':scope>.side');
+    fill(face,`-${k*100}%`,'600%');
+    const g=document.createElement('div');g.className='ghostimg';g.style.backgroundSize='100% 600%';g.style.backgroundPosition=`0 ${(5-k)/5*100}%`;rear.appendChild(g);
+    [face,rear].forEach(x=>{const sh=document.createElement('div');sh.className='sh';x.appendChild(sh)})});
+  fold.classList.add('on');sheet.style.opacity='0';
+}
+function foldPanel(el,dir,delay){
+  const d=1250,outer=el.querySelector(':scope>.seg'),inner=outer.querySelector(':scope>.seg');
+  const ease='cubic-bezier(.42,0,.25,1)';
+  A(el,[{transform:'rotateX(0deg)'},{transform:`rotateX(${dir*30}deg)`,offset:.25},{transform:`rotateX(${dir*120}deg)`,offset:.62},{transform:`rotateX(${dir*180}deg)`}],{duration:d,delay,easing:ease});
+  // the far half lags, so the third curves as it turns, then lies flat
+  A(inner,[{transform:'rotateX(0deg)'},{transform:`rotateX(${-dir*16}deg)`,offset:.3},{transform:`rotateX(${-dir*20}deg)`,offset:.6},{transform:`rotateX(${-dir*6}deg)`,offset:.86},{transform:'rotateX(0deg)'}],{duration:d,delay,easing:ease});
+  // matte light: the face darkens a touch as it turns away, the back brightens as it comes to face you
+  el.querySelectorAll('.face .sh').forEach(sh=>A(sh,[{opacity:0},{opacity:.12,offset:.5},{opacity:.12}],{duration:d,delay}));
+  el.querySelectorAll('.rear .sh').forEach(sh=>A(sh,[{opacity:.1},{opacity:.1,offset:.5},{opacity:0}],{duration:d,delay}));
+}
+
+function play(){
+  reset();
+  const rows=[...document.querySelectorAll('.row')];const sh=sheet.getBoundingClientRect();
+  const SCAN=5200,S0=600;
+  at(S0,()=>{caption('Detect · <b>every field</b> labelled from its values');scan.classList.add('on');scan.style.transition=`top ${SCAN*k}ms linear`;scan.style.top='100%'});
+  rows.forEach(r=>{const y=(r.getBoundingClientRect().top-sh.top)/sh.height;const t=S0+y*SCAN;const spans=[...r.querySelectorAll('.s')];
+    spans.forEach((s,j)=>{at(t+j*45,()=>s.classList.add('hit'));at(t+j*45+520,()=>s.classList.add(s.classList.contains('gen')?'swap':'gone'))});
+    if(r.classList.contains('rare'))at(t+900,()=>r.querySelector('.note').classList.add('on'))});
+  at(S0+SCAN*.45,()=>caption('Protect · <b>removed</b> or <b>coarsened</b>, field by field'));
+  at(S0+SCAN+300,()=>{scan.classList.remove('on');caption('Shuffle · <b>row order</b> gives back no dates');shuffleRows()});
+  at(S0+SCAN+1700,()=>caption('Attack · <b>5 of 5</b> attacks failed'));
+  at(S0+SCAN+2100,()=>stamp.classList.add('on'));
+  if(hold)return;
+  const F=S0+SCAN+3600;
+  // fold in thirds: bottom third up, then top third down over it
+  at(F,()=>{buildFold();caption('Release · <b>folded</b> for one recipient')});
+  at(F,()=>A($('lift'),[{opacity:0},{opacity:1}],{duration:900}));
+  foldPanel($('f2'),1,F+150);
+  foldPanel($('f0'),-1,F+1150);
+  // the folded packet is addressed with a rubber stamp, postmarked, and sent
+  const T=F+2500;
+  const thump=()=>A(fold,[{transform:'translateY(0) scale(1)'},{transform:'translateY(.15cqw) scale(.996)',offset:.3},{transform:'translateY(0) scale(1)'}],{duration:260,easing:'ease-out'});
+  at(T,()=>{$('tag').classList.add('on');thump();caption('Addressed · <b>University research group</b> · HEALTH-S1')});
+  at(T+900,()=>{$('pm').classList.add('on');thump();caption('Postmarked · <b>k ≥ 5</b> · 0 identifiers')});
+  at(T+2200,()=>{caption('Sent');A(fold,[{transform:'translate(0,0) rotate(0deg) scale(1)'},{transform:'translate(-1cqw,.8cqw) rotate(1.5deg) scale(1)',offset:.18},{transform:'translate(70cqw,-45cqw) rotate(-14deg) scale(.55)'}],{duration:1300,easing:'cubic-bezier(.55,0,.35,1)'})});
+  at(T+3200,()=>{cap.style.opacity=0});
+  at(T+3500,()=>end.classList.add('on'));
+}
+const hide=()=>{};
+$('play').onclick=()=>{hold=false;hide();play()};
+$('hold').onclick=()=>{hold=true;hide();play()};
+$('reset').onclick=()=>{hide();reset()};
+reset();
+if(location.hash==='#autoplay'||location.hash==='#slow')setTimeout(()=>$('play').click(),300);
+if(SCRUB)setTimeout(()=>{hide();play();const T=+SCRUB;events.sort((a,b)=>a[0]-b[0]);for(const [t,f] of events){if(t>T)break;clock=t;advance(t);f()}clock=T;advance(T);
+  document.querySelectorAll('.sheet *,.stamp,.tag,.pm,.end,.cap').forEach(e=>e.style.transition='none')},400);
+})();
+</script>
+
+</body>
+</html>
