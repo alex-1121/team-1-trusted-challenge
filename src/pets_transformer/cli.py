@@ -25,9 +25,10 @@ def main(argv=None):
     b.add_argument("--submission", help="default: pets_submission at the repo root")
     b.add_argument("--pets-eval", default=score.PETS_EVAL)
     b.add_argument("--contract", help="contract JSON (default: contracts/<scenario>.json)")
-    b.add_argument("--semantic", choices=["lexicon", "hybrid"], default=None,
-                   help="detector: word lists only, or word lists then the model (default: env PETS_SEMANTIC, else "
-                        "hybrid when the model is installed)")
+    b.add_argument("--semantic", choices=["lexicon", "advisor", "hybrid"], default=None,
+                   help="detector: word lists only; word lists with the model flagging columns for review (advisor); or "
+                        "word lists then the model labels the rest (hybrid). Default: env PETS_SEMANTIC, else advisor "
+                        "when the model is installed")
     q = sub.add_parser("score", help="run the organisers' scorecard and check, write a summary")
     q.add_argument("--original", required=True)
     q.add_argument("--protected", required=True)

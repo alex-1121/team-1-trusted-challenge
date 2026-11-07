@@ -68,6 +68,10 @@ def test_unavailable_model_falls_back(tmp_path, monkeypatch, capsys):
     assert capsys.readouterr().err.count("\n") == 1
     monkeypatch.setattr(semantic, "available", lambda: False)
     assert semantic.resolve_mode("hybrid") == "lexicon"
+    monkeypatch.setattr(semantic, "available", lambda: True)
+    monkeypatch.delenv("PETS_SEMANTIC")
+    assert semantic.resolve_mode(None) == "advisor"  # with a model, the default never changes a label
+    assert semantic.resolve_mode("hybrid") == "hybrid"
 
 
 def test_env_mode_is_read(monkeypatch):
