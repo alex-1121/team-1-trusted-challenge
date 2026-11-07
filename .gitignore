@@ -28,3 +28,7 @@ __pycache__/
 pets_submission/*
 !pets_submission/unseen_field_labels.csv
 !pets_submission/health_field_labels.csv
+
+# Semantic column types: generated fake test tables and training corpus (regenerate with scripts/semantic/)
+data/semantic-eval/
+data/semantic-corpus/
