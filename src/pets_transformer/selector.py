@@ -17,6 +17,9 @@ nothing: every candidate is measured and a stated rule decides.
    and have risk below RISK_LINE, the highest mean utility; ties within 1e-9: lower risk, then fewer distinct
    values in the protected column (drop counts as 0), then the candidate name in alphabetical order. If none is below the line: the feasible one with the lowest risk, and the
    reason says the line was not met. If none is feasible: the best scores, and the reason says so.
+   Before the rule, a candidate other than drop is set aside unless it raises at least one required task by
+   MIN_GAIN over drop (per task, not the mean); if none is left, drop is chosen. The repair pass applies the same.
+   The gain test applies only when drop is itself feasible; a drop that breaks a required task is no option.
 4. k target for the main table (the one with most quasi-identifiers in the reference): the kept quasi-identifiers,
    l-diversity on a kept diagnosis code, join flags for tables joined on its key, and a repair ladder built from
    the chosen PETs.
@@ -42,6 +45,7 @@ from . import repair as rp
 
 TOL = 0.05
 RISK_LINE = 0.05  # policy number set by the team, printed in every reason
+MIN_GAIN = 0.01  # a candidate other than drop must raise one required task by this much over drop (Arda, 2026-11-07)
 K = 5
 CATEGORY_MAX = 20  # a plain category with more distinct values than this is not assumed known to an attacker
 KEYED = {"token", "pseudonym"}
@@ -154,8 +158,19 @@ def _fitness(frame, table, contract, labels, k=K):
 
 def _decide(tried):
     """tried: dicts with candidate, scores, ok, risk, distinct. Returns (entry, why), why one of line, line not met,
-    fallback. Ties: lower risk, then fewer distinct values (so a tie never keeps a finer value), then name. Only
-    measured numbers and the candidate name decide; the menu position never does."""
+    fallback, no gain. A candidate other than drop competes only if it raises at least one required task by MIN_GAIN
+    over drop (per task, not the mean); each entry gets its gain_over_drop. The gain test applies only when drop is
+    itself feasible: a drop that breaks a required task is no option, so the normal rule picks. Ties: lower risk, then fewer distinct
+    values (so a tie never keeps a finer value), then name. Only measured numbers and the candidate name decide; the
+    menu position never does."""
+    drop = next((x for x in tried if x["candidate"] == "drop"), None)
+    for x in tried if drop is not None else ():
+        x["gain_over_drop"] = None if x is drop else max((v - drop["scores"].get(k, 0.0) for k, v in x["scores"].items()), default=0.0)
+    if drop is not None and drop["ok"]:
+        earned = [x for x in tried if x is not drop and x["gain_over_drop"] >= MIN_GAIN - 1e-12]
+        if len(tried) > 1 and not earned:
+            return drop, "no gain"
+        tried = [drop, *earned]
     feasible = [x for x in tried if x["ok"]]
     under = [x for x in feasible if x["risk"] < RISK_LINE]
     if under:
@@ -169,18 +184,23 @@ def _decide(tried):
 
 
 def _tried_text(tried, ok_word="within", bad_word="outside", against=f"{TOL}"):
-    return "; ".join(f"{x['candidate']}: {ok_word if x['ok'] else bad_word} {against} (utility {_fmt(x['scores'])}; risk {x['risk']:.4f})"
+    return "; ".join(f"{x['candidate']}: {ok_word if x['ok'] else bad_word} {against} (utility {_fmt(x['scores'])}; risk {x['risk']:.4f}"
+                     + (f"; gain over drop {x['gain_over_drop']:.4f}" if x.get("gain_over_drop") is not None else "") + ")"
                      for x in tried)
 
 
-def _chosen_text(name, entry, why, repaired=False):
+def _chosen_text(name, entry, why, repaired=False, tried=()):
     line = "met" if entry["risk"] < RISK_LINE else "not met"
     where = "on the repaired release " if repaired else ""
     feasible = "no worse than the current choice" if repaired else f"within {TOL} of the reference"
     text = {"line": f"highest mean utility {where}among the candidates {feasible} and under the risk line {RISK_LINE}",
             "line not met": f"lowest risk among the candidates {feasible}; the risk line {RISK_LINE} was not met",
-            "fallback": f"no candidate stayed within the tolerance, so the best scores were taken; risk line {RISK_LINE} {line}"}[why]
-    return f"Chosen: {name} (risk {entry['risk']:.4f}), {text} (ties: lower risk, then fewer distinct values, then name)."
+            "fallback": f"no candidate stayed within the tolerance, so the best scores were taken; risk line {RISK_LINE} {line}",
+            "no gain": f"no candidate improves a required task by at least {MIN_GAIN} over drop; risk line {RISK_LINE} {line}"}[why]
+    return (f"Chosen: {name} (risk {entry['risk']:.4f}), {text} (a candidate other than drop must raise a required task"
+            f" by at least {MIN_GAIN} over drop; ties: lower risk, then fewer distinct values, then name)."
+            + ((" Drop lowers the mean task score on the repaired release, so the gain rule does not apply." if repaired
+                else " Drop breaks a required task, so the gain rule does not apply.") if any(x["candidate"] == "drop" and not x["ok"] for x in tried) else ""))
 
 
 def select(original, scenario_id, root, labels=None, key=b"s" * 32, log=print, scen=None, utility_fn=None):
@@ -293,7 +313,7 @@ def select(original, scenario_id, root, labels=None, key=b"s" * 32, log=print, s
             rule["reason"] = (f"{head} The only candidate for this type is drop (utility {_fmt(x['scores'])}; risk {x['risk']:.4f};"
                               f" risk line {RISK_LINE}).")
             continue
-        rule["reason"] = f"{head} Candidates tried: {_tried_text(w['tried'])}. {_chosen_text(w['chosen'], w['pick'], w['why'])}"
+        rule["reason"] = f"{head} Candidates tried: {_tried_text(w['tried'])}. {_chosen_text(w['chosen'], w['pick'], w['why'], tried=w['tried'])}"
         if rule["pet"] == "token":
             rule["reason"] += " A keyed HMAC-SHA256 token keeps joins and carries no order, which a sequential id would give back."
     for t in [t for t in c["tables"] if c["tables"][t]["action"] == "withhold"]:
@@ -348,7 +368,7 @@ def select(original, scenario_id, root, labels=None, key=b"s" * 32, log=print, s
                 f"Detected {w['role']} ({w['subtype'] or 'no subtype'}). Candidates tried before the k repair: {_tried_text(w['tried'])}."
                 f" Scored again on the repaired release (feasible: mean utility no worse than {k['from']}, {_fmt(k['before'])}):"
                 f" {_tried_text(k['tried'], 'no worse', 'worse', 'than the current choice')}."
-                f" {_chosen_text(w['chosen'], k['pick'], k['why'], repaired=True)}")
+                f" {_chosen_text(w['chosen'], k['pick'], k['why'], repaired=True, tried=k['tried'])}")
 
     final = score_now()
     log(f"final: {_fmt(final)}")
@@ -373,7 +393,7 @@ def select(original, scenario_id, root, labels=None, key=b"s" * 32, log=print, s
                     "rule": ("Share of the released rows whose combination of every kept value (every kept column except keyed"
                              " tokens and free text) is shared by fewer than 5 rows, on the final release after the k repair."
                              " Reported for the fit-for-sharing statement; it decides nothing in selection.")}
-    evidence = {"scenario": scenario_id, "required_tasks": required, "tolerance": TOL, "risk_line": RISK_LINE, "k": K,
+    evidence = {"scenario": scenario_id, "required_tasks": required, "tolerance": TOL, "risk_line": RISK_LINE, "min_gain": MIN_GAIN, "k": K,
                 "knowable_rule": KNOWABLE_RULE,
                 "main_table": main_ref, "reference_scores": ref, "final_scores_before_repair": final,
                 "final_scores_after_repair": after, "risk_after_repair": post, "fitness": c["fitness"],

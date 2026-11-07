@@ -226,6 +226,49 @@ def test_selector_drops_a_column_no_task_needs_when_utility_and_risk_tie(tmp_pat
     assert rule["pet"] == "drop" and "ties: lower risk, then fewer distinct values, then name" in rule["reason"]
 
 
+def _gain_toy(tmp_path, gain):
+    from pets_transformer import selector
+    d = tmp_path / "toy"
+    d.mkdir()
+    pd.DataFrame({"rec": [f"RC-{i:05d}" for i in range(40)], "colour": ["A", "B", "C", "D"] * 10}).to_csv(d / "t.csv", index=False)
+    labels = pd.DataFrame({"dataset": "toy", "table": "t", "column": ["rec", "colour"],
+                           "privacy_role": ["record_key", "non_sensitive"], "subtype": ["RECORD_ID", "CATEGORY"]})
+    scen = {"id": "TOY", "recipient": "r", "purpose": "p", "trust_level": "t", "threat_model": "m", "utility_requirements": ["U1", "U2"]}
+
+    def util(domain, orig, prot, scen):  # U1 gains `gain` with colour kept; U2 does not need it
+        t = prot.get("t", pd.DataFrame())
+        return [{"id": "U1", "score": 0.9 + (gain if "colour" in t.columns else 0.0)}, {"id": "U2", "score": 1.0 if "t" in prot else 0.0}]
+    c, ev = selector.select(d, "TOY", tmp_path, labels=labels, scen=scen, utility_fn=util, log=lambda *_: None)
+    tried = {x["candidate"]: x for x in next(x for x in ev["trail"] if x["column"] == "colour")["tried"]}
+    return c["columns"]["t"]["colour"], tried
+
+
+def test_selector_drops_a_column_that_gains_less_than_min_gain_over_drop(tmp_path):
+    from pets_transformer import selector
+    rule, tried = _gain_toy(tmp_path, 0.005)
+    assert abs(tried["kept"]["gain_over_drop"] - 0.005) < 1e-9 and tried["kept"]["ok"] and tried["kept"]["risk"] < selector.RISK_LINE
+    assert rule["pet"] == "drop"
+    assert f"no candidate improves a required task by at least {selector.MIN_GAIN} over drop" in rule["reason"]
+
+
+def test_selector_keeps_a_column_that_gains_more_than_min_gain_over_drop(tmp_path):
+    from pets_transformer import selector
+    rule, tried = _gain_toy(tmp_path, 0.02)
+    assert abs(tried["kept"]["gain_over_drop"] - 0.02) < 1e-9
+    assert rule["pet"] == "keep" and f"by at least {selector.MIN_GAIN} over drop" in rule["reason"]
+
+
+def test_min_gain_does_not_apply_when_drop_breaks_a_required_task():
+    from pets_transformer import selector
+    # ok is set by hand: with one task and TOL 0.05 the main pass cannot make this pair, the repair pass (mean
+    # no worse than the current choice) can
+    tried = [{"candidate": "drop", "scores": {"U1": 0.94}, "ok": False, "risk": 0.0, "distinct": 0},
+             {"candidate": "month", "scores": {"U1": 0.945}, "ok": True, "risk": 0.0, "distinct": 12}]
+    pick, why = selector._decide(tried)
+    assert pick["candidate"] == "month" and why == "line" and abs(pick["gain_over_drop"] - 0.005) < 1e-9
+    assert "drop breaks a required task, so the gain rule does not apply" in selector._chosen_text("month", pick, why, tried=tried).lower()
+
+
 def test_selector_never_reads_the_menu_order(tmp_path, monkeypatch):
     from pets_transformer import selector
     d, labels = _tiny(tmp_path)

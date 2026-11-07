@@ -9,6 +9,7 @@
   ],
   "tolerance": 0.05,
   "risk_line": 0.05,
+  "min_gain": 0.01,
   "k": 5,
   "knowable_rule": "a kept column the detector labels quasi_identifier (any subtype), or a kept non_sensitive column of subtype CATEGORY with at most 20 distinct values; sensitive attributes, dropped columns, keyed tokens and free text are never knowable",
   "main_table": "ed_visits",
@@ -153,7 +154,8 @@
           "ok": false,
           "risk": 0.0,
           "distinct": 0,
-          "knowable": []
+          "knowable": [],
+          "gain_over_drop": null
         },
         {
           "candidate": "20-year age band",
@@ -169,7 +171,8 @@
           "distinct": 5,
           "knowable": [
             "date_of_birth"
-          ]
+          ],
+          "gain_over_drop": 0.02710592756380137
         },
         {
           "candidate": "10-year age band",
@@ -185,7 +188,8 @@
           "distinct": 9,
           "knowable": [
             "date_of_birth"
-          ]
+          ],
+          "gain_over_drop": 0.9641950063457823
         }
       ]
     },
@@ -195,7 +199,7 @@
       "role": "quasi_identifier",
       "subtype": "SEX",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -212,7 +216,8 @@
           "distinct": 0,
           "knowable": [
             "date_of_birth"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "exact",
@@ -229,7 +234,8 @@
           "knowable": [
             "date_of_birth",
             "sex"
-          ]
+          ],
+          "gain_over_drop": 0.0
         }
       ]
     },
@@ -239,7 +245,7 @@
       "role": "quasi_identifier",
       "subtype": "POSTCODE",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -256,7 +262,8 @@
           "distinct": 0,
           "knowable": [
             "date_of_birth"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "2-digit postcode area",
@@ -273,7 +280,8 @@
           "knowable": [
             "date_of_birth",
             "postcode"
-          ]
+          ],
+          "gain_over_drop": 0.0
         },
         {
           "candidate": "3-digit postcode area",
@@ -290,7 +298,8 @@
           "knowable": [
             "date_of_birth",
             "postcode"
-          ]
+          ],
+          "gain_over_drop": 0.0
         }
       ]
     },
@@ -317,7 +326,8 @@
           "distinct": 0,
           "knowable": [
             "date_of_birth"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "8 most common, rest other",
@@ -334,7 +344,8 @@
           "knowable": [
             "date_of_birth",
             "municipality"
-          ]
+          ],
+          "gain_over_drop": 1.0
         },
         {
           "candidate": "exact",
@@ -351,7 +362,8 @@
           "knowable": [
             "date_of_birth",
             "municipality"
-          ]
+          ],
+          "gain_over_drop": 1.0
         }
       ]
     },
@@ -379,7 +391,8 @@
           "knowable": [
             "date_of_birth",
             "municipality"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "month",
@@ -397,7 +410,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         },
         {
           "candidate": "ISO week",
@@ -415,7 +429,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         },
         {
           "candidate": "hour of day",
@@ -433,7 +448,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": 1.0
         },
         {
           "candidate": "date",
@@ -451,7 +467,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         },
         {
           "candidate": "date and hour",
@@ -469,7 +486,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": 1.0
         }
       ]
     },
@@ -479,7 +497,7 @@
       "role": "quasi_identifier",
       "subtype": "AGE",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -498,7 +516,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "exact",
@@ -517,7 +536,8 @@
             "municipality",
             "arrival_ts",
             "resp_rate"
-          ]
+          ],
+          "gain_over_drop": 0.0
         }
       ]
     },
@@ -527,7 +547,7 @@
       "role": "quasi_identifier",
       "subtype": "TIMESTAMP",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -546,7 +566,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "month",
@@ -565,7 +586,8 @@
             "municipality",
             "arrival_ts",
             "discharge_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         },
         {
           "candidate": "ISO week",
@@ -584,7 +606,8 @@
             "municipality",
             "arrival_ts",
             "discharge_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         },
         {
           "candidate": "hour of day",
@@ -603,7 +626,8 @@
             "municipality",
             "arrival_ts",
             "discharge_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         },
         {
           "candidate": "date",
@@ -622,7 +646,8 @@
             "municipality",
             "arrival_ts",
             "discharge_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         },
         {
           "candidate": "date and hour",
@@ -641,7 +666,8 @@
             "municipality",
             "arrival_ts",
             "discharge_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         }
       ]
     },
@@ -651,7 +677,7 @@
       "role": "quasi_identifier",
       "subtype": "TIMESTAMP",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -666,7 +692,8 @@
           "ok": true,
           "risk": 0.0,
           "distinct": 0,
-          "knowable": []
+          "knowable": [],
+          "gain_over_drop": null
         },
         {
           "candidate": "month",
@@ -682,7 +709,8 @@
           "distinct": 13,
           "knowable": [
             "sampled_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         },
         {
           "candidate": "ISO week",
@@ -698,7 +726,8 @@
           "distinct": 53,
           "knowable": [
             "sampled_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         },
         {
           "candidate": "hour of day",
@@ -714,7 +743,8 @@
           "distinct": 24,
           "knowable": [
             "sampled_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         },
         {
           "candidate": "date",
@@ -730,7 +760,8 @@
           "distinct": 366,
           "knowable": [
             "sampled_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         },
         {
           "candidate": "date and hour",
@@ -746,7 +777,8 @@
           "distinct": 8338,
           "knowable": [
             "sampled_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         }
       ]
     },
@@ -756,7 +788,7 @@
       "role": "technical_identifier",
       "subtype": "HOSTNAME",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -775,7 +807,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "keyed token",
@@ -793,7 +826,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         }
       ]
     },
@@ -803,7 +837,7 @@
       "role": "technical_identifier",
       "subtype": "RECORD_ID",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -822,7 +856,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "keyed token",
@@ -840,7 +875,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         }
       ]
     },
@@ -865,7 +901,8 @@
           "ok": false,
           "risk": 0.0,
           "distinct": 0,
-          "knowable": []
+          "knowable": [],
+          "gain_over_drop": null
         },
         {
           "candidate": "keyed token",
@@ -879,7 +916,8 @@
           "ok": true,
           "risk": 0.0,
           "distinct": 26209,
-          "knowable": []
+          "knowable": [],
+          "gain_over_drop": 1.0
         }
       ]
     },
@@ -908,7 +946,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "kept",
@@ -926,7 +965,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": 1.0
         }
       ]
     },
@@ -936,7 +976,7 @@
       "role": "sensitive_attribute",
       "subtype": "DIAGNOSIS_CODE",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -955,7 +995,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "kept",
@@ -973,7 +1014,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         }
       ]
     },
@@ -983,7 +1025,7 @@
       "role": "sensitive_attribute",
       "subtype": "OTHER",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -1002,7 +1044,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "kept",
@@ -1020,7 +1063,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         }
       ]
     },
@@ -1030,7 +1074,7 @@
       "role": "sensitive_attribute",
       "subtype": "OTHER",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -1049,7 +1093,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "kept",
@@ -1067,7 +1112,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         }
       ]
     },
@@ -1077,7 +1123,7 @@
       "role": "sensitive_attribute",
       "subtype": "OTHER",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -1096,7 +1142,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "kept",
@@ -1114,7 +1161,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         }
       ]
     },
@@ -1124,7 +1172,7 @@
       "role": "sensitive_attribute",
       "subtype": "OTHER",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -1143,7 +1191,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "kept",
@@ -1161,7 +1210,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         }
       ]
     },
@@ -1171,7 +1221,7 @@
       "role": "sensitive_attribute",
       "subtype": "OTHER",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -1190,7 +1240,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "kept",
@@ -1208,7 +1259,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": 0.0
         }
       ]
     },
@@ -1237,7 +1289,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": null
         }
       ]
     },
@@ -1247,7 +1300,7 @@
       "role": "non_sensitive",
       "subtype": "CATEGORY",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -1266,7 +1319,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "kept",
@@ -1285,7 +1339,8 @@
             "municipality",
             "arrival_ts",
             "arrival_mode"
-          ]
+          ],
+          "gain_over_drop": 0.0
         }
       ]
     },
@@ -1314,7 +1369,8 @@
             "date_of_birth",
             "municipality",
             "arrival_ts"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "kept",
@@ -1333,7 +1389,8 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ]
+          ],
+          "gain_over_drop": 1.0
         }
       ]
     },
@@ -1363,7 +1420,8 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "kept",
@@ -1382,7 +1440,8 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ]
+          ],
+          "gain_over_drop": 1.0
         }
       ]
     },
@@ -1412,7 +1471,8 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "kept",
@@ -1431,7 +1491,8 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ]
+          ],
+          "gain_over_drop": 1.0
         }
       ]
     },
@@ -1441,7 +1502,7 @@
       "role": "non_sensitive",
       "subtype": "CATEGORY",
       "chosen": "drop",
-      "rule": "line not met",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -1461,7 +1522,8 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "kept",
@@ -1481,7 +1543,8 @@
             "arrival_ts",
             "triage",
             "disposition"
-          ]
+          ],
+          "gain_over_drop": 0.002116402116402072
         }
       ]
     },
@@ -1511,7 +1574,8 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "kept",
@@ -1530,7 +1594,8 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ]
+          ],
+          "gain_over_drop": 0.9641950063457823
         }
       ]
     },
@@ -1555,7 +1620,8 @@
           "ok": false,
           "risk": 0.0,
           "distinct": 0,
-          "knowable": []
+          "knowable": [],
+          "gain_over_drop": null
         },
         {
           "candidate": "kept",
@@ -1571,7 +1637,8 @@
           "distinct": 15,
           "knowable": [
             "test_code"
-          ]
+          ],
+          "gain_over_drop": 1.0
         }
       ]
     },
@@ -1581,7 +1648,7 @@
       "role": "non_sensitive",
       "subtype": "CATEGORY",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -1598,7 +1665,8 @@
           "distinct": 0,
           "knowable": [
             "test_code"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "kept",
@@ -1615,7 +1683,8 @@
           "knowable": [
             "test_code",
             "test_name"
-          ]
+          ],
+          "gain_over_drop": 0.0
         }
       ]
     },
@@ -1642,7 +1711,8 @@
           "distinct": 0,
           "knowable": [
             "test_code"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "kept",
@@ -1658,7 +1728,8 @@
           "distinct": 1341,
           "knowable": [
             "test_code"
-          ]
+          ],
+          "gain_over_drop": 1.0
         }
       ]
     },
@@ -1668,7 +1739,7 @@
       "role": "non_sensitive",
       "subtype": "CATEGORY",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -1685,7 +1756,8 @@
           "distinct": 0,
           "knowable": [
             "test_code"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "kept",
@@ -1702,7 +1774,8 @@
           "knowable": [
             "test_code",
             "unit"
-          ]
+          ],
+          "gain_over_drop": 0.0
         }
       ]
     },
@@ -1712,7 +1785,7 @@
       "role": "non_sensitive",
       "subtype": "CATEGORY",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -1729,7 +1802,8 @@
           "distinct": 0,
           "knowable": [
             "test_code"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "kept",
@@ -1746,7 +1820,8 @@
           "knowable": [
             "test_code",
             "ref_range"
-          ]
+          ],
+          "gain_over_drop": 0.0
         }
       ]
     },
@@ -1756,7 +1831,7 @@
       "role": "non_sensitive",
       "subtype": "CATEGORY",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -1773,7 +1848,8 @@
           "distinct": 0,
           "knowable": [
             "test_code"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "kept",
@@ -1790,7 +1866,8 @@
           "knowable": [
             "test_code",
             "abnormal_flag"
-          ]
+          ],
+          "gain_over_drop": 0.0
         }
       ]
     },
@@ -1820,7 +1897,8 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "keyed token",
@@ -1839,7 +1917,8 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ]
+          ],
+          "gain_over_drop": 1.0
         }
       ]
     },
@@ -1849,7 +1928,7 @@
       "role": "record_key",
       "subtype": "RECORD_ID",
       "chosen": "drop",
-      "rule": "line",
+      "rule": "no gain",
       "risk_line": 0.05,
       "tried": [
         {
@@ -1866,7 +1945,8 @@
           "distinct": 0,
           "knowable": [
             "test_code"
-          ]
+          ],
+          "gain_over_drop": null
         },
         {
           "candidate": "keyed token",
@@ -1882,7 +1962,8 @@
           "distinct": 130341,
           "knowable": [
             "test_code"
-          ]
+          ],
+          "gain_over_drop": 0.0
         }
       ]
     },
@@ -1912,7 +1993,8 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ]
+          ],
+          "gain_over_drop": null
         }
       ]
     },
@@ -1942,7 +2024,8 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ]
+          ],
+          "gain_over_drop": null
         }
       ]
     },
@@ -1972,7 +2055,8 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ]
+          ],
+          "gain_over_drop": null
         }
       ]
     },
@@ -2002,7 +2086,8 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ]
+          ],
+          "gain_over_drop": null
         }
       ]
     },
@@ -2032,7 +2117,8 @@
             "municipality",
             "arrival_ts",
             "triage"
-          ]
+          ],
+          "gain_over_drop": null
         }
       ]
     }

@@ -43,3 +43,18 @@ EDU-S2 changes (v1 -> v2):
 - students.special_support: drop -> keep
 
 Final task scores after repair: HEALTH-S3 H-U2, H-U3, H-U5 all 1.0000; EDU-S2 EDU-U2, EDU-U4 both 1.0000.
+
+## EDU-S2 after MIN_GAIN
+
+Rule added 2026-11-07: a candidate other than drop competes only if it raises at least one required task by MIN_GAIN 0.01 over drop (per task). Same select command, written as `<scenario>.v3.json`. HEALTH-S1 v3 (wall time 201.1 s): 38 of 38 entries identical to the shipped contract on pet and params, k target equal, no move after repair; only the reasons changed, so `contracts/HEALTH-S1.json`, `contracts/generated/HEALTH-S1.v2.json` and `results/selection/HEALTH-S1.v2.json` were replaced by the v3 run.
+
+| Item | EDU-S2 v2 | EDU-S2 v3 (MIN_GAIN) | v1 (`contracts/generated/EDU-S2.auto.json`) |
+| --- | --- | --- | --- |
+| Wall time | 92.4 s | 133.5 s | - |
+| students.special_support | keep | drop (gain over drop: EDU-U2 0.0038, under 0.01) | drop |
+| students.school_code | keep | drop (gain over drop: EDU-U2 0.0025, under 0.01) | drop |
+| Differences vs v1 (pet and params, 44 column entries) | 2 | 0 | - |
+| Post-repair risk, students | 0.0124 | 0.0000 | - |
+| Post-repair risk, absences / course_grades | 0.0000 / 0.0000 | 0.0000 / 0.0000 | - |
+| Fitness (share in a group under 5): absences, course_grades, students | 0.0369, 0.0001, 0.0124 | 0.0369, 0.0001, 0.0000 | - |
+| Final EDU-U2, EDU-U4 after repair | 1.0000, 1.0000 | 0.9926, 1.0000 | - |
