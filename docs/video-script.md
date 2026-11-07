@@ -38,7 +38,14 @@ Our word lists know Finnish names, so a German surname looks harmless to them. A
 
 [results/health-s1-build/checks/informed_attacker.json]
 
-Still open: knowing a visit's diagnosis group, age range, town and hour singles out one visit in ten, 93 percent correctly. Our detector also mislabels triage, how urgent a visit is, as plain, so we count it as known, and then 15 percent of visits stand out. The signature shows which policy was used. Two releases that each pass on their own can still be combined by whoever holds both, until people stand out again. We do not test for that. Today only a secure processing room and a data-use agreement forbid it. Nobody independent has checked our work. These scores are our own, separate from official judging.
+What our tool does not do yet
+
+Separate releases can be linked back together. When we provide multiple datasets to different researchers, each one of them scoring high on privacy, they can still be combined and enriched to the point where the data is not private anymore. Neither we nor the scorecard tested for this. Today the only safeguards are organisational - a secure processing environment and a data-use agreement that forbids linkage.
+
+When the tool is not sure, it asks a person. Before it protects anything, the tool reads each column and works out what kind of information it holds: a name, a date, a diagnosis, and so on. Messy data makes that harder. When the tool cannot tell, it marks the column for a person to check. Its best guess stands until that person looks, and the release does not wait for them. So someone has to read that list before the data goes out. The flag comes from our small language model, so it only appears when that model is installed.
+
+Built on made-up data. The word lists the tool uses to spot names, towns, occupations and the like were pulled out of the hackathon dataset, which is synthetic: invented people, not real ones. The small model was trained on fake tables only. Real data has other names, other spellings and other kinds of columns, so the tool as it stands would miss some of them. To use it on a real dataset, the word lists would have to be rebuilt from that data and the model retrained on it.
+
 
 [attribution card: TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0)]
 
