@@ -2,13 +2,21 @@
   "release": "health-s1-build (contracts/HEALTH-S1.json)",
   "table": "ed_visits",
   "time_column": "arrival_ts",
+  "time_columns": [
+    [
+      "ed_visits",
+      "arrival_ts"
+    ]
+  ],
   "gate": "pass",
-  "rule": "every attack at or below its threshold; thresholds are our choice, stated here",
+  "rule": "every attack at or below its threshold or not applicable with a reason; k, joined k and l at the policy's minimum; every check the contract needs has run; every required task at the floor; no identifier found; only the contract's files in the release; every limit comes from the signed policy",
   "attacks": {
     "order_attack": {
       "metric": "share_rows_date_rebuilt",
       "value": 0.0002,
       "detail": {
+        "table": "ed_visits",
+        "column": "arrival_ts",
         "orderings_tried": [
           {
             "ordering": "file order",
@@ -22,27 +30,50 @@
           }
         ],
         "best_ordering": "file order",
-        "share_rows_date_rebuilt": 0.0002
+        "share_rows_date_rebuilt": 0.0002,
+        "columns_checked": [
+          {
+            "table": "ed_visits",
+            "column": "arrival_ts",
+            "applicable": null,
+            "why": null,
+            "share_rows_date_rebuilt": 0.0002
+          }
+        ]
       },
       "threshold": 0.05,
+      "status": "pass",
+      "reason": null,
       "pass": true
     },
     "news_linkage": {
       "metric": "share_clips_reidentified",
       "value": 0.0,
       "detail": {
+        "table": "ed_visits",
+        "column": "arrival_ts",
         "clips": 220,
         "clips_with_date_and_hour": 25,
-        "singled_out": 0,
+        "singled_out": 1,
         "correct": 0,
-        "share_clips_reidentified": 0.0
+        "share_clips_reidentified": 0.0,
+        "columns_checked": [
+          {
+            "table": "ed_visits",
+            "column": "arrival_ts",
+            "clips_with_date_and_hour": 25,
+            "share_clips_reidentified": 0.0
+          }
+        ]
       },
       "threshold": 0.0,
+      "status": "pass",
+      "reason": null,
       "pass": true
     },
     "person_fingerprint": {
       "metric": "share_persons_unique",
-      "value": 0.0,
+      "value": null,
       "detail": {
         "table": "lab_results",
         "applicable": false,
@@ -60,7 +91,9 @@
         ]
       },
       "threshold": 0.05,
-      "pass": true
+      "status": "not_applicable",
+      "reason": "person key released, but no quasi-identifier in this table to fingerprint",
+      "pass": null
     },
     "scorer_linkage_band_aware": {
       "metric": "worst_reidentification_rate",
@@ -84,6 +117,7 @@
                 ]
               }
             ],
+            "evaluated": true,
             "reidentification_rate": 0.0,
             "claim_precision": null,
             "n_unique_claims": 0,
@@ -109,6 +143,7 @@
                 ]
               }
             ],
+            "evaluated": true,
             "reidentification_rate": 0.0,
             "claim_precision": null,
             "n_unique_claims": 0,
@@ -134,6 +169,7 @@
                 ]
               }
             ],
+            "evaluated": true,
             "reidentification_rate": 0.0,
             "claim_precision": null,
             "n_unique_claims": 0,
@@ -152,6 +188,8 @@
         "worst_reidentification_rate": 0.0
       },
       "threshold": 0.01,
+      "status": "pass",
+      "reason": null,
       "pass": true
     },
     "plain_hash": {
@@ -162,9 +200,12 @@
         "worst_share_reversed": 0.0
       },
       "threshold": 0.0,
+      "status": "pass",
+      "reason": null,
       "pass": true
     }
   },
+  "reasons": [],
   "utility_check": {
     "rule": "every required task scores at least 0.5",
     "scores": {
