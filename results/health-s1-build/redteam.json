@@ -13,7 +13,7 @@
   "attacks": {
     "order_attack": {
       "metric": "share_rows_date_rebuilt",
-      "value": 0.0002,
+      "value": 0.0003,
       "detail": {
         "table": "ed_visits",
         "column": "arrival_ts",
@@ -26,18 +26,18 @@
           {
             "ordering": "sorted by ed_visits.visit_id",
             "rows": 46398,
-            "share_dates_rebuilt": 0.0002
+            "share_dates_rebuilt": 0.0003
           }
         ],
-        "best_ordering": "file order",
-        "share_rows_date_rebuilt": 0.0002,
+        "best_ordering": "sorted by ed_visits.visit_id",
+        "share_rows_date_rebuilt": 0.0003,
         "columns_checked": [
           {
             "table": "ed_visits",
             "column": "arrival_ts",
             "applicable": null,
             "why": null,
-            "share_rows_date_rebuilt": 0.0002
+            "share_rows_date_rebuilt": 0.0003
           }
         ]
       },
