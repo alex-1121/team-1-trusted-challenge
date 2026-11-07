@@ -808,6 +808,32 @@ def test_a_submission_folder_holding_anything_else_is_refused_and_nothing_is_tou
     assert all((world.submission / x).exists() for x in ("notes.txt", "education/students.csv", "toy/sub/deep.csv", "toy/old_contacts.csv"))
 
 
+@pytest.mark.parametrize("dirt", [".DS_Store", "education_field_labels.csv", "education/students.csv"])
+def test_a_dirty_submission_folder_is_refused_before_any_work(world, monkeypatch, dirt):
+    def no_work(*a, **k):
+        raise AssertionError("the build started work on a dirty submission folder")
+    monkeypatch.setattr(build.detect, "detect_dataset", no_work)
+    (world.submission / dirt).parent.mkdir(parents=True, exist_ok=True)
+    (world.submission / dirt).write_text("x\n")
+    with pytest.raises(SystemExit, match=re.escape(dirt)):
+        world.go()
+    assert not world.out.exists() and (world.submission / dirt).exists()
+
+
+@pytest.mark.parametrize("break_it", ["contract", "input"])
+def test_any_refusal_removes_the_earlier_verdict_first(world, monkeypatch, break_it):
+    world.results.mkdir()
+    for name in ("release_record.json", "redteam.json"):
+        (world.results / name).write_text('{"gate": "pass"}')
+    if break_it == "contract":
+        world.cpath.write_text("{ not json")
+    else:
+        monkeypatch.setattr(build, "BASELINE_DIR", world.root / "no-baselines")
+    with pytest.raises((ValueError, FileNotFoundError)):
+        world.go()
+    assert sorted(world.results.iterdir()) == []
+
+
 def test_a_rebuild_into_its_own_submission_folder_passes(world):
     world.go()
     world.go()
