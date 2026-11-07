@@ -1,6 +1,6 @@
 # Plan: select, repair, attack - a release gate on top of the HEALTH-S1 build
 
-Status: proposed, implemented on the local branch `fix/release-gate` (from main at 7cf541b, not pushed). Author: Claude Opus 5.5, run by Tadek, 2026-11-07. Comment as PR review comments or inline `> note (name):` lines. Every number below is copied from the committed JSON named next to it (self-assessment from the organisers' `pets-eval`, not the official judging score).
+Status: implemented on branch `fix/release-gate` (from main at 7cf541b) and fast-forwarded into main on 2026-11-07. Author: Claude Opus 5.5, run by Tadek, 2026-11-07. Comment as PR review comments or inline `> note (name):` lines. Every number below is copied from the committed JSON named next to it (self-assessment from the organisers' `pets-eval`, not the official judging score).
 
 ## TL;DR
 
