@@ -45,3 +45,9 @@ The test split is not rerun.
 ## Changed after the test run
 
 - 2026-11-07 20:55, advisor mode (zray's decision after the E1 miss): the default with the model installed is now `advisor`, which keeps every word-list label and only flags columns where the model would choose a different treatment (flag `suggest`, besides `disagree` and `unclear`). The model and thresholds are unchanged. `hybrid` stays available. `advisor.json` measures the flags on dev and test data at once; it was made after the test run, so it is not a held-out result, and no setting was tuned on it.
+- 2026-11-07 21:25, fixes from the review of PR #42 (commits 71701e3 "detect: fixes from PR #42 review" and cf054d6, a follow-up the dev rerun found: on the first fix a wide reading that did not escalate could still set the hybrid label). None changes the model, the thresholds or advisor-mode labels:
+  - The second look at rows spread over the whole file now runs on the word-list reading, before the model, so hybrid can no longer end less protective than lexicon. The model reads each column once.
+  - Flags on tables that hold no person are dropped when both the word lists and the model end the column non-sensitive there (the table rule would demote it either way).
+  - A mode asked for by name fails when the model is missing; the build records the mode that ran.
+  The development files (`*_dev.json`), `advisor.json`, `e2b_unseen.json` and `e5_cost.json` were rerun on cf054d6. The `*_test.json` files are not rerun and still describe commit 68aa116.
+- Commits named inside the JSON files that are no longer in the branch history (the branch was rebased onto main after the runs) are kept on the fork as tags `evidence/<short sha>`: 27c8e44, 3a4df8e, 68aa116, d78aa1d, f3fad46. `git fetch fork 'refs/tags/evidence/*:refs/tags/evidence/*'` then `git checkout evidence/68aa116` gives the exact code of the test run.

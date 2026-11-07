@@ -1,5 +1,5 @@
 {
- "commit": "d78aa1d5ccf9774168f55330b392f0b852554831",
+ "commit": "cf054d6762aea9d7f42f54efe21a9a7cc44b3a82",
  "uncommitted_changes": false,
  "encoder": "intfloat/multilingual-e5-small",
  "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
@@ -15,7 +15,7 @@
    "conf": 0.8
   }
  },
- "created": "2026-11-07T19:54:13Z",
+ "created": "2026-11-07T20:45:03Z",
  "datasets": {
   "finance": {
    "group": "proving_ground_tuning",
@@ -106,33 +106,6 @@
      "verdict": "false alarm"
     },
     {
-     "table": "geoip_ranges",
-     "column": "country",
-     "flag": "disagree",
-     "word_lists": "non_sensitive",
-     "model_suggests": null,
-     "truth": "non_sensitive",
-     "verdict": "false alarm"
-    },
-    {
-     "table": "geoip_ranges",
-     "column": "city",
-     "flag": "suggest",
-     "word_lists": "non_sensitive",
-     "model_suggests": "quasi_identifier LOCATION_NAME",
-     "truth": "non_sensitive",
-     "verdict": "false alarm"
-    },
-    {
-     "table": "geoip_ranges",
-     "column": "network_type",
-     "flag": "unclear",
-     "word_lists": "non_sensitive",
-     "model_suggests": null,
-     "truth": "non_sensitive",
-     "verdict": "false alarm"
-    },
-    {
      "table": "identity",
      "column": "surname",
      "flag": "disagree",
@@ -188,7 +161,7 @@
     }
    ],
    "catches": 1,
-   "false_alarms": 12,
+   "false_alarms": 9,
    "word_list_wrong": 6,
    "missed": 5
   },
@@ -263,9 +236,9 @@
     {
      "table": "students",
      "column": "programme",
-     "flag": "unclear",
+     "flag": "suggest",
      "word_lists": "non_sensitive",
-     "model_suggests": null,
+     "model_suggests": "quasi_identifier OCCUPATION",
      "truth": "quasi_identifier",
      "verdict": "catch"
     }
@@ -279,37 +252,9 @@
    "group": "proving_ground_tuning",
    "labels_equal_lexicon": true,
    "columns": 48,
-   "flags": [
-    {
-     "table": "bike_stations",
-     "column": "name",
-     "flag": "suggest",
-     "word_lists": "non_sensitive",
-     "model_suggests": "quasi_identifier MUNICIPALITY",
-     "truth": "non_sensitive",
-     "verdict": "false alarm"
-    },
-    {
-     "table": "stops",
-     "column": "name",
-     "flag": "suggest",
-     "word_lists": "non_sensitive",
-     "model_suggests": "quasi_identifier MUNICIPALITY",
-     "truth": "non_sensitive",
-     "verdict": "false alarm"
-    },
-    {
-     "table": "stops",
-     "column": "name_sv",
-     "flag": "suggest",
-     "word_lists": "non_sensitive",
-     "model_suggests": "quasi_identifier MUNICIPALITY",
-     "truth": "non_sensitive",
-     "verdict": "false alarm"
-    }
-   ],
+   "flags": [],
    "catches": 0,
-   "false_alarms": 3,
+   "false_alarms": 0,
    "word_list_wrong": 5,
    "missed": 5
   },
@@ -329,35 +274,17 @@
    "columns": 26,
    "flags": [
     {
-     "table": "sensors",
-     "column": "location_name",
-     "flag": "suggest",
-     "word_lists": "non_sensitive",
-     "model_suggests": "quasi_identifier MUNICIPALITY",
-     "truth": "non_sensitive",
-     "verdict": "false alarm"
-    },
-    {
-     "table": "sensors",
-     "column": "zone",
-     "flag": "suggest",
-     "word_lists": "non_sensitive",
-     "model_suggests": "quasi_identifier MUNICIPALITY",
-     "truth": "non_sensitive",
-     "verdict": "false alarm"
-    },
-    {
      "table": "wifi_probes",
      "column": "ssid_probed",
      "flag": "suggest",
      "word_lists": "non_sensitive",
-     "model_suggests": "quasi_identifier ORG_NAME",
+     "model_suggests": "quasi_identifier MUNICIPALITY",
      "truth": "quasi_identifier",
      "verdict": "catch"
     }
    ],
    "catches": 1,
-   "false_alarms": 2,
+   "false_alarms": 0,
    "word_list_wrong": 2,
    "missed": 1
   },
@@ -396,9 +323,9 @@
     {
      "table": "lab_results",
      "column": "test_code",
-     "flag": "unclear",
+     "flag": "suggest",
      "word_lists": "non_sensitive",
-     "model_suggests": null,
+     "model_suggests": "quasi_identifier LOCATION_NAME",
      "truth": "non_sensitive",
      "verdict": "false alarm"
     },
@@ -1558,26 +1485,21 @@
  "totals": {
   "proving_ground_tuning": {
    "columns": 346,
-   "flags": 31,
+   "flags": 23,
    "catches": 7,
-   "false_alarms": 24,
+   "false_alarms": 16,
    "word_list_wrong": 39,
    "missed": 32,
    "by_flag": {
     "suggest": {
-     "flags": 12,
-     "catches": 5,
-     "false_alarms": 7
+     "flags": 7,
+     "catches": 6,
+     "false_alarms": 1
     },
     "disagree": {
-     "flags": 17,
+     "flags": 16,
      "catches": 1,
-     "false_alarms": 16
-    },
-    "unclear": {
-     "flags": 2,
-     "catches": 1,
-     "false_alarms": 1
+     "false_alarms": 15
     }
    }
   },
@@ -1595,14 +1517,14 @@
      "false_alarms": 3
     },
     "unclear": {
-     "flags": 2,
+     "flags": 1,
      "catches": 1,
-     "false_alarms": 1
+     "false_alarms": 0
     },
     "suggest": {
-     "flags": 5,
+     "flags": 6,
      "catches": 3,
-     "false_alarms": 2
+     "false_alarms": 3
     }
    }
   },

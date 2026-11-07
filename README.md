@@ -67,7 +67,7 @@ The same detector labelled the organisers' unlabelled HR export: 26 columns in `
 | Name, address, town, occupation and similar columns labelled harmless there | - | 0 in each country (`results/detect-semantic/e2_eu_test.json`) |
 | Calibration error (gap between stated and actual confidence) | - | 0.0218 (`results/detect-semantic/e3_calibration_test.json`) |
 | Proving-ground held-out macro-F1: health, public_admin, customer_service | 0.8202, 0.7241, 0.7821 | 0.7879, 0.7084, 0.7786 (`results/detect-semantic/e1_proving_ground_test.json`) |
-| Detect time, all nine datasets, laptop CPU | 22.1 s | 59.8 s (`results/detect-semantic/e5_cost.json`) |
+| Detect time, all nine datasets, laptop CPU | 22.4 s | 54.8 s (`results/detect-semantic/e5_cost.json`) |
 
 The proving-ground row is a miss: the model read lab test codes and a permit type as place or organisation names, confidently, so no warning was raised. So the default is advisor mode, decided after the test run (`results/detect-semantic/SPLIT.md`): the word lists set every label, exactly as before, and the model only adds a review flag when it would treat a column differently. Labels and proving-ground scores are therefore unchanged. Its flags (`results/detect-semantic/advisor.json`; "right" means the word-list label really was wrong):
 
@@ -75,7 +75,7 @@ The proving-ground row is a miss: the model read lab test codes and a permit typ
 |---|---|---|---|---|---|
 | Fake EU tables, countries never trained on (cs, pt, hu) | 66 | 42 | 28 | 28 | 0 |
 | Proving ground, held out (health, public_admin, customer_service) | 129 | 30 | 11 | 5 | 6 |
-| Proving ground, tuning datasets | 346 | 39 | 31 | 7 | 24 |
+| Proving ground, tuning datasets | 346 | 39 | 23 | 7 | 16 |
 
 On foreign data every flag points at a real mistake. On the Finnish proving ground about half the flags on held-out data are false alarms, most of them the model doubting a correct word-list match. A flag says "look at this column", not what the right label is. Next step: add types for codes, medical and education terms and number formats, and train on real tables from EU open-data portals (no personal data in them), with names and addresses kept fake. Limitations: the model is trained on fake data only (Faker and word lists from an open model on Featherless; no real or proving-ground value left the laptop); a word-list match is trusted without question; number formats (phone, national ID, licence plate) are not among its types; warnings do not stop a build.
 

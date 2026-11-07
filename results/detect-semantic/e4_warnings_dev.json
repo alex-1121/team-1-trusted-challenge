@@ -1,5 +1,5 @@
 {
- "commit": "27c8e446bd1b863755cb2bd05974a24dfbdfcee2",
+ "commit": "cf054d6762aea9d7f42f54efe21a9a7cc44b3a82",
  "uncommitted_changes": false,
  "encoder": "intfloat/multilingual-e5-small",
  "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
@@ -15,7 +15,7 @@
    "conf": 0.8
   }
  },
- "created": "2026-11-07T19:18:28Z",
+ "created": "2026-11-07T20:36:56Z",
  "split": "dev",
  "proving_ground": {
   "finance": {
@@ -34,20 +34,17 @@
   },
   "cyber": {
    "columns": 126,
-   "model_read": 47,
-   "needs_review": 10,
-   "share": 0.0794,
+   "model_read": 50,
+   "needs_review": 8,
+   "share": 0.0635,
    "by_flag": {
-    "disagree": 9,
-    "unclear": 1
+    "disagree": 8
    },
    "columns_flagged": [
     "edr_alerts.command_line (disagree)",
     "edr_alerts.file_path (disagree)",
     "email_gateway.subject (disagree)",
     "email_gateway.attachment_names (disagree)",
-    "geoip_ranges.country (disagree)",
-    "geoip_ranges.network_type (unclear)",
     "identity.surname (disagree)",
     "identity.department (disagree)",
     "signin_logs.geo_country (disagree)",
@@ -56,7 +53,7 @@
   },
   "education": {
    "columns": 61,
-   "model_read": 36,
+   "model_read": 37,
    "needs_review": 5,
    "share": 0.082,
    "by_flag": {
@@ -217,7 +214,7 @@
  },
  "proving_ground_total": {
   "columns": 346,
-  "needs_review": 18,
-  "share": 0.052
+  "needs_review": 16,
+  "share": 0.0462
  }
 }
