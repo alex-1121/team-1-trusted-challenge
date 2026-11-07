@@ -34,18 +34,22 @@ ATTACKS = ("order_attack", "news_linkage", "person_fingerprint", "scorer_linkage
 HOUR = re.compile(r"^\d\d:00")  # an exact hour or the start of a repair block "03:00 to 05:59"
 NO_QI = "no QI of this attacker survives in the release"
 LEAK_RISKS = ("direct identifiers retained", "free-text identifier leakage")
+ID_ROLES = {"direct_identifier", "technical_identifier", "record_key"}
 
 
 def _read(p):
     return pd.read_csv(p, dtype=str)
 
 
+def _time_columns(contract):
+    """Every hour-only column of a released table; a withheld table releases nothing to attack."""
+    tables = contract.get("tables", {})
+    return [(t, c) for t, cols in contract["columns"].items() if tables.get(t, {}).get("action") == "release"
+            for c, rule in cols.items() if rule["pet"] == "hour_of_day"]
+
+
 def _time_column(contract):
-    for t, cols in contract["columns"].items():
-        for c, rule in cols.items():
-            if rule["pet"] == "hour_of_day":
-                return t, c
-    return None, None
+    return next(iter(_time_columns(contract)), (None, None))
 
 
 def rebuild_days(hours):
@@ -229,7 +233,7 @@ def plain_hash(protected, original, max_values=20000):
 
 
 def _number(v):
-    return isinstance(v, (int, float)) and math.isfinite(v)
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)
 
 
 def attack_status(name, attack, time_col, thresholds):
@@ -239,8 +243,9 @@ def attack_status(name, attack, time_col, thresholds):
     value, d = attack.get("value"), attack.get("detail") or {}
     if name in ("order_attack", "news_linkage") and not time_col:
         return "not_applicable", "no hour-only column in the release"
-    if name == "order_attack" and d.get("applicable") is False:
-        return "fail", f"could not run: {d.get('why')}"
+    idle = [x for x in d.get("columns_checked", [d]) if x.get("applicable") is False]
+    if name == "order_attack" and idle:
+        return "fail", f"could not run: {idle[0].get('why')}"
     if name == "news_linkage":
         if d.get("applicable") is False:
             return "not_applicable", d.get("why")
@@ -357,41 +362,65 @@ def evaluate(policy, contract, report, card, check_results, scan, csv_files, req
 
 def run(protected, original, contract, out, thresholds, truth=None, adversary=None, label="", specs_path=None):
     protected, original, out = Path(protected), Path(original), Path(out)
-    main, time_col = _time_column(contract)
+    hour_cols = _time_columns(contract)
+    main, time_col = hour_cols[0] if hour_cols else (None, None)
     if main is None:  # no hour-only column: nothing for the order attack to rebuild; red-team the k target table
         main = (contract.get("k_target") or {}).get("table") or next(t for t, s in contract["tables"].items() if s["action"] == "release")
     rid = contract["tables"][main]["record_id"]
     rel = _read(protected / f"{main}.csv")
     rowmap = _read(protected / f"rowmap_{main}.csv")
     rec_ids = rowmap.set_index(rowmap.protected_row.astype(int))["original_record_id"].reindex(range(len(rel))).values
-    orig = _read(original / f"{main}.csv").set_index(rid)
-    orig_dates = pd.Series(orig[time_col].reindex(rec_ids).values).str[:10] if time_col else None
-    joins = {f.stem: _read(f) for f in sorted(protected.glob("*.csv"))
-             if f.stem != main and not f.stem.startswith("rowmap_") and f.stem != "plan"}
-    if time_col:
-        oa, rebuilt = order_attack(rel, orig_dates, main, time_col, joins)
+
+    def released(t):  # a released table, and the original record id of each of its rows
+        if t == main:
+            return rel, rec_ids
+        tab, rm = _read(protected / f"{t}.csv"), _read(protected / f"rowmap_{t}.csv")
+        return tab, rm.set_index(rm.protected_row.astype(int))["original_record_id"].reindex(range(len(tab))).values
+
+    oas, rebuilt = [], {}
+    for t, c in hour_cols:  # every hour-only column, each against its own table's order
+        tab, recs = released(t)
+        orig_dates = pd.Series(_read(original / f"{t}.csv").set_index(contract["tables"][t]["record_id"])[c].reindex(recs).values).str[:10]
+        joins = {f.stem: _read(f) for f in sorted(protected.glob("*.csv")) if f.stem not in (t, "plan") and not f.stem.startswith("rowmap_")}
+        a, rebuilt[(t, c)] = order_attack(tab, orig_dates, t, c, joins)
+        oas.append({"table": t, "column": c, **a})
+    if oas:
+        oa = {**max(oas, key=lambda a: a["share_rows_date_rebuilt"]),
+              "columns_checked": [{k: a.get(k) for k in ("table", "column", "applicable", "why", "share_rows_date_rebuilt")} for a in oas]}
     else:
-        oa, rebuilt = {"applicable": False, "why": "no hour-only column in the release", "share_rows_date_rebuilt": 0.0}, None
+        oa = {"applicable": False, "why": "no hour-only column in the release", "share_rows_date_rebuilt": 0.0}
 
     news = None
-    if time_col and original.name != "health":
+    if hour_cols and original.name != "health":
         news = {"applicable": False, "why": "the news clips describe health visits, and this release holds other data"}
-    elif time_col and adversary and truth:
-        need = [Path(adversary) / "news_clips_health.csv", Path(truth) / "adversary__news_clips_health.csv",
-                Path(truth) / f"{original.name}__{main}.csv"]
-        if all(f.exists() for f in need):
-            news = news_linkage(rel, rebuilt, rec_ids, *map(_read, need), time_col)
-    # a person key: a pseudonym, or a token that repeats within a table (one subject, several rows)
+    elif hour_cols and adversary and truth:
+        runs = []
+        for t, c in hour_cols:
+            need = [Path(adversary) / "news_clips_health.csv", Path(truth) / "adversary__news_clips_health.csv", Path(truth) / f"{original.name}__{t}.csv"]
+            if not all(f.exists() for f in need):
+                runs = None  # an hour column the clips cannot be matched against: the attack did not run
+                break
+            tab, recs = released(t)
+            runs.append({"table": t, "column": c, **news_linkage(tab, rebuilt[(t, c)], recs, *map(_read, need), c)})
+        if runs:
+            news = {**max(runs, key=lambda r: r["share_clips_reidentified"]),
+                    "columns_checked": [{k: r[k] for k in ("table", "column", "clips_with_date_and_hour", "share_clips_reidentified")} for r in runs]}
+    # a person key: a pseudonym, or a token or an identifier kept as it is that repeats within a table (one subject,
+    # several rows). The PET and the detected role come from protect's plan.csv, else from the contract's named rules.
+    plan = _read(protected / "plan.csv").fillna("") if (protected / "plan.csv").exists() else None
+    resolved = {} if plan is None else {(r.table, r.column): (r.role, r.pet) for r in plan.itertuples() if not r.pet.startswith("repair:")}
     kcols = (contract.get("k_target") or {}).get("columns") or [c for c in ["date_of_birth", "sex", "municipality", time_col] if c]
     pf_all = []
-    for t, cols in contract["columns"].items():
+    for t in [t for t, s in contract["tables"].items() if s["action"] == "release"]:
         f = protected / f"{t}.csv"
         if not f.exists():
             continue
         tab = rel if t == main else _read(f)
-        keys = [c for c, r in cols.items() if c in tab.columns and (r["pet"] == "pseudonym" or (r["pet"] == "token" and not tab[c].dropna().is_unique))]
-        fp = [c for c in tab.columns if c in kcols or (c in cols and cols[c]["pet"] in ("age_band", "top_n_exact_else_other", "hour_of_day"))]
-        tc = time_col if t == main and time_col in tab.columns else None
+        rule = {c: resolved.get((t, c), ("", contract["columns"].get(t, {}).get(c, {}).get("pet", ""))) for c in tab.columns}
+        keys = [c for c, (role, pet) in rule.items() if pet == "pseudonym" or (
+            (pet == "token" or (pet == "keep" and role in ID_ROLES)) and not tab[c].dropna().is_unique)]
+        fp = [c for c in tab.columns if c in kcols or rule[c][1] in ("age_band", "top_n_exact_else_other", "hour_of_day")]
+        tc = next((c for tt, c in hour_cols if tt == t), None)
         if keys and (fp or tc):
             r = person_fingerprint(tab, keys[:1], fp, tc)
             pf_all.append({"table": t, **r})
@@ -427,7 +456,7 @@ def run(protected, original, contract, out, thresholds, truth=None, adversary=No
         r["pass"] = {"pass": True, "fail": False}.get(r["status"])
         if r["status"] == "not_applicable":
             r["value"] = None  # the 0.0 an idle attack returns is not a measurement
-    report = {"release": label or str(protected.name), "table": main, "time_column": time_col,
+    report = {"release": label or str(protected.name), "table": main, "time_column": time_col, "time_columns": [list(x) for x in hour_cols],
               "gate": "fail" if attack_failures(results, time_col, thresholds) else "pass",
               "rule": "every attack at or below its threshold or not applicable with a reason; thresholds come from the policy",
               "attacks": results}

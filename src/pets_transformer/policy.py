@@ -2,10 +2,12 @@
 policy whose signature verifies, with a contract the policy allows. Nothing here falls back to a default: every failure
 is a refusal.
 
-The principal is fixed here, not read from the policy: a signed file must not choose who may sign it.
+The principal and the allowed_signers file are fixed here, never read from the policy or from --policy-dir: a signed
+file, or a folder that brings its own allowed_signers, must not choose who may sign it.
 """
 import hashlib
 import json
+import re
 import subprocess
 from pathlib import Path
 
@@ -15,6 +17,8 @@ from .score import ROOT
 DEFAULT_DIR = ROOT / "policy"
 NAMESPACE = "pets-policy"
 PRINCIPAL = "data-steward"
+ALLOWED_SIGNERS = DEFAULT_DIR / "allowed_signers"
+VERIFY_TIMEOUT = 30  # seconds
 FIELDS = ("scenario", "owner_role", "recipient", "purpose", "agreement_ref", "recipient_duties", "enforced_after_release", "attack_thresholds",
           "utility_floor", "k_min", "l_min", "no_k_target", "required_tasks", "attacker_assumption", "allowed_contracts")
 
@@ -48,8 +52,8 @@ def parse(data, scenario):
     if p["k_min"] is None:
         if p["l_min"] is not None or not p["no_k_target"]:
             refuse("a policy without k_min must say why in no_k_target and have no l_min")
-    elif not (isinstance(p["k_min"], int) and isinstance(p["l_min"], int)) or p["no_k_target"]:
-        refuse("k_min and l_min must be integers, with no_k_target null")
+    elif type(p["k_min"]) is not int or type(p["l_min"]) is not int or p["k_min"] < 2 or p["l_min"] < 1 or p["no_k_target"]:
+        refuse("k_min must be an integer of at least 2 and l_min an integer of at least 1, with no_k_target null")
     if not isinstance(p["allowed_contracts"], dict) or not p["allowed_contracts"].get(p["attacker_assumption"]):
         refuse(f"allowed_contracts has no contract for attacker_assumption {p['attacker_assumption']!r}")
     return p
@@ -68,21 +72,27 @@ def load(policy_dir, scenario):
 
 
 def verify(policy_dir, scenario):
-    """Returns (policy, its sha256, the signature's file name). The bytes checked are the bytes parsed."""
+    """Returns (policy, its sha256, the signature's file name, the signing key's fingerprint as ssh-keygen reports it).
+    The bytes checked are the bytes parsed: read once, verified on stdin, parsed from the same buffer."""
     f = _file(policy_dir, scenario)
-    sig, signers = f.with_name(f.name + ".sig"), Path(policy_dir) / "allowed_signers"
-    for need in (f, sig, signers):
+    sig = f.with_name(f.name + ".sig")
+    for need in (f, sig, ALLOWED_SIGNERS):
         if not need.exists():
             refuse(f"{need} is missing")
     data = f.read_bytes()
     try:
-        r = subprocess.run(["ssh-keygen", "-Y", "verify", "-f", str(signers), "-I", PRINCIPAL, "-n", NAMESPACE, "-s", str(sig)],
-                           input=data, capture_output=True)
+        r = subprocess.run(["ssh-keygen", "-Y", "verify", "-f", str(ALLOWED_SIGNERS), "-I", PRINCIPAL, "-n", NAMESPACE, "-s", str(sig)],
+                           input=data, capture_output=True, timeout=VERIFY_TIMEOUT)
+    except subprocess.TimeoutExpired:
+        refuse(f"ssh-keygen did not answer within {VERIFY_TIMEOUT} seconds")
     except OSError as e:
         refuse(f"ssh-keygen could not run ({e})")
     if r.returncode:
         refuse(f"the signature of {f.name} does not verify for {PRINCIPAL}: {r.stderr.decode(errors='replace').strip()}")
-    return parse(data, scenario), sha256(data), sig.name
+    key = re.search(r" key (SHA256:\S+)", r.stdout.decode(errors="replace"))
+    if not key:
+        refuse("ssh-keygen verified the signature but reported no key fingerprint")
+    return parse(data, scenario), sha256(data), sig.name, key.group(1)
 
 
 def check_contract(policy, data):
@@ -93,10 +103,11 @@ def check_contract(policy, data):
     return got
 
 
-def record(policy, policy_sha, signature, contract_sha, files, check_results, report):
+def record(policy, policy_sha, signature, fingerprint, contract_sha, files, check_results, report):
     """release_record.json: what left, under which signed policy, and what stays at risk. files: path -> sha256."""
     checks = {n.removesuffix(".json"): o.get("per_join") or o["result"] for n, o in check_results.items()}
     return {"scenario": policy["scenario"], "gate": report["gate"], "policy_sha256": policy_sha, "signature_file": signature,
+            "signing_key_fingerprint": fingerprint,
             "attacker_assumption": policy["attacker_assumption"], "contract_sha256": contract_sha, "files_sha256": files,
             "recipient": policy["recipient"], "purpose": policy["purpose"], "agreement_ref": policy["agreement_ref"],
             "recipient_duties": policy["recipient_duties"], "enforced_after_release": policy["enforced_after_release"],

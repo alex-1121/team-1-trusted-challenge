@@ -29,7 +29,7 @@ def main(argv=None):
                    help="detector: word lists only; word lists with the model flagging columns for review (advisor); or "
                         "word lists then the model labels the rest (hybrid). Default: env PETS_SEMANTIC, else advisor "
                         "when the model is installed")
-    b.add_argument("--policy-dir", default=policy.DEFAULT_DIR, help="folder with <scenario>.policy.json, its .sig and allowed_signers (default: policy/)")
+    b.add_argument("--policy-dir", default=policy.DEFAULT_DIR, help="folder with <scenario>.policy.json and its .sig (default: policy/); allowed_signers is always policy/allowed_signers")
     q = sub.add_parser("score", help="run the organisers' scorecard and check, write a summary")
     q.add_argument("--original", required=True)
     q.add_argument("--protected", required=True)
