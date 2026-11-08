@@ -4,9 +4,9 @@ Since AI Hackathon 2026, Turku, 6-8 November. TrustED challenge: protect the dat
 
 ## What this tool does
 
-You give it a synthetic dataset and a sharing scenario (who gets the data, and why). In one command it:
+It takes a dataset and a sharing scenario (who gets the data, and why). In one command it:
 
-1. **Detects** what every column holds (a name, a birth date, a diagnosis code, ...). It reads the values only, never the column names.
+1. **Detects** what every column holds (a name, a birth date, a diagnosis code, ...). It reads the values only, never the column names, so it also works when headers are hidden (the `unseen` dataset names its columns `c01` to `c26`).
 2. **Chooses** a privacy-enhancing transformation (PET) for each column, such as dropping it, turning a birth date into a 10-year age band, or replacing an ID with a keyed token.
 3. **Transforms** the data, then fixes the rows that are still easy to single out.
 4. **Measures** the result with the organisers' own scorecard (`pets-eval`) and with extra attacks of our own.
