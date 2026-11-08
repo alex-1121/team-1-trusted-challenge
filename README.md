@@ -244,6 +244,13 @@ On HEALTH-S1, our own red team broke an earlier release that the scorecard had r
 
 The full write-up, with every number and the file it comes from: `docs/technical-details.md`.
 
+## Organiser checks
+
+- Our labels for the unseen export are on main at `pets_submission/unseen_field_labels.csv`.
+- The HEALTH-S1 protected tables with their row maps are on the private branch `pets-submission`. They are never on main, so the source zip carries no row maps.
+- Organisers who want to run the hidden-attacker check can be added to the repo, or can ask the team.
+- We did not do the customer_service redaction.
+
 ---
 
 ## What is in this repo
