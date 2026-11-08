@@ -246,9 +246,8 @@ The full write-up, with every number and the file it comes from: `docs/technical
 
 ## Organiser checks
 
-- Our labels for the unseen export are on main at `pets_submission/unseen_field_labels.csv`.
-- The HEALTH-S1 protected tables with their row maps are on the private branch `pets-submission`. They are never on main, so the source zip carries no row maps.
-- Organisers who want to run the hidden-attacker check can be added to the repo, or can ask the team.
+- `pets_submission/` holds what the organisers' guide asks for (`context/proving-ground/docs/EVALUATION.md`, "Optional organiser checks"): our labels for the unseen export (`unseen_field_labels.csv`) and the HEALTH-S1 protected tables with their row maps (`health/`). See `pets_submission/README.md`.
+- The repository is private, and the row maps must never be published. `.gitattributes` keeps the protected tables, the row maps and the release record out of the source zip.
 - We did not do the customer_service redaction.
 
 ---
