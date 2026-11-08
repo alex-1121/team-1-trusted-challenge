@@ -1,6 +1,6 @@
 # Organiser reply to the team's questions, 7 November 2026
 
-Source: reply from the challenge organisers to questions the team sent, received 2026-11-07, pasted by Arda. Verbatim below; our reading of it is in `plans/2026-11-07-release-gate.md` and the README, not here.
+Source: reply from the challenge organisers to questions the team sent, received 2026-11-07, pasted by Arda. Verbatim below; our reading of it is in `plans/2026-11-07-release-gate.md` at commit `7d4a45c` and the README, not here.
 
 ---
 

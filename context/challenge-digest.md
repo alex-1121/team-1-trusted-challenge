@@ -65,7 +65,7 @@ Scorecard maths: privacy = 1 - (0.5 x worst risk + 0.5 x mean risk). Composite =
 
 Prizes for this challenge: EUR 2,000 / 750 / 250 for the top three.
 
-Source: `proving-ground/START_HERE.md` ("How you are measured"), `proving-ground/docs/EVALUATION.md`, `brief.md` section 06, `../team/plan.md` (Judging, prizes).
+Source: `proving-ground/START_HERE.md` ("How you are measured"), `proving-ground/docs/EVALUATION.md`, `brief.md` section 06, `team/plan.md` at commit `7d4a45c` (Judging, prizes).
 
 ## Baselines to beat
 
@@ -84,7 +84,7 @@ Source: `proving-ground/README.md`, `proving-ground/docs/BENCHMARK.md`.
 - Licence line on anything we publish: "TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0)".
 - Say what the guarantee is. "Anonymised" and "differentially private" need a method and parameters.
 
-Source: `../team/submission-checklist.md`, `../team/plan.md`, `proving-ground/START_HERE.md` ("Rules of the road"), `proving-ground/docs/EVALUATION.md`.
+Source: `../team/submission-checklist.md`, `team/plan.md` at commit `7d4a45c`, `proving-ground/START_HERE.md` ("Rules of the road"), `proving-ground/docs/EVALUATION.md`.
 
 ## Quickstart commands
 

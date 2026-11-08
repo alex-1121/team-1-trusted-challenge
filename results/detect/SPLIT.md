@@ -1,6 +1,6 @@
 # Detector held-out split
 
-Written before the held-out run. Source: issue #15, `plans/2026-11-07-health-s1-spec.md`.
+Written before the held-out run. Source: issue #15, `plans/2026-11-07-health-s1-spec.md` at commit `7d4a45c`.
 
 ## Tuning set (rules and thresholds were tuned while looking at these)
 

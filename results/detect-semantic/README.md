@@ -1,6 +1,6 @@
 # Column-type model: committed evidence
 
-What each file here is. The model and its rules: `plans/2026-11-07-eu-column-types.md`. How the data is split and when the test split runs: `SPLIT.md`. Every JSON written by `scripts/semantic/evaluate.py` also records the commit, the encoder revision, the thresholds and the time. No file here holds a data value: only column names, labels, probabilities, counts and scores.
+What each file here is. The model and its rules: `plans/2026-11-07-eu-column-types.md` at commit `7d4a45c`. How the data is split and when the test split runs: `SPLIT.md`. Every JSON written by `scripts/semantic/evaluate.py` also records the commit, the encoder revision, the thresholds and the time. No file here holds a data value: only column names, labels, probabilities, counts and scores.
 
 | File | What it holds | Written by |
 |---|---|---|

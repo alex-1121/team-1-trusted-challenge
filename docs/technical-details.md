@@ -6,7 +6,7 @@ The full write-up that used to be the README: how the detector, the selector, th
 
 We build a working tool that detects what each column and text field of a synthetic dataset contains. It picks a privacy-enhancing transformation (PET) per data type and sharing scenario, and transforms the data. Then it shows, with measured numbers, what risk was removed and what utility remains.
 
-Status (2026-11-07): HEALTH-S1 is the scored scenario; the build detects, selects, protects, repairs, scores and red-teams in one command, and refuses a release that fails an attack or its purpose (`plans/2026-11-07-release-gate.md`). A multilingual column-type model (`plans/2026-11-07-eu-column-types.md`) runs in advisor mode: the word lists still set every label, the model only flags columns for a person to review (`results/detect-semantic/advisor.json`).
+Status (2026-11-07): HEALTH-S1 is the scored scenario; the build detects, selects, protects, repairs, scores and red-teams in one command, and refuses a release that fails an attack or its purpose (`plans/2026-11-07-release-gate.md` at commit `7d4a45c`). A multilingual column-type model (`plans/2026-11-07-eu-column-types.md` at commit `7d4a45c`) runs in advisor mode: the word lists still set every label, the model only flags columns for a person to review (`results/detect-semantic/advisor.json`).
 
 ## The demo in five items
 
@@ -26,7 +26,7 @@ The target was macro-F1 above 0.65, the organisers' rule baseline B1 (`results/d
 
 The same detector labelled the organisers' unlabelled HR export: 26 columns in `results/detect/unseen_field_labels.csv`, format `column,privacy_role,subtype`. The organisers hold the answers, so we have no score for it.
 
-**A multilingual model that flags the columns the word lists may have missed** (`plans/2026-11-07-eu-column-types.md`). The word lists know Finnish names and towns; a German surname or a Polish occupation falls through to "category", which is treated as harmless. A small multilingual sentence encoder (`intfloat/multilingual-e5-small`, MIT licence, runs offline on CPU) plus a classifier head trained only on fake data gives such columns one of ten types with calibrated probabilities. We tested two ways to use it. In hybrid mode a word-list match stands and the model labels the fall-through columns. Results, development data first and a test split run once (`results/detect-semantic/SPLIT.md`):
+**A multilingual model that flags the columns the word lists may have missed** (`plans/2026-11-07-eu-column-types.md` at commit `7d4a45c`). The word lists know Finnish names and towns; a German surname or a Polish occupation falls through to "category", which is treated as harmless. A small multilingual sentence encoder (`intfloat/multilingual-e5-small`, MIT licence, runs offline on CPU) plus a classifier head trained only on fake data gives such columns one of ten types with calibrated probabilities. We tested two ways to use it. In hybrid mode a word-list match stands and the model labels the fall-through columns. Results, development data first and a test split run once (`results/detect-semantic/SPLIT.md`):
 
 | Check (test split) | Word lists only | Word lists + model |
 |---|---|---|
@@ -135,7 +135,7 @@ Keeping the patient pseudonym the organisers suggest fails it: 0.2935 of patient
 | pub-s3-auto | selector | 1.0 | 0.2131 | 0.3734 | fail (utility) |
 | pub-s3 | selector, then reviewed | 1.0 | 0.5547 | 0.7327 | fail (utility) |
 
-**Open for the team** (details and costs in `plans/2026-11-07-release-gate.md`): keep the lab join flag (0.9866, every visit with labs in a group of at least 5 such visits) or drop it (0.992, 0.055 of those visits in smaller groups, `results/health-s1-noflag-build/checks/joined_k.json`); ship the informed contract for a less trusted recipient; the gate thresholds are our choice. The hand-written contract scores 0.0011 higher than the selected one but leaves 0.121 of visits with labs in groups of fewer than 5 and lets the informed attacker single out 0.1599 of visits (`results/health-s1-handwritten-build/checks/`).
+**Open for the team** (details and costs in `plans/2026-11-07-release-gate.md` at commit `7d4a45c`): keep the lab join flag (0.9866, every visit with labs in a group of at least 5 such visits) or drop it (0.992, 0.055 of those visits in smaller groups, `results/health-s1-noflag-build/checks/joined_k.json`); ship the informed contract for a less trusted recipient; the gate thresholds are our choice. The hand-written contract scores 0.0011 higher than the selected one but leaves 0.121 of visits with labs in groups of fewer than 5 and lets the informed attacker single out 0.1599 of visits (`results/health-s1-handwritten-build/checks/`).
 
 **Residual risk** (`docs/guarantee-and-residual-risk.md`): an attacker who already knows a visit's diagnosis group, age band, municipality and arrival hour singles out one row for 0.0971 of the visits, 0.9294 of them correctly (`results/health-s1-build/checks/informed_attacker.json`), and sees that visit's length of stay, temperature and lab values. `contracts/HEALTH-S1-informed.json` closes this (0.0) at composite 0.9647 (`results/health-s1-informed-build/`); the default relies on the research environment and the agreement with a known recipient instead. Neither is fit for public release.
 

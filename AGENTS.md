@@ -49,7 +49,7 @@ Goal: never lose or overwrite a teammate's work. Commit and push only when the t
 
 ## Where things go
 
-- Plans and notes: `plans/`, one markdown per plan, see `plans/README.md`.
+- Plans and notes: the `plans/` folder was removed before submission; the plans written during the event are at commit `7d4a45c` (`git show 7d4a45c:plans/README.md`). Put a new plan in a PR description.
 - Decisions: a row in `decisions.md`.
 - Context you discover about the challenge or the data: `context/`, with a "Source:" line.
 - Project index: the "Layout" table in `README.md` has one row per top-level file and folder. When you add, rename, move or delete one, update its row in the same commit. Files inside `context/` and `team/` are indexed in `context/README.md` instead; update that file when you change one of them.
