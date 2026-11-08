@@ -47,6 +47,7 @@ Each row names the model and the teammate who ran it. "Fable" is Claude Fable 5.
 | 2026-11-07 | After the S1 pick: the arrival-time trap named (H-U8 needs a clock time while `arrival_ts` is a scored quasi-identifier; coarser kills H-U8, finer leaves rows unique); run one scorecard on a hand-made protected copy before writing any program | Hour-only escape was unverified | Fable with a blind Opus checker, run by Arda | PROPOSED, then done as the gate run (PR #11) | `plans/2026-11-06-build-idea-candidates.md` at commit `7d4a45c` review section |
 | 2026-11-07 | Repository audit: about 75 percent fit to the challenge, 70 percent to the current objectives; P1 and P2 fixes listed | Pre-submission check | Codex GPT-6 Astra, run by NKizo | findings, OPEN | `plans/review_by_astra.md` at commit `7d4a45c` |
 | 2026-11-07 | Handover of the row maps to the organisers: route A a private upload the organisers name, route B an AES-256 archive with the password sent on another channel | Row maps must reach the organisers without going public | Fable (deliverables ticket F) | PROPOSED, team picks after the Discord answer | `docs/pets-submission-handover.md` |
+| 2026-11-08 | Astra audit status after the gate change: findings 1 (withdrawn table), 2 (identifier scan) and 6 (missing required task) are fixed and tested in `tests/test_gate.py`; 3 (detection downgrades person data without person markers), 4 (HEALTH-S3 model validation overlaps training and test identities), 5 (declared threats untested outside HEALTH-S1), 7 (the standalone `protect` command skips repair and the gate) and 8 (presentation lags evidence) stay open | Supersedes the "findings, OPEN" row; the audit file left main in PR #51 | Opus 5.5, run by Arda | PARTLY FIXED | `plans/review_by_astra.md` at commit `7d4a45c`; `tests/test_gate.py` |
 
 ### 2b. The spec (Fable, run by Arda, unattended, 2026-11-07, "every choice open to the team")
 
@@ -104,7 +105,7 @@ Each row names the model and the teammate who ran it. "Fable" is Claude Fable 5.
 - Code licence (MIT proposed).
 - Lab-presence flag in the k target, the informed-attacker contract as default or not, and the gate thresholds (all built by Opus, all marked open for the team).
 - Row-map handover route (A or B), after the organisers answer on Discord.
-- Astra's P1 and P2 findings.
+- Astra's open findings 3, 4, 5, 7 and 8 (see the 2026-11-08 row in section 2).
 - Sunday before 10:00 Turku time: record and upload the video, fill the submission form, fresh-clone install test, make the repo public.
 
 To add a row: append to the right section with the date, the decision with its exact value, the reason in one clause, who (a teammate by name, or the model and who ran it), the status word, and the source. Never edit an old row; add a new one that supersedes it. A team decision also needs its row in `decisions.md`.

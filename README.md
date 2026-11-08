@@ -240,7 +240,7 @@ Scores from the organisers' `pets-eval` scorecard, 0 to 1, higher is better. The
 
 Sources: "before" from `baseline-scores/<dataset>_<SCENARIO>_<recipient>_raw.json`, "after" from `results/<scenario>-build/scorecard.json` (for example `results/health-s1-build/scorecard.json`). Composite is the organisers' weighted harmonic mean of privacy (weight 30) and utility (weight 25).
 
-On HEALTH-S1, our own red team broke an earlier release that the scorecard had rated 0.9709 (`results/redteam/before-7cf541b.json`). The current release passes all five of our extra attacks (`results/health-s1-build/redteam.json`). What an attacker can still do, in plain words: `docs/guarantee-and-residual-risk.md` and `LIMITATIONS.md`.
+On HEALTH-S1, our own red team broke an earlier release that the scorecard had rated 0.9709 (`results/redteam/before-7cf541b.json`). The current release passes the four of our extra attacks that apply; the fifth, the person fingerprint, does not apply because no quasi-identifier sits beside the visit code (`results/health-s1-build/redteam.json`). What an attacker can still do, in plain words: `docs/guarantee-and-residual-risk.md` and `LIMITATIONS.md`.
 
 The full write-up, with every number and the file it comes from: `docs/technical-details.md`.
 
