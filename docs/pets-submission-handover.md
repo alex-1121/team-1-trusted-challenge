@@ -4,7 +4,7 @@ The organisers may ask, during the event, for a `pets_submission/` folder so the
 
 ## What the folder holds
 
-`python -m pets_transformer.cli build --scenario HEALTH-S1` fills it (`README.md`, "How to run"), and only when the red-team gate and the utility check pass (`results/health-s1-build/redteam.json`):
+`python -m pets_transformer.cli build --scenario HEALTH-S1` fills it (`README.md`, "Make a protected copy of the data for a scenario"; every option in `technical-details.md`, "How to run (every option)"), and only when the red-team gate and the utility check pass (`results/health-s1-build/redteam.json`):
 
 - `pets_submission/health/ed_visits.csv` and `pets_submission/health/lab_results.csv`: the protected tables. Not committed.
 - `pets_submission/health/rowmap_ed_visits.csv` and `pets_submission/health/rowmap_lab_results.csv`: one row per protected row, giving the original record id. Not committed.
