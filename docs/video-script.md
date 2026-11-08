@@ -60,4 +60,4 @@ Our word lists know Finnish names, so a German surname looks harmless to them. A
 
 Numbers are rounded for speech. The scorecard is our own self-assessment and is separate from the official judging score. The 0.60 to 0.77 score is from the model labelling on its own (hybrid mode); the shipped default is advisor mode, where it only flags.
 
-<!-- spoken words: 393 (counted without the heading, the intro line, screen cues and the sources section) -->
+<!-- spoken words: 364 (counted without the heading, the intro line, screen cues and the sources section) -->
