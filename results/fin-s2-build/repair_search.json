@@ -1,0 +1,44 @@
+{
+  "target": {
+    "table": "card_transactions",
+    "k": 5,
+    "l": 1,
+    "columns": [
+      "amount_eur"
+    ],
+    "linked": {},
+    "reason": "Every released card_transactions row shares its kept quasi-identifiers (amount_eur) with at least 4 other rows; only the rows that miss the target are coarsened, and rows still at risk get those columns suppressed."
+  },
+  "ladder": {},
+  "floor": 0.85,
+  "rule": "best composite among orders with no row at risk and every required task at or above the floor",
+  "chosen": "",
+  "orders": [
+    {
+      "order": [],
+      "name": "",
+      "tasks": {
+        "FIN-U1": 0.7032123721410322,
+        "FIN-U4": null,
+        "FIN-U6": null
+      },
+      "privacy": 0.999,
+      "utility": 0.2344,
+      "composite": 0.4024,
+      "at_risk_after": 0,
+      "rows_released": 398408,
+      "steps": [
+        {
+          "step": "suppress",
+          "column": "amount_eur",
+          "rows_changed": 22615
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    }
+  ]
+}

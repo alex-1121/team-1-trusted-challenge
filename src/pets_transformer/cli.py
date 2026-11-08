@@ -29,6 +29,9 @@ def main(argv=None):
                    help="detector: word lists only; word lists with the model flagging columns for review (advisor); or "
                         "word lists then the model labels the rest (hybrid). Default: env PETS_SEMANTIC, else advisor "
                         "when the model is installed")
+    b.add_argument("--skip-signature", action="store_true",
+                   help="demo runs only: read policy/<scenario>.policy.json without checking its signature; the contract "
+                        "hash and every limit still apply, and release_record.json says the signature was skipped")
     q = sub.add_parser("score", help="run the organisers' scorecard and check, write a summary")
     q.add_argument("--original", required=True)
     q.add_argument("--protected", required=True)
@@ -59,6 +62,10 @@ def main(argv=None):
     s.add_argument("--proving-ground", default=score.PROVING_GROUND)
     s.add_argument("--out", required=True, help="contract JSON to write")
     s.add_argument("--evidence", help="ablation evidence JSON to write")
+    d = sub.add_parser("draft-policy", help="write an unsigned policy/<scenario>.policy.json for a selected contract, for review")
+    d.add_argument("--scenario", required=True)
+    d.add_argument("--contract", required=True, help="the contract JSON the policy allows (pinned by its sha256)")
+    d.add_argument("--proving-ground", default=score.PROVING_GROUND)
     a = ap.parse_args(argv)
     if a.cmd == "protect":
         c = contract.load(a.contract)
@@ -70,7 +77,7 @@ def main(argv=None):
         print(f"wrote {len(plan)} plan rows to {a.out}")
     elif a.cmd == "build":
         plan = build.run(a.scenario, a.original, a.out, a.results, a.submission, a.pets_eval, a.contract,
-                         semantic=a.semantic)
+                         semantic=a.semantic, skip_signature=a.skip_signature)
         print(f"built {a.scenario}: {len(plan)} plan rows, results in {a.results or 'results/' + a.scenario.lower() + '-build'}")
     elif a.cmd == "checks":
         checks.run(a.protected, a.original, a.out, a.truth, sys.argv[1:] if argv is None else argv, contract.load(a.contract))
@@ -85,6 +92,16 @@ def main(argv=None):
                 Path(path).parent.mkdir(parents=True, exist_ok=True)
                 Path(path).write_text(json.dumps(obj, indent=2, ensure_ascii=False) + "\n")
         print(f"wrote {a.out}")
+    elif a.cmd == "draft-policy":
+        import json
+        target = policy.POLICY_DIR / f"{a.scenario}.policy.json"
+        if target.exists():
+            ap.error(f"{target} exists; a draft never overwrites a policy")
+        scen = selector.pio.get_scenario(a.scenario, Path(a.proving_ground))
+        if not scen:
+            ap.error(f"no scenario {a.scenario} in the proving ground's scenarios.json")
+        target.write_text(json.dumps(policy.draft(scen, Path(a.contract).read_bytes()), indent=2, ensure_ascii=False) + "\n")
+        print(f"wrote {target} (unsigned; review it, then build with --skip-signature or have the steward sign it)")
     elif a.cmd == "redteam":
         c = contract.load(a.contract)
         rep = redteam.run(a.protected, a.original, c, Path(a.out).parent, policy.load(c["scenario"])["attack_thresholds"],

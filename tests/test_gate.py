@@ -393,8 +393,8 @@ def world(tmp_path, monkeypatch, keys):
     monkeypatch.setattr(build.score, "run", scorecard)
     out, results, submission = tmp_path / "o", tmp_path / "r", tmp_path / "s"
 
-    def go(contract_path=cpath):
-        return build.run("TOY-S1", out=out, results=results, submission=submission, contract_path=contract_path)
+    def go(contract_path=cpath, **kw):
+        return build.run("TOY-S1", out=out, results=results, submission=submission, contract_path=contract_path, **kw)
     return SimpleNamespace(go=go, out=out, results=results, submission=submission, pdir=pdir, pfile=pfile, cpath=cpath, contract=contract,
                            root=tmp_path, signers=signers)
 
@@ -491,6 +491,21 @@ def test_valid_signature_builds(world):
 def test_unsigned_policy_is_refused(world):
     (world.pdir / "TOY-S1.policy.json.sig").unlink()
     assert_refused(world, "sig is missing")
+
+
+def test_skip_signature_builds_an_unsigned_policy_and_the_record_says_so(world):
+    (world.pdir / "TOY-S1.policy.json.sig").unlink()
+    world.go(skip_signature=True)
+    rec = json.loads((world.submission / "release_record.json").read_text())
+    assert rec["signature_file"] == "skipped" and rec["signing_key_fingerprint"] == "skipped"
+    assert rec["policy_sha256"] == policy.sha256(world.pfile.read_bytes())
+
+
+def test_skip_signature_still_refuses_a_contract_the_policy_does_not_allow(world):
+    world.cpath.write_bytes(world.cpath.read_bytes() + b" ")
+    with pytest.raises(SystemExit, match="is not the one allowed"):
+        world.go(skip_signature=True)
+    assert not world.submission.exists()
 
 
 def test_missing_allowed_signers_is_refused(world):
@@ -994,3 +1009,25 @@ def test_log_build_appends_one_line_per_gated_build(tmp_path):
     assert [r["gate"] for r in rows] == ["fail", "pass"]
     assert rows[0]["reasons"] == ["news_linkage above threshold"] and rows[0]["scenario"] == "HEALTH-S1"
     assert all(r["utc"].endswith("Z") for r in rows)
+
+
+SCEN = {"id": "TOY-S9", "dataset": "toy_set", "recipient": "r", "purpose": "p", "utility_requirements": ["U1", "U2"]}
+
+
+def test_a_drafted_policy_pins_the_contract_and_copies_k_and_l_from_its_target():
+    data = json.dumps({"k_target": {"k": 5, "l": 2}}).encode()
+    p = policy.draft(SCEN, data)
+    assert p["allowed_contracts"] == {"default": policy.sha256(data)} and (p["k_min"], p["l_min"], p["no_k_target"]) == (5, 2, None)
+    assert p["required_tasks"] == ["U1", "U2"] and p["attack_thresholds"] == policy.DRAFT_THRESHOLDS
+    assert policy.check_contract(p, data) == policy.sha256(data)
+
+
+def test_a_drafted_policy_without_a_k_target_says_why_and_still_parses():
+    p = policy.draft(SCEN, b"{}")
+    assert p["k_min"] is None and p["l_min"] is None and p["no_k_target"]
+
+
+def test_draft_policy_never_overwrites_a_policy(capsys):
+    with pytest.raises(SystemExit):
+        cli.main(["draft-policy", "--scenario", "HEALTH-S1", "--contract", "contracts/HEALTH-S1.json"])
+    assert "never overwrites" in capsys.readouterr().err

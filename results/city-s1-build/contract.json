@@ -1,0 +1,146 @@
+{
+  "scenario": "CITY-S1",
+  "dataset": "smart_city",
+  "generated_by": "pets_transformer.selector",
+  "tolerance": 0.05,
+  "risk_line": 0.05,
+  "recipient": "Anyone (open data portal)",
+  "purpose": "Publish hourly footfall by zone for businesses, events and citizens.",
+  "trust_level": "public",
+  "threat_model": "Outsider with public plate_sightings and knowledge of when a neighbour walks home.",
+  "required_tasks": [
+    "CITY-U1",
+    "CITY-U5"
+  ],
+  "tables": {
+    "anpr_parking": {
+      "action": "withhold",
+      "record_id": "event_id",
+      "reason": "Withheld: without it every required task stays within 0.05 of the reference (CITY-U1 1.0000, CITY-U5 1.0000)."
+    },
+    "footfall_15min": {
+      "action": "withhold",
+      "record_id": "count_id",
+      "reason": "Withheld: without it every required task stays within 0.05 of the reference (CITY-U1 1.0000, CITY-U5 1.0000)."
+    },
+    "sensors": {
+      "action": "withhold",
+      "record_id": "sensor_id",
+      "reason": "Withheld: without it every required task stays within 0.05 of the reference (CITY-U1 1.0000, CITY-U5 1.0000)."
+    },
+    "wifi_probes": {
+      "action": "release",
+      "record_id": "probe_id",
+      "reason": "Released: without it CITY-U1 0.0000, CITY-U5 0.0000."
+    }
+  },
+  "columns": {
+    "wifi_probes": {
+      "probe_id": {
+        "pet": "drop",
+        "reason": "Detected record_key (RECORD_ID). Candidates tried: drop: outside 0.05 (utility CITY-U1 0.7728, CITY-U5 0.8485; risk 0.0006); keyed token: outside 0.05 (utility CITY-U1 0.7728, CITY-U5 0.8485; risk 0.0006; gain over drop 0.0000). Chosen: drop (risk 0.0006), no candidate stayed within the tolerance, so the best scores were taken; risk line 0.05 met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name). Drop breaks a required task, so the gain rule does not apply."
+      },
+      "sensor_id": {
+        "pet": "keep",
+        "reason": "Detected quasi_identifier (LOCATION_NAME). Candidates tried: drop: outside 0.05 (utility CITY-U1 0.0000, CITY-U5 0.0000; risk 0.0000); 8 most common, rest other: outside 0.05 (utility CITY-U1 0.0000, CITY-U5 0.9980; risk 0.0000; gain over drop 0.9980); exact: within 0.05 (utility CITY-U1 1.0000, CITY-U5 1.0000; risk 0.0000; gain over drop 1.0000). Chosen: exact (risk 0.0000), highest mean utility among the candidates within 0.05 of the reference and under the risk line 0.05 (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name). Drop breaks a required task, so the gain rule does not apply. After the k repair, risk on the knowable columns of wifi_probes (sensor_id, ts) is 0.0000: line met."
+      },
+      "ts": {
+        "pet": "date_hour",
+        "reason": "Detected quasi_identifier (TIMESTAMP). Candidates tried: drop: outside 0.05 (utility CITY-U1 0.0000, CITY-U5 0.0000; risk 0.0000); month: outside 0.05 (utility CITY-U1 0.0000, CITY-U5 0.0000; risk 0.0000; gain over drop 0.0000); ISO week: outside 0.05 (utility CITY-U1 0.0000, CITY-U5 0.0000; risk 0.0000; gain over drop 0.0000); hour of day: outside 0.05 (utility CITY-U1 0.0000, CITY-U5 0.0000; risk 0.0000; gain over drop 0.0000); date: outside 0.05 (utility CITY-U1 0.0000, CITY-U5 0.7917; risk 0.0000; gain over drop 0.7917); date and hour: outside 0.05 (utility CITY-U1 0.7728, CITY-U5 0.8485; risk 0.0006; gain over drop 0.8485). Chosen: date and hour (risk 0.0006), no candidate stayed within the tolerance, so the best scores were taken; risk line 0.05 met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name). Drop breaks a required task, so the gain rule does not apply. After the k repair, risk on the knowable columns of wifi_probes (sensor_id, ts) is 0.0000: line met."
+      },
+      "mac": {
+        "pet": "token",
+        "params": {
+          "prefix": "T"
+        },
+        "reason": "Detected technical_identifier (MAC_ADDRESS). Candidates tried: drop: outside 0.05 (utility CITY-U1 0.0000, CITY-U5 0.0000; risk 0.0006); keyed token: outside 0.05 (utility CITY-U1 0.7728, CITY-U5 0.8485; risk 0.0006; gain over drop 0.8485). Chosen: keyed token (risk 0.0006), no candidate stayed within the tolerance, so the best scores were taken; risk line 0.05 met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name). Drop breaks a required task, so the gain rule does not apply. A keyed HMAC-SHA256 token keeps joins and carries no order, which a sequential id would give back."
+      },
+      "rssi_dbm": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (MEASUREMENT). Candidates tried: drop: outside 0.05 (utility CITY-U1 0.7728, CITY-U5 0.8485; risk 0.0006); kept: outside 0.05 (utility CITY-U1 0.7728, CITY-U5 0.8485; risk 0.0006; gain over drop 0.0000). Chosen: drop (risk 0.0006), no candidate stayed within the tolerance, so the best scores were taken; risk line 0.05 met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name). Drop breaks a required task, so the gain rule does not apply."
+      },
+      "ssid_probed": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried: drop: outside 0.05 (utility CITY-U1 0.7728, CITY-U5 0.8485; risk 0.0006); kept: outside 0.05 (utility CITY-U1 0.7728, CITY-U5 0.8485; risk 0.0006; gain over drop 0.0000). Chosen: drop (risk 0.0006), no candidate stayed within the tolerance, so the best scores were taken; risk line 0.05 met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name). Drop breaks a required task, so the gain rule does not apply."
+      }
+    }
+  },
+  "roles": {
+    "wifi_probes": {
+      "quasi_identifier": {
+        "pet": "drop",
+        "reason": "default for a quasi identifier the contract does not name"
+      },
+      "technical_identifier": {
+        "pet": "drop",
+        "reason": "default for a technical identifier the contract does not name"
+      },
+      "sensitive_attribute": {
+        "pet": "keep",
+        "reason": "default for a sensitive attribute the contract does not name"
+      },
+      "free_text": {
+        "pet": "drop",
+        "reason": "default for a free text the contract does not name"
+      },
+      "non_sensitive": {
+        "pet": "keep",
+        "reason": "default for a non sensitive the contract does not name"
+      },
+      "record_key": {
+        "pet": "token",
+        "params": {
+          "prefix": "T"
+        },
+        "reason": "default for a record key the contract does not name"
+      },
+      "direct_identifier": {
+        "pet": "drop",
+        "reason": "default for a direct identifier the contract does not name"
+      }
+    }
+  },
+  "k_target": {
+    "table": "wifi_probes",
+    "k": 5,
+    "l": 1,
+    "columns": [
+      "sensor_id",
+      "ts"
+    ],
+    "linked": {},
+    "ladder": {
+      "sensor_id:set": {
+        "column": "sensor_id",
+        "op": "set",
+        "value": "other",
+        "reason": "At-risk rows only: place becomes other."
+      },
+      "ts:to_day": {
+        "column": "ts",
+        "op": "to_day",
+        "reason": "At-risk rows only: hour dropped, date kept."
+      }
+    },
+    "reason": "Every released wifi_probes row shares its kept quasi-identifiers (sensor_id, ts) with at least 4 other rows; only the rows that miss the target are coarsened, and rows still at risk get those columns suppressed."
+  },
+  "k_columns": [
+    "sensor_id",
+    "ts"
+  ],
+  "fitness": {
+    "trust_level": "public",
+    "k": 5,
+    "tables": {
+      "wifi_probes": {
+        "n_rows": 585525,
+        "columns": [
+          "sensor_id",
+          "ts"
+        ],
+        "share_k_below_5": 0.0
+      }
+    },
+    "rule": "Share of the released rows whose combination of every kept value (every kept column except keyed tokens and free text) is shared by fewer than 5 rows, on the final release after the k repair. Reported for the fit-for-sharing statement; it decides nothing in selection."
+  }
+}

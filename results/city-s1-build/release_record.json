@@ -1,0 +1,62 @@
+{
+  "scenario": "CITY-S1",
+  "gate": "pass",
+  "policy_sha256": "3b20e2d6fc90a45bf2c55a236db3193949540373a32ddc139b93802aa9d31430",
+  "signature_file": "skipped",
+  "signing_key_fingerprint": "skipped",
+  "attacker_assumption": "default",
+  "contract_sha256": "7fd13fcdb938ee02b637448f1133dff555433c377ff5d6708729c14d903afeae",
+  "files_for_recipient": {
+    "smart_city/wifi_probes.csv": "31ca08cd4b24f3f349708e115adb574b31cf8171d55411a43bfc8dd58148afbf",
+    "unseen_field_labels.csv": "ec0c4ce57f19ec555562ab263beb263dcf6792856b46c154a5f152033d3ee156",
+    "smart_city_field_labels.csv": "9883009deb13114724dbcaffb873dcf2250ce5b763644ae1dcb4ce360c239de9"
+  },
+  "files_for_organiser_scoring_only": {
+    "smart_city/rowmap_wifi_probes.csv": "d53d8410a405d127aa676b58beded71d70b0509ff835f4a3f55ad69d9cf66f07"
+  },
+  "row_maps": "The row maps link each released row to its original record: they go to the organisers for scoring only and never to the recipient.",
+  "recipient": "Anyone (open data portal)",
+  "purpose": "Publish hourly footfall by zone for businesses, events and citizens.",
+  "agreement_ref": "none: CITY-S1 is a synthetic proving-ground scenario, no real agreement exists",
+  "recipient_duties": [
+    "No re-identification of any person in the release.",
+    "No linkage with outside data about the people in the release."
+  ],
+  "enforced_after_release": "none",
+  "residual_risks": {
+    "checks": {
+      "informed_attacker": {
+        "protected": {
+          "n_attacker_rows": 585525,
+          "n_singled_out": 0,
+          "n_correct": 0,
+          "singled_out_rate": 0.0,
+          "correct_among_singled_out": null,
+          "correct_rate": 0.0
+        },
+        "protected_counting_generalised_rows": {
+          "n_attacker_rows": 585525,
+          "n_singled_out": 0,
+          "n_correct": 0,
+          "singled_out_rate": 0.0,
+          "correct_among_singled_out": null,
+          "correct_rate": 0.0
+        },
+        "original_same_facts": {
+          "n_attacker_rows": 585525,
+          "n_singled_out": 38,
+          "n_correct": 38,
+          "singled_out_rate": 0.0001,
+          "correct_among_singled_out": 1.0,
+          "correct_rate": 0.0001
+        }
+      }
+    },
+    "attacks_not_applicable": {
+      "order_attack": "no hour-only column in the release",
+      "news_linkage": "no hour-only column in the release",
+      "person_fingerprint": "person key released, but no per-person quasi-identifier in this table",
+      "scorer_linkage_band_aware": "no attack spec targets a released table"
+    }
+  }
+}

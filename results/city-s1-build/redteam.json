@@ -1,0 +1,90 @@
+{
+  "release": "city-s1-build (out/CITY-S1/contract.json)",
+  "table": "wifi_probes",
+  "time_column": null,
+  "time_columns": [],
+  "gate": "pass",
+  "rule": "every attack at or below its threshold or not applicable with a reason; k, joined k and l at the policy's minimum; every check the contract needs has run; every required task at the floor; no identifier found; only the contract's files in the release; every limit comes from the signed policy",
+  "attacks": {
+    "order_attack": {
+      "metric": "share_rows_date_rebuilt",
+      "value": null,
+      "detail": {
+        "applicable": false,
+        "why": "no hour-only column in the release",
+        "share_rows_date_rebuilt": 0.0
+      },
+      "threshold": 0.05,
+      "status": "not_applicable",
+      "reason": "no hour-only column in the release",
+      "pass": null
+    },
+    "news_linkage": {
+      "metric": "share_clips_reidentified",
+      "value": null,
+      "detail": null,
+      "threshold": 0.0,
+      "status": "not_applicable",
+      "reason": "no hour-only column in the release",
+      "pass": null
+    },
+    "person_fingerprint": {
+      "metric": "share_persons_unique",
+      "value": null,
+      "detail": {
+        "table": "wifi_probes",
+        "applicable": false,
+        "person_column": "mac",
+        "why": "person key released, but no per-person quasi-identifier in this table",
+        "share_persons_unique": 0.0,
+        "tables_checked": [
+          {
+            "table": "wifi_probes",
+            "applicable": false,
+            "person_column": "mac",
+            "why": "person key released, but no per-person quasi-identifier in this table",
+            "share_persons_unique": 0.0
+          }
+        ]
+      },
+      "threshold": 0.05,
+      "status": "not_applicable",
+      "reason": "person key released, but no per-person quasi-identifier in this table",
+      "pass": null
+    },
+    "scorer_linkage_band_aware": {
+      "metric": "worst_reidentification_rate",
+      "value": null,
+      "detail": {
+        "specs": [],
+        "worst_reidentification_rate": 0.0
+      },
+      "threshold": 0.01,
+      "status": "not_applicable",
+      "reason": "no attack spec targets a released table",
+      "pass": null
+    },
+    "plain_hash": {
+      "metric": "worst_share_reversed",
+      "value": 0.0,
+      "detail": {
+        "hash_like_columns": [],
+        "worst_share_reversed": 0.0
+      },
+      "threshold": 0.0,
+      "status": "pass",
+      "reason": null,
+      "pass": true
+    }
+  },
+  "reasons": [],
+  "utility_check": {
+    "rule": "every required task scores at least 0.5",
+    "scores": {
+      "CITY-U1": 0.7447058754115815,
+      "CITY-U5": 0.8490795217158041
+    },
+    "pass": true,
+    "below_floor": {}
+  }
+}

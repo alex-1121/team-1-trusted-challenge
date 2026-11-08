@@ -1,0 +1,21 @@
+{
+  "order": [],
+  "rows": 398408,
+  "at_risk_before": 22615,
+  "share_at_risk_before": 0.0568,
+  "steps": [
+    {
+      "step": "suppress",
+      "column": "amount_eur",
+      "rows_changed": 22615
+    },
+    {
+      "step": "drop_rows",
+      "column": "(row)",
+      "rows_changed": 0
+    }
+  ],
+  "rows_released": 398408,
+  "at_risk_after": 0,
+  "share_at_risk_after": 0.0
+}

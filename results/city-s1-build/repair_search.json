@@ -1,0 +1,107 @@
+{
+  "target": {
+    "table": "wifi_probes",
+    "k": 5,
+    "l": 1,
+    "columns": [
+      "sensor_id",
+      "ts"
+    ],
+    "linked": {},
+    "reason": "Every released wifi_probes row shares its kept quasi-identifiers (sensor_id, ts) with at least 4 other rows; only the rows that miss the target are coarsened, and rows still at risk get those columns suppressed."
+  },
+  "ladder": {
+    "sensor_id:set": {
+      "column": "sensor_id",
+      "op": "set",
+      "value": "other",
+      "reason": "At-risk rows only: place becomes other."
+    },
+    "ts:to_day": {
+      "column": "ts",
+      "op": "to_day",
+      "reason": "At-risk rows only: hour dropped, date kept."
+    }
+  },
+  "floor": 0.85,
+  "rule": "best composite among orders with no row at risk and every required task at or above the floor",
+  "chosen": "sensor_id:set-ts:to_day",
+  "orders": [
+    {
+      "order": [
+        "sensor_id:set",
+        "ts:to_day"
+      ],
+      "name": "sensor_id:set-ts:to_day",
+      "tasks": {
+        "CITY-U1": 0.7447058754115815,
+        "CITY-U5": 0.8490795217158041
+      },
+      "privacy": 0.4133,
+      "utility": 0.7969,
+      "composite": 0.5291,
+      "at_risk_after": 0,
+      "rows_released": 585525,
+      "steps": [
+        {
+          "step": "sensor_id:set",
+          "column": "sensor_id",
+          "rows_changed": 348
+        },
+        {
+          "step": "ts:to_day",
+          "column": "ts",
+          "rows_changed": 43
+        },
+        {
+          "step": "suppress",
+          "column": "sensor_id, ts",
+          "rows_changed": 23
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    },
+    {
+      "order": [
+        "ts:to_day",
+        "sensor_id:set"
+      ],
+      "name": "ts:to_day-sensor_id:set",
+      "tasks": {
+        "CITY-U1": 0.7450996830853505,
+        "CITY-U5": 0.8488328405150566
+      },
+      "privacy": 0.4107,
+      "utility": 0.797,
+      "composite": 0.5267,
+      "at_risk_after": 0,
+      "rows_released": 585525,
+      "steps": [
+        {
+          "step": "ts:to_day",
+          "column": "ts",
+          "rows_changed": 348
+        },
+        {
+          "step": "sensor_id:set",
+          "column": "sensor_id",
+          "rows_changed": 311
+        },
+        {
+          "step": "suppress",
+          "column": "sensor_id, ts",
+          "rows_changed": 0
+        },
+        {
+          "step": "drop_rows",
+          "column": "(row)",
+          "rows_changed": 0
+        }
+      ]
+    }
+  ]
+}

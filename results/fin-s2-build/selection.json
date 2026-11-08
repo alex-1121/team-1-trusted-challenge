@@ -1,0 +1,1093 @@
+{
+  "scenario": "FIN-S2",
+  "required_tasks": [
+    "FIN-U1",
+    "FIN-U4",
+    "FIN-U6"
+  ],
+  "tolerance": 0.05,
+  "risk_line": 0.05,
+  "min_gain": 0.01,
+  "k": 5,
+  "knowable_rule": "a kept column the detector labels quasi_identifier (any subtype), or a kept non_sensitive column of subtype CATEGORY with at most 20 distinct values; sensitive attributes, dropped columns, keyed tokens and free text are never knowable",
+  "main_table": "card_transactions",
+  "reference_scores": {
+    "FIN-U1": 0.8117723658342586,
+    "FIN-U4": 0.0,
+    "FIN-U6": 0.0
+  },
+  "final_scores_before_repair": {
+    "FIN-U1": 0.8131285873589116,
+    "FIN-U4": 0.0,
+    "FIN-U6": 0.0
+  },
+  "final_scores_after_repair": {
+    "FIN-U1": 0.609558740938286,
+    "FIN-U4": 0.0,
+    "FIN-U6": 0.0
+  },
+  "risk_after_repair": {
+    "card_transactions": {
+      "risk": 0.0495,
+      "knowable": [
+        "amount_eur",
+        "currency",
+        "channel"
+      ],
+      "line_met": true
+    }
+  },
+  "fitness": {
+    "trust_level": "contractual",
+    "k": 5,
+    "tables": {
+      "card_transactions": {
+        "n_rows": 398408,
+        "columns": [
+          "amount_eur",
+          "currency",
+          "mcc",
+          "channel",
+          "is_fraud"
+        ],
+        "share_k_below_5": 0.3941
+      }
+    },
+    "rule": "Share of the released rows whose combination of every kept value (every kept column except keyed tokens and free text) is shared by fewer than 5 rows, on the final release after the k repair. Reported for the fit-for-sharing statement; it decides nothing in selection."
+  },
+  "moved_after_repair": [
+    {
+      "table": "card_transactions",
+      "column": "ts",
+      "from": "date and hour",
+      "to": "drop",
+      "rule": "no gain",
+      "scores_before": {
+        "FIN-U1": 0.0,
+        "FIN-U4": 0.0,
+        "FIN-U6": 0.0
+      },
+      "scores_after": {
+        "FIN-U1": 0.609558740938286,
+        "FIN-U4": 0.0,
+        "FIN-U6": 0.0
+      },
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "FIN-U1": 0.609558740938286,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.10622025662135298,
+          "distinct": 0,
+          "knowable": [
+            "amount_eur",
+            "currency",
+            "channel"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "month",
+          "scores": {
+            "FIN-U1": 0.5802551138118909,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.3708409469689364,
+          "distinct": 6,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "currency",
+            "channel"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "ISO week",
+          "scores": {
+            "FIN-U1": 0.0,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.776784100720869,
+          "distinct": 27,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "currency",
+            "channel"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "hour of day",
+          "scores": {
+            "FIN-U1": 0.0,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.6064662356177587,
+          "distinct": 24,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "currency",
+            "channel"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "date",
+          "scores": {
+            "FIN-U1": 0.04340672061844576,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.8919248609465673,
+          "distinct": 184,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "currency",
+            "channel"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "date and hour",
+          "scores": {
+            "FIN-U1": 0.0,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9926532599746993,
+          "distinct": 4223,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "currency",
+            "channel"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    }
+  ],
+  "trail": [
+    {
+      "table": "card_transactions",
+      "column": "(table)",
+      "decision": "release",
+      "scores": {
+        "FIN-U1": 0.0,
+        "FIN-U4": 0.0,
+        "FIN-U6": 0.0
+      }
+    },
+    {
+      "table": "cards",
+      "column": "(table)",
+      "decision": "withhold",
+      "scores": {
+        "FIN-U1": 0.8117723658342586,
+        "FIN-U4": 0.0,
+        "FIN-U6": 0.0
+      }
+    },
+    {
+      "table": "customers",
+      "column": "(table)",
+      "decision": "withhold",
+      "scores": {
+        "FIN-U1": 0.8117723658342586,
+        "FIN-U4": 0.0,
+        "FIN-U6": 0.0
+      }
+    },
+    {
+      "table": "transfers",
+      "column": "(table)",
+      "decision": "withhold",
+      "scores": {
+        "FIN-U1": 0.8117723658342586,
+        "FIN-U4": 0.0,
+        "FIN-U6": 0.0
+      }
+    },
+    {
+      "table": "card_transactions",
+      "column": "ts",
+      "role": "quasi_identifier",
+      "subtype": "TIMESTAMP",
+      "chosen": "date and hour",
+      "rule": "line",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "FIN-U1": 0.7792197953877011,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "month",
+          "scores": {
+            "FIN-U1": 0.48813381843256176,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 6,
+          "knowable": [
+            "ts"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "ISO week",
+          "scores": {
+            "FIN-U1": 0.4144167365172773,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 27,
+          "knowable": [
+            "ts"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "hour of day",
+          "scores": {
+            "FIN-U1": 0.0,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 24,
+          "knowable": [
+            "ts"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "date",
+          "scores": {
+            "FIN-U1": 0.7714585405845966,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 184,
+          "knowable": [
+            "ts"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "date and hour",
+          "scores": {
+            "FIN-U1": 0.8117723658342586,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.002515009738760266,
+          "distinct": 4223,
+          "knowable": [
+            "ts"
+          ],
+          "gain_over_drop": 0.03255257044655746
+        }
+      ]
+    },
+    {
+      "table": "card_transactions",
+      "column": "amount_eur",
+      "role": "quasi_identifier",
+      "subtype": "FINANCIAL_DATA",
+      "chosen": "exact",
+      "rule": "line not met",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "FIN-U1": 0.0,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": false,
+          "risk": 0.002515009738760266,
+          "distinct": 0,
+          "knowable": [
+            "ts"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "exact",
+          "scores": {
+            "FIN-U1": 0.8117723658342586,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9818301841328487,
+          "distinct": 23626,
+          "knowable": [
+            "ts",
+            "amount_eur"
+          ],
+          "gain_over_drop": 0.8117723658342586
+        }
+      ]
+    },
+    {
+      "table": "card_transactions",
+      "column": "original_amount",
+      "role": "quasi_identifier",
+      "subtype": "FINANCIAL_DATA",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "FIN-U1": 0.8117723658342586,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9818301841328487,
+          "distinct": 0,
+          "knowable": [
+            "ts",
+            "amount_eur"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "exact",
+          "scores": {
+            "FIN-U1": 0.8117723658342586,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9819105038051444,
+          "distinct": 23864,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "original_amount"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "card_transactions",
+      "column": "merchant_city",
+      "role": "quasi_identifier",
+      "subtype": "MUNICIPALITY",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "FIN-U1": 0.8117723658342586,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9818301841328487,
+          "distinct": 0,
+          "knowable": [
+            "ts",
+            "amount_eur"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "8 most common, rest other",
+          "scores": {
+            "FIN-U1": 0.8117723658342586,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9946938816489629,
+          "distinct": 9,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "merchant_city"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "exact",
+          "scores": {
+            "FIN-U1": 0.8117723658342586,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9946938816489629,
+          "distinct": 44,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "merchant_city"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "card_transactions",
+      "column": "merchant_country",
+      "role": "quasi_identifier",
+      "subtype": "LOCATION_NAME",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9818301841328487,
+          "distinct": 0,
+          "knowable": [
+            "ts",
+            "amount_eur"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "8 most common, rest other",
+          "scores": {
+            "FIN-U1": 0.8117723658342586,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9820836930985322,
+          "distinct": 9,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "merchant_country"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "exact",
+          "scores": {
+            "FIN-U1": 0.8117723658342586,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9820836930985322,
+          "distinct": 16,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "merchant_country"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "card_transactions",
+      "column": "pos_lat",
+      "role": "quasi_identifier",
+      "subtype": "GPS_COORDINATE",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9818301841328487,
+          "distinct": 0,
+          "knowable": [
+            "ts",
+            "amount_eur"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "2-decimal grid (about 1 km)",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9941517238609666,
+          "distinct": 175,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "pos_lat"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "3-decimal grid (about 100 m)",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9947767113110179,
+          "distinct": 588,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "pos_lat"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "card_transactions",
+      "column": "pos_lon",
+      "role": "quasi_identifier",
+      "subtype": "GPS_COORDINATE",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9818301841328487,
+          "distinct": 0,
+          "knowable": [
+            "ts",
+            "amount_eur"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "2-decimal grid (about 1 km)",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9947767113110179,
+          "distinct": 298,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "pos_lon"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "3-decimal grid (about 100 m)",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9947767113110179,
+          "distinct": 817,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "pos_lon"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "card_transactions",
+      "column": "device_id",
+      "role": "technical_identifier",
+      "subtype": "RECORD_ID",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9818301841328487,
+          "distinct": 0,
+          "knowable": [
+            "ts",
+            "amount_eur"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "keyed token",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9818301841328487,
+          "distinct": 8132,
+          "knowable": [
+            "ts",
+            "amount_eur"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "card_transactions",
+      "column": "ip_address",
+      "role": "technical_identifier",
+      "subtype": "IP_ADDRESS",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9818301841328487,
+          "distinct": 0,
+          "knowable": [
+            "ts",
+            "amount_eur"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "keyed token",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9818301841328487,
+          "distinct": 19156,
+          "knowable": [
+            "ts",
+            "amount_eur"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "card_transactions",
+      "column": "currency",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "kept",
+      "rule": "line not met",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "FIN-U1": 0.24010385714847549,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": false,
+          "risk": 0.9818301841328487,
+          "distinct": 0,
+          "knowable": [
+            "ts",
+            "amount_eur"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9819105038051444,
+          "distinct": 8,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "currency"
+          ],
+          "gain_over_drop": 0.5845818322599915
+        }
+      ]
+    },
+    {
+      "table": "card_transactions",
+      "column": "merchant_name",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9819105038051444,
+          "distinct": 0,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "currency"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9819105038051444,
+          "distinct": 1102,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "currency"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "card_transactions",
+      "column": "mcc",
+      "role": "non_sensitive",
+      "subtype": "MEASUREMENT",
+      "chosen": "kept",
+      "rule": "line not met",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "FIN-U1": 0.40189619695100104,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": false,
+          "risk": 0.9819105038051444,
+          "distinct": 0,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "currency"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9819105038051444,
+          "distinct": 32,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "currency"
+          ],
+          "gain_over_drop": 0.42278949245746594
+        }
+      ]
+    },
+    {
+      "table": "card_transactions",
+      "column": "channel",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "kept",
+      "rule": "line not met",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "FIN-U1": 0.5988446841388164,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": false,
+          "risk": 0.9819105038051444,
+          "distinct": 0,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "currency"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9926532599746993,
+          "distinct": 3,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "currency",
+            "channel"
+          ],
+          "gain_over_drop": 0.22584100526965056
+        }
+      ]
+    },
+    {
+      "table": "card_transactions",
+      "column": "is_fraud",
+      "role": "non_sensitive",
+      "subtype": "MEASUREMENT",
+      "chosen": "kept",
+      "rule": "line not met",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "FIN-U1": 0.0,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": false,
+          "risk": 0.9926532599746993,
+          "distinct": 0,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "currency",
+            "channel"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9926532599746993,
+          "distinct": 2,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "currency",
+            "channel"
+          ],
+          "gain_over_drop": 0.824685689408467
+        }
+      ]
+    },
+    {
+      "table": "card_transactions",
+      "column": "fraud_type",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9926532599746993,
+          "distinct": 0,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "currency",
+            "channel"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9926532599746993,
+          "distinct": 5,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "currency",
+            "channel",
+            "fraud_type"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "card_transactions",
+      "column": "tx_id",
+      "role": "record_key",
+      "subtype": "RECORD_ID",
+      "chosen": "drop",
+      "rule": "no gain",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9926532599746993,
+          "distinct": 0,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "currency",
+            "channel"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "keyed token",
+          "scores": {
+            "FIN-U1": 0.824685689408467,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9926532599746993,
+          "distinct": 398408,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "currency",
+            "channel"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "card_transactions",
+      "column": "card_pan",
+      "role": "direct_identifier",
+      "subtype": "PAYMENT_CARD",
+      "chosen": "drop",
+      "rule": "only candidate",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "FIN-U1": 0.8117723658342586,
+            "FIN-U4": 0.0,
+            "FIN-U6": 0.0
+          },
+          "ok": true,
+          "risk": 0.9926532599746993,
+          "distinct": 0,
+          "knowable": [
+            "ts",
+            "amount_eur",
+            "currency",
+            "channel"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "order": [
+    "sensor_id:set",
+    "ts:to_day"
+  ],
+  "rows": 585525,
+  "at_risk_before": 348,
+  "share_at_risk_before": 0.0006,
+  "steps": [
+    {
+      "step": "sensor_id:set",
+      "column": "sensor_id",
+      "rows_changed": 348
+    },
+    {
+      "step": "ts:to_day",
+      "column": "ts",
+      "rows_changed": 43
+    },
+    {
+      "step": "suppress",
+      "column": "sensor_id, ts",
+      "rows_changed": 23
+    },
+    {
+      "step": "drop_rows",
+      "column": "(row)",
+      "rows_changed": 0
+    }
+  ],
+  "rows_released": 585525,
+  "at_risk_after": 0,
+  "share_at_risk_after": 0.0
+}

@@ -1,0 +1,177 @@
+{
+  "scenario": "FIN-S2",
+  "dataset": "finance",
+  "generated_by": "pets_transformer.selector",
+  "tolerance": 0.05,
+  "risk_line": 0.05,
+  "recipient": "AI vendor (processor)",
+  "purpose": "Train and evaluate a fraud model and a spending-category model.",
+  "trust_level": "contractual",
+  "threat_model": "Vendor staff with public receipts and directory; private: merchant_knowledge, broker_profiles.",
+  "required_tasks": [
+    "FIN-U1",
+    "FIN-U4",
+    "FIN-U6"
+  ],
+  "tables": {
+    "card_transactions": {
+      "action": "release",
+      "record_id": "tx_id",
+      "reason": "Released: without it FIN-U1 0.0000."
+    },
+    "cards": {
+      "action": "withhold",
+      "record_id": "card_ref_id",
+      "reason": "Withheld: without it every required task stays within 0.05 of the reference (FIN-U1 0.8118, FIN-U4 0.0000, FIN-U6 0.0000)."
+    },
+    "customers": {
+      "action": "withhold",
+      "record_id": "customer_id",
+      "reason": "Withheld: without it every required task stays within 0.05 of the reference (FIN-U1 0.8118, FIN-U4 0.0000, FIN-U6 0.0000)."
+    },
+    "transfers": {
+      "action": "withhold",
+      "record_id": "transfer_id",
+      "reason": "Withheld: without it every required task stays within 0.05 of the reference (FIN-U1 0.8118, FIN-U4 0.0000, FIN-U6 0.0000)."
+    }
+  },
+  "columns": {
+    "card_transactions": {
+      "tx_id": {
+        "pet": "drop",
+        "reason": "Detected record_key (RECORD_ID). Candidates tried: drop: within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9927); keyed token: within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9927; gain over drop 0.0000). Chosen: drop (risk 0.9927), no candidate improves a required task by at least 0.01 over drop; risk line 0.05 not met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name)."
+      },
+      "card_pan": {
+        "pet": "drop",
+        "reason": "Detected direct_identifier (PAYMENT_CARD). The only candidate for this type is drop (utility FIN-U1 0.8118, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9927; risk line 0.05)."
+      },
+      "ts": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (TIMESTAMP). Candidates tried before the k repair: drop: within 0.05 (utility FIN-U1 0.7792, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.0000); month: outside 0.05 (utility FIN-U1 0.4881, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.0000; gain over drop 0.0000); ISO week: outside 0.05 (utility FIN-U1 0.4144, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.0000; gain over drop 0.0000); hour of day: outside 0.05 (utility FIN-U1 0.0000, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.0000; gain over drop 0.0000); date: within 0.05 (utility FIN-U1 0.7715, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.0000; gain over drop 0.0000); date and hour: within 0.05 (utility FIN-U1 0.8118, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.0025; gain over drop 0.0326). Scored again on the repaired release (feasible: mean utility no worse than date and hour, FIN-U1 0.0000, FIN-U4 0.0000, FIN-U6 0.0000): drop: no worse than the current choice (utility FIN-U1 0.6096, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.1062); month: no worse than the current choice (utility FIN-U1 0.5803, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.3708; gain over drop 0.0000); ISO week: no worse than the current choice (utility FIN-U1 0.0000, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.7768; gain over drop 0.0000); hour of day: no worse than the current choice (utility FIN-U1 0.0000, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.6065; gain over drop 0.0000); date: no worse than the current choice (utility FIN-U1 0.0434, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.8919; gain over drop 0.0000); date and hour: no worse than the current choice (utility FIN-U1 0.0000, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9927; gain over drop 0.0000). Chosen: drop (risk 0.1062), no candidate improves a required task by at least 0.01 over drop; risk line 0.05 not met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name)."
+      },
+      "amount_eur": {
+        "pet": "keep",
+        "reason": "Detected quasi_identifier (FINANCIAL_DATA). Candidates tried: drop: outside 0.05 (utility FIN-U1 0.0000, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.0025); exact: within 0.05 (utility FIN-U1 0.8118, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9818; gain over drop 0.8118). Chosen: exact (risk 0.9818), lowest risk among the candidates within 0.05 of the reference; the risk line 0.05 was not met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name). Drop breaks a required task, so the gain rule does not apply. After the k repair, risk on the knowable columns of card_transactions (amount_eur, currency, channel) is 0.0495: line met."
+      },
+      "original_amount": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (FINANCIAL_DATA). Candidates tried: drop: within 0.05 (utility FIN-U1 0.8118, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9818); exact: within 0.05 (utility FIN-U1 0.8118, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9819; gain over drop 0.0000). Chosen: drop (risk 0.9818), no candidate improves a required task by at least 0.01 over drop; risk line 0.05 not met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name)."
+      },
+      "currency": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried: drop: outside 0.05 (utility FIN-U1 0.2401, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9818); kept: within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9819; gain over drop 0.5846). Chosen: kept (risk 0.9819), lowest risk among the candidates within 0.05 of the reference; the risk line 0.05 was not met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name). Drop breaks a required task, so the gain rule does not apply. After the k repair, risk on the knowable columns of card_transactions (amount_eur, currency, channel) is 0.0495: line met."
+      },
+      "merchant_name": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried: drop: within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9819); kept: within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9819; gain over drop 0.0000). Chosen: drop (risk 0.9819), no candidate improves a required task by at least 0.01 over drop; risk line 0.05 not met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name)."
+      },
+      "mcc": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (MEASUREMENT). Candidates tried: drop: outside 0.05 (utility FIN-U1 0.4019, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9819); kept: within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9819; gain over drop 0.4228). Chosen: kept (risk 0.9819), lowest risk among the candidates within 0.05 of the reference; the risk line 0.05 was not met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name). Drop breaks a required task, so the gain rule does not apply."
+      },
+      "merchant_city": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (MUNICIPALITY). Candidates tried: drop: within 0.05 (utility FIN-U1 0.8118, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9818); 8 most common, rest other: within 0.05 (utility FIN-U1 0.8118, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9947; gain over drop 0.0000); exact: within 0.05 (utility FIN-U1 0.8118, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9947; gain over drop 0.0000). Chosen: drop (risk 0.9818), no candidate improves a required task by at least 0.01 over drop; risk line 0.05 not met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name)."
+      },
+      "merchant_country": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (LOCATION_NAME). Candidates tried: drop: within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9818); 8 most common, rest other: within 0.05 (utility FIN-U1 0.8118, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9821; gain over drop 0.0000); exact: within 0.05 (utility FIN-U1 0.8118, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9821; gain over drop 0.0000). Chosen: drop (risk 0.9818), no candidate improves a required task by at least 0.01 over drop; risk line 0.05 not met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name)."
+      },
+      "channel": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried: drop: outside 0.05 (utility FIN-U1 0.5988, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9819); kept: within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9927; gain over drop 0.2258). Chosen: kept (risk 0.9927), lowest risk among the candidates within 0.05 of the reference; the risk line 0.05 was not met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name). Drop breaks a required task, so the gain rule does not apply. After the k repair, risk on the knowable columns of card_transactions (amount_eur, currency, channel) is 0.0495: line met."
+      },
+      "pos_lat": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (GPS_COORDINATE). Candidates tried: drop: within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9818); 2-decimal grid (about 1 km): within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9942; gain over drop 0.0000); 3-decimal grid (about 100 m): within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9948; gain over drop 0.0000). Chosen: drop (risk 0.9818), no candidate improves a required task by at least 0.01 over drop; risk line 0.05 not met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name)."
+      },
+      "pos_lon": {
+        "pet": "drop",
+        "reason": "Detected quasi_identifier (GPS_COORDINATE). Candidates tried: drop: within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9818); 2-decimal grid (about 1 km): within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9948; gain over drop 0.0000); 3-decimal grid (about 100 m): within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9948; gain over drop 0.0000). Chosen: drop (risk 0.9818), no candidate improves a required task by at least 0.01 over drop; risk line 0.05 not met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name)."
+      },
+      "device_id": {
+        "pet": "drop",
+        "reason": "Detected technical_identifier (RECORD_ID). Candidates tried: drop: within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9818); keyed token: within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9818; gain over drop 0.0000). Chosen: drop (risk 0.9818), no candidate improves a required task by at least 0.01 over drop; risk line 0.05 not met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name)."
+      },
+      "ip_address": {
+        "pet": "drop",
+        "reason": "Detected technical_identifier (IP_ADDRESS). Candidates tried: drop: within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9818); keyed token: within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9818; gain over drop 0.0000). Chosen: drop (risk 0.9818), no candidate improves a required task by at least 0.01 over drop; risk line 0.05 not met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name)."
+      },
+      "is_fraud": {
+        "pet": "keep",
+        "reason": "Detected non_sensitive (MEASUREMENT). Candidates tried: drop: outside 0.05 (utility FIN-U1 0.0000, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9927); kept: within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9927; gain over drop 0.8247). Chosen: kept (risk 0.9927), lowest risk among the candidates within 0.05 of the reference; the risk line 0.05 was not met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name). Drop breaks a required task, so the gain rule does not apply."
+      },
+      "fraud_type": {
+        "pet": "drop",
+        "reason": "Detected non_sensitive (CATEGORY). Candidates tried: drop: within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9927); kept: within 0.05 (utility FIN-U1 0.8247, FIN-U4 0.0000, FIN-U6 0.0000; risk 0.9927; gain over drop 0.0000). Chosen: drop (risk 0.9927), no candidate improves a required task by at least 0.01 over drop; risk line 0.05 not met (a candidate other than drop must raise a required task by at least 0.01 over drop; ties: lower risk, then fewer distinct values, then name)."
+      }
+    }
+  },
+  "roles": {
+    "card_transactions": {
+      "quasi_identifier": {
+        "pet": "drop",
+        "reason": "default for a quasi identifier the contract does not name"
+      },
+      "technical_identifier": {
+        "pet": "drop",
+        "reason": "default for a technical identifier the contract does not name"
+      },
+      "sensitive_attribute": {
+        "pet": "keep",
+        "reason": "default for a sensitive attribute the contract does not name"
+      },
+      "free_text": {
+        "pet": "drop",
+        "reason": "default for a free text the contract does not name"
+      },
+      "non_sensitive": {
+        "pet": "keep",
+        "reason": "default for a non sensitive the contract does not name"
+      },
+      "record_key": {
+        "pet": "token",
+        "params": {
+          "prefix": "T"
+        },
+        "reason": "default for a record key the contract does not name"
+      },
+      "direct_identifier": {
+        "pet": "drop",
+        "reason": "default for a direct identifier the contract does not name"
+      }
+    }
+  },
+  "k_target": {
+    "table": "card_transactions",
+    "k": 5,
+    "l": 1,
+    "columns": [
+      "amount_eur"
+    ],
+    "linked": {},
+    "ladder": {},
+    "reason": "Every released card_transactions row shares its kept quasi-identifiers (amount_eur) with at least 4 other rows; only the rows that miss the target are coarsened, and rows still at risk get those columns suppressed."
+  },
+  "k_columns": [
+    "amount_eur"
+  ],
+  "fitness": {
+    "trust_level": "contractual",
+    "k": 5,
+    "tables": {
+      "card_transactions": {
+        "n_rows": 398408,
+        "columns": [
+          "amount_eur",
+          "currency",
+          "mcc",
+          "channel",
+          "is_fraud"
+        ],
+        "share_k_below_5": 0.3941
+      }
+    },
+    "rule": "Share of the released rows whose combination of every kept value (every kept column except keyed tokens and free text) is shared by fewer than 5 rows, on the final release after the k repair. Reported for the fit-for-sharing statement; it decides nothing in selection."
+  }
+}

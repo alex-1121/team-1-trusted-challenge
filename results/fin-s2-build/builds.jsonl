@@ -1,0 +1,1 @@
+{"utc": "2026-11-08T07:28:10Z", "scenario": "FIN-S2", "gate": "fail", "reasons": ["k: scorer min k of card_transactions 1 under 5", "utility: required task FIN-U4 not measured", "utility: required task FIN-U6 not measured"]}

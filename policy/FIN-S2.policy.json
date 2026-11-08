@@ -1,0 +1,32 @@
+{
+  "scenario": "FIN-S2",
+  "owner_role": "bank data steward",
+  "recipient": "AI vendor (processor)",
+  "purpose": "Train and evaluate a fraud model and a spending-category model.",
+  "agreement_ref": "none: FIN-S2 is a synthetic proving-ground scenario, no real agreement exists",
+  "recipient_duties": [
+    "No re-identification of any person in the release.",
+    "No linkage with public lists, including receipt_photos_ocr and public_directory."
+  ],
+  "enforced_after_release": "none",
+  "attack_thresholds": {
+    "order_attack": 0.05,
+    "news_linkage": 0.0,
+    "person_fingerprint": 0.05,
+    "scorer_linkage_band_aware": 0.01,
+    "plain_hash": 0.0
+  },
+  "utility_floor": 0.5,
+  "k_min": 5,
+  "l_min": 1,
+  "no_k_target": null,
+  "required_tasks": [
+    "FIN-U1",
+    "FIN-U4",
+    "FIN-U6"
+  ],
+  "attacker_assumption": "default",
+  "allowed_contracts": {
+    "default": "8cab125084a01cc205134228901c4974f8e817ded27958dca22c90ee32a9be07"
+  }
+}

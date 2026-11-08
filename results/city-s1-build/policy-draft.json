@@ -1,0 +1,31 @@
+{
+  "scenario": "CITY-S1",
+  "owner_role": "smart city data steward",
+  "recipient": "Anyone (open data portal)",
+  "purpose": "Publish hourly footfall by zone for businesses, events and citizens.",
+  "agreement_ref": "none: CITY-S1 is a synthetic proving-ground scenario, no real agreement exists",
+  "recipient_duties": [
+    "No re-identification of any person in the release.",
+    "No linkage with outside data about the people in the release."
+  ],
+  "enforced_after_release": "none",
+  "attack_thresholds": {
+    "order_attack": 0.05,
+    "news_linkage": 0.0,
+    "person_fingerprint": 0.05,
+    "scorer_linkage_band_aware": 0.01,
+    "plain_hash": 0.0
+  },
+  "utility_floor": 0.5,
+  "k_min": 5,
+  "l_min": 1,
+  "no_k_target": null,
+  "required_tasks": [
+    "CITY-U1",
+    "CITY-U5"
+  ],
+  "attacker_assumption": "default",
+  "allowed_contracts": {
+    "default": "7fd13fcdb938ee02b637448f1133dff555433c377ff5d6708729c14d903afeae"
+  }
+}

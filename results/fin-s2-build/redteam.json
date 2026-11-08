@@ -1,0 +1,108 @@
+{
+  "release": "fin-s2-build (contracts/generated/FIN-S2.auto.json)",
+  "table": "card_transactions",
+  "time_column": null,
+  "time_columns": [],
+  "gate": "fail",
+  "rule": "every attack at or below its threshold or not applicable with a reason; k, joined k and l at the policy's minimum; every check the contract needs has run; every required task at the floor; no identifier found; only the contract's files in the release; every limit comes from the signed policy",
+  "attacks": {
+    "order_attack": {
+      "metric": "share_rows_date_rebuilt",
+      "value": null,
+      "detail": {
+        "applicable": false,
+        "why": "no hour-only column in the release",
+        "share_rows_date_rebuilt": 0.0
+      },
+      "threshold": 0.05,
+      "status": "not_applicable",
+      "reason": "no hour-only column in the release",
+      "pass": null
+    },
+    "news_linkage": {
+      "metric": "share_clips_reidentified",
+      "value": null,
+      "detail": null,
+      "threshold": 0.0,
+      "status": "not_applicable",
+      "reason": "no hour-only column in the release",
+      "pass": null
+    },
+    "person_fingerprint": {
+      "metric": "share_persons_unique",
+      "value": null,
+      "detail": {
+        "applicable": false,
+        "why": "no person key released (no pseudonym, no repeating token)",
+        "share_persons_unique": 0.0,
+        "tables_checked": []
+      },
+      "threshold": 0.05,
+      "status": "not_applicable",
+      "reason": "no person key released (no pseudonym, no repeating token)",
+      "pass": null
+    },
+    "scorer_linkage_band_aware": {
+      "metric": "worst_reidentification_rate",
+      "value": 0.0,
+      "detail": {
+        "specs": [
+          {
+            "table": "card_transactions",
+            "adversary": "receipt_photos_ocr",
+            "qis_used": [
+              {
+                "kind": "number",
+                "protected": [
+                  "amount_eur"
+                ]
+              }
+            ],
+            "evaluated": true,
+            "reidentification_rate": 0.0,
+            "claim_precision": null,
+            "n_unique_claims": 0,
+            "n_targets_in_data": 1239,
+            "share_targets_in_candidate_set_le5": 0.0,
+            "median_candidate_set": 23821.0
+          }
+        ],
+        "worst_reidentification_rate": 0.0
+      },
+      "threshold": 0.01,
+      "status": "pass",
+      "reason": null,
+      "pass": true
+    },
+    "plain_hash": {
+      "metric": "worst_share_reversed",
+      "value": 0.0,
+      "detail": {
+        "hash_like_columns": [],
+        "worst_share_reversed": 0.0
+      },
+      "threshold": 0.0,
+      "status": "pass",
+      "reason": null,
+      "pass": true
+    }
+  },
+  "reasons": [
+    "k: scorer min k of card_transactions 1 under 5",
+    "utility: required task FIN-U4 not measured",
+    "utility: required task FIN-U6 not measured"
+  ],
+  "utility_check": {
+    "rule": "every required task scores at least 0.5",
+    "scores": {
+      "FIN-U1": 0.7965757220849872,
+      "FIN-U4": null,
+      "FIN-U6": null
+    },
+    "pass": false,
+    "below_floor": {
+      "FIN-U4": null,
+      "FIN-U6": null
+    }
+  }
+}

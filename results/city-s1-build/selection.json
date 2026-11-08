@@ -1,0 +1,404 @@
+{
+  "scenario": "CITY-S1",
+  "required_tasks": [
+    "CITY-U1",
+    "CITY-U5"
+  ],
+  "tolerance": 0.05,
+  "risk_line": 0.05,
+  "min_gain": 0.01,
+  "k": 5,
+  "knowable_rule": "a kept column the detector labels quasi_identifier (any subtype), or a kept non_sensitive column of subtype CATEGORY with at most 20 distinct values; sensitive attributes, dropped columns, keyed tokens and free text are never knowable",
+  "main_table": "wifi_probes",
+  "reference_scores": {
+    "CITY-U1": 1.0,
+    "CITY-U5": 1.0
+  },
+  "final_scores_before_repair": {
+    "CITY-U1": 0.7727663160100093,
+    "CITY-U5": 0.848518823328736
+  },
+  "final_scores_after_repair": {
+    "CITY-U1": 0.7447058754115815,
+    "CITY-U5": 0.8490795217158041
+  },
+  "risk_after_repair": {
+    "wifi_probes": {
+      "risk": 0.0,
+      "knowable": [
+        "sensor_id",
+        "ts"
+      ],
+      "line_met": true
+    }
+  },
+  "fitness": {
+    "trust_level": "public",
+    "k": 5,
+    "tables": {
+      "wifi_probes": {
+        "n_rows": 585525,
+        "columns": [
+          "sensor_id",
+          "ts"
+        ],
+        "share_k_below_5": 0.0
+      }
+    },
+    "rule": "Share of the released rows whose combination of every kept value (every kept column except keyed tokens and free text) is shared by fewer than 5 rows, on the final release after the k repair. Reported for the fit-for-sharing statement; it decides nothing in selection."
+  },
+  "moved_after_repair": [],
+  "trail": [
+    {
+      "table": "anpr_parking",
+      "column": "(table)",
+      "decision": "withhold",
+      "scores": {
+        "CITY-U1": 1.0,
+        "CITY-U5": 1.0
+      }
+    },
+    {
+      "table": "footfall_15min",
+      "column": "(table)",
+      "decision": "withhold",
+      "scores": {
+        "CITY-U1": 1.0,
+        "CITY-U5": 1.0
+      }
+    },
+    {
+      "table": "sensors",
+      "column": "(table)",
+      "decision": "withhold",
+      "scores": {
+        "CITY-U1": 1.0,
+        "CITY-U5": 1.0
+      }
+    },
+    {
+      "table": "wifi_probes",
+      "column": "(table)",
+      "decision": "release",
+      "scores": {
+        "CITY-U1": 0.0,
+        "CITY-U5": 0.0
+      }
+    },
+    {
+      "table": "wifi_probes",
+      "column": "sensor_id",
+      "role": "quasi_identifier",
+      "subtype": "LOCATION_NAME",
+      "chosen": "exact",
+      "rule": "line",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "CITY-U1": 0.0,
+            "CITY-U5": 0.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "8 most common, rest other",
+          "scores": {
+            "CITY-U1": 0.0,
+            "CITY-U5": 0.9979744286116049
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 9,
+          "knowable": [
+            "sensor_id"
+          ],
+          "gain_over_drop": 0.9979744286116049
+        },
+        {
+          "candidate": "exact",
+          "scores": {
+            "CITY-U1": 1.0,
+            "CITY-U5": 1.0
+          },
+          "ok": true,
+          "risk": 0.0,
+          "distinct": 20,
+          "knowable": [
+            "sensor_id"
+          ],
+          "gain_over_drop": 1.0
+        }
+      ]
+    },
+    {
+      "table": "wifi_probes",
+      "column": "ts",
+      "role": "quasi_identifier",
+      "subtype": "TIMESTAMP",
+      "chosen": "date and hour",
+      "rule": "fallback",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "CITY-U1": 0.0,
+            "CITY-U5": 0.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 0,
+          "knowable": [
+            "sensor_id"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "month",
+          "scores": {
+            "CITY-U1": 0.0,
+            "CITY-U5": 0.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 1,
+          "knowable": [
+            "sensor_id",
+            "ts"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "ISO week",
+          "scores": {
+            "CITY-U1": 0.0,
+            "CITY-U5": 0.0
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 2,
+          "knowable": [
+            "sensor_id",
+            "ts"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "hour of day",
+          "scores": {
+            "CITY-U1": 0.0,
+            "CITY-U5": 0.0
+          },
+          "ok": false,
+          "risk": 4.440459416762734e-05,
+          "distinct": 24,
+          "knowable": [
+            "sensor_id",
+            "ts"
+          ],
+          "gain_over_drop": 0.0
+        },
+        {
+          "candidate": "date",
+          "scores": {
+            "CITY-U1": 0.0,
+            "CITY-U5": 0.7916882656174913
+          },
+          "ok": false,
+          "risk": 0.0,
+          "distinct": 14,
+          "knowable": [
+            "sensor_id",
+            "ts"
+          ],
+          "gain_over_drop": 0.7916882656174913
+        },
+        {
+          "candidate": "date and hour",
+          "scores": {
+            "CITY-U1": 0.7727663160100093,
+            "CITY-U5": 0.848518823328736
+          },
+          "ok": false,
+          "risk": 0.0005943384142436275,
+          "distinct": 270,
+          "knowable": [
+            "sensor_id",
+            "ts"
+          ],
+          "gain_over_drop": 0.848518823328736
+        }
+      ]
+    },
+    {
+      "table": "wifi_probes",
+      "column": "mac",
+      "role": "technical_identifier",
+      "subtype": "MAC_ADDRESS",
+      "chosen": "keyed token",
+      "rule": "fallback",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "CITY-U1": 0.0,
+            "CITY-U5": 0.0
+          },
+          "ok": false,
+          "risk": 0.0005943384142436275,
+          "distinct": 0,
+          "knowable": [
+            "sensor_id",
+            "ts"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "keyed token",
+          "scores": {
+            "CITY-U1": 0.7727663160100093,
+            "CITY-U5": 0.848518823328736
+          },
+          "ok": false,
+          "risk": 0.0005943384142436275,
+          "distinct": 143373,
+          "knowable": [
+            "sensor_id",
+            "ts"
+          ],
+          "gain_over_drop": 0.848518823328736
+        }
+      ]
+    },
+    {
+      "table": "wifi_probes",
+      "column": "rssi_dbm",
+      "role": "non_sensitive",
+      "subtype": "MEASUREMENT",
+      "chosen": "drop",
+      "rule": "fallback",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "CITY-U1": 0.7727663160100093,
+            "CITY-U5": 0.848518823328736
+          },
+          "ok": false,
+          "risk": 0.0005943384142436275,
+          "distinct": 0,
+          "knowable": [
+            "sensor_id",
+            "ts"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "CITY-U1": 0.7727663160100093,
+            "CITY-U5": 0.848518823328736
+          },
+          "ok": false,
+          "risk": 0.0005943384142436275,
+          "distinct": 59,
+          "knowable": [
+            "sensor_id",
+            "ts"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "wifi_probes",
+      "column": "ssid_probed",
+      "role": "non_sensitive",
+      "subtype": "CATEGORY",
+      "chosen": "drop",
+      "rule": "fallback",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "CITY-U1": 0.7727663160100093,
+            "CITY-U5": 0.848518823328736
+          },
+          "ok": false,
+          "risk": 0.0005943384142436275,
+          "distinct": 0,
+          "knowable": [
+            "sensor_id",
+            "ts"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "kept",
+          "scores": {
+            "CITY-U1": 0.7727663160100093,
+            "CITY-U5": 0.848518823328736
+          },
+          "ok": false,
+          "risk": 0.0005943384142436275,
+          "distinct": 4920,
+          "knowable": [
+            "sensor_id",
+            "ts"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    },
+    {
+      "table": "wifi_probes",
+      "column": "probe_id",
+      "role": "record_key",
+      "subtype": "RECORD_ID",
+      "chosen": "drop",
+      "rule": "fallback",
+      "risk_line": 0.05,
+      "tried": [
+        {
+          "candidate": "drop",
+          "scores": {
+            "CITY-U1": 0.7727663160100093,
+            "CITY-U5": 0.848518823328736
+          },
+          "ok": false,
+          "risk": 0.0005943384142436275,
+          "distinct": 0,
+          "knowable": [
+            "sensor_id",
+            "ts"
+          ],
+          "gain_over_drop": null
+        },
+        {
+          "candidate": "keyed token",
+          "scores": {
+            "CITY-U1": 0.7727663160100093,
+            "CITY-U5": 0.848518823328736
+          },
+          "ok": false,
+          "risk": 0.0005943384142436275,
+          "distinct": 585525,
+          "knowable": [
+            "sensor_id",
+            "ts"
+          ],
+          "gain_over_drop": 0.0
+        }
+      ]
+    }
+  ]
+}

@@ -96,6 +96,29 @@ def verify(scenario):
     return parse(data, scenario), sha256(data), sig.name, key.group(1)
 
 
+DRAFT_THRESHOLDS = {"order_attack": 0.05, "news_linkage": 0.0, "person_fingerprint": 0.05, "scorer_linkage_band_aware": 0.01,
+                    "plain_hash": 0.0}  # the limits every signed policy in policy/ uses
+DRAFT_UTILITY_FLOOR = 0.5
+
+
+def draft(scen, contract_data):
+    """An unsigned policy for a scenario that has none: who and why from the organisers' scenario definition, the
+    limits every signed policy here uses, k and l from the contract's k target, and the contract pinned by its sha256.
+    A draft for a person to review (and the steward to sign), never a decision: parse() checks it like any other."""
+    kt = json.loads(contract_data).get("k_target")
+    p = {"scenario": scen["id"], "owner_role": f"{scen['dataset'].replace('_', ' ')} data steward",
+         "recipient": scen["recipient"], "purpose": scen["purpose"],
+         "agreement_ref": f"none: {scen['id']} is a synthetic proving-ground scenario, no real agreement exists",
+         "recipient_duties": ["No re-identification of any person in the release.",
+                              "No linkage with outside data about the people in the release."],
+         "enforced_after_release": "none", "attack_thresholds": dict(DRAFT_THRESHOLDS), "utility_floor": DRAFT_UTILITY_FLOOR,
+         "k_min": kt["k"] if kt else None, "l_min": kt.get("l", 1) if kt else None,
+         "no_k_target": None if kt else "The selected contract releases no quasi-identifier, so there is no group to count.",
+         "required_tasks": list(scen["utility_requirements"]), "attacker_assumption": "default",
+         "allowed_contracts": {"default": sha256(contract_data)}}
+    return parse(json.dumps(p).encode(), scen["id"])
+
+
 def check_contract(policy, data):
     """The contract's sha256 when it is the one allowed for the selected attacker assumption, else a refusal."""
     assumption, got = policy["attacker_assumption"], sha256(data)

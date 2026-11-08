@@ -67,7 +67,7 @@ pip install pytest
 pytest -q
 ```
 
-You should see `262 passed, 1 skipped` within a few seconds.
+You should see `267 passed, 1 skipped` within a few seconds.
 
 You are set up.
 
@@ -150,6 +150,55 @@ Open `out/HEALTH-S1/report/summary.md` first; `plan.md` explains every choice co
 
 The row maps (`rowmap_*.csv`) link each protected row back to its original row. The scorecard needs them, but they are never published or given to a data recipient (organiser rule).
 
+### How to run a new scenario
+
+Any of the 27 organiser scenarios in `data/proving-ground/metadata/scenarios.json` can be built, and each already has its "before" scorecard in `baseline-scores/`. Pick one that has no file in `policy/` yet, for example CITY-S1 (a city publishes footfall counts as open data). Everything goes to `out/<scenario>/` except the policy, which the build reads only from `policy/`. From the repo root, with `.venv` active:
+
+1. **Choose the scenario.**
+
+   ```bash
+   ID=CITY-S1
+   ```
+
+2. **Let the selector write the contract**, the column-by-column plan (a few minutes):
+
+   ```bash
+   python -m pets_transformer.cli select --scenario $ID \
+       --out out/$ID/contract.json --evidence out/$ID/selection.json
+   ```
+
+   It prints one line per column. Look at the first line, `reference (...)`: the required tasks scored with every column at its finest option. A task at `0.0000` there cannot be served by any choice the selector makes, and the build will refuse.
+
+3. **Draft the policy**, the limits the release must meet:
+
+   ```bash
+   python -m pets_transformer.cli draft-policy --scenario $ID --contract out/$ID/contract.json
+   ```
+
+   This writes `policy/$ID.policy.json`: recipient, purpose and required tasks from the scenario, the same attack limits as our signed policies, k and l from the contract, and the contract's sha256, so the build accepts this contract and no other. It never overwrites an existing policy. Open the file and check it; that is the data steward's part.
+
+4. **Build** (about the same time again):
+
+   ```bash
+   python -m pets_transformer.cli build --scenario $ID --contract out/$ID/contract.json \
+       --skip-signature --submission out/$ID/release --results out/$ID/report
+   ```
+
+   `--skip-signature` is for demo runs only. It reads the policy without checking the steward's signature. Every limit and the contract hash still apply, and `release_record.json` says `"skipped"` for the signature. A real release has the steward sign the policy ("Signing a policy" in `docs/technical-details.md`) and runs without the flag.
+
+5. **Read the result**: `out/$ID/report/summary.md` first, then `out/$ID/report/redteam.json` for the gate's verdict and reasons. On a pass, the protected tables are in `out/$ID/release/`. A refusal is a result too: it says which limit or task the release missed.
+
+   A pass means every check the gate runs passed, not that the release is safe. Read the privacy risk table in `summary.md` too: the gate does not read every number in it (see CITY-S1 below).
+
+We first ran this on FIN-S2 (a bank shares card transactions with an AI vendor), with the hand-written policy `policy/FIN-S2.policy.json`. The pipeline runs end to end on finance (selector 3.3 min, build 1.5 min on a laptop), and the gate **refuses** the release, for three reasons (`results/fin-s2-build/builds.jsonl`):
+
+- FIN-U4 and FIN-U6 are not measured. Both need `card_pan` as a stable pseudonym (a consistent stand-in for the card number). Our detector labels it a direct identifier, whose only option is drop. With those two tasks at 0 from the start, the selector also withheld the `cards` and `customers` tables that FIN-U6 needs.
+- The organisers' scorer finds groups smaller than 5 on `amount_eur` and `currency` (smallest group 1). Our repair enforced k of 5 on `amount_eur` alone.
+
+The one task that could run, FIN-U1 (the fraud model), keeps 0.7966 of its original score, and privacy is 0.999 (`results/fin-s2-build/scorecard.json`). Nothing was released. Fixing it needs a pseudonym option for direct identifiers that a required task uses as a key.
+
+We then followed the five steps above word for word on CITY-S1 (selector 1 min, build 1 min). The gate **passes**, and that pass is wrong for open data. The selector withheld the footfall counts and released the raw WiFi probes instead: one row per probe, with the sensor, the date and hour, and a keyed token for each phone's MAC address. The organisers' scorecard rates privacy 0.412 (0.225 before) because 0.882 of the phones can be singled out by their trail of sensors and hours ("trajectory unicity", `results/city-s1-build/scorecard.json`). Our fingerprint attack only counts facts that stay the same for a person, so it reports "not applicable" here, and the gate never reads the scorecard's trajectory number (`results/city-s1-build/redteam.json`). The selector also ignores that the recipient is "anyone": it decides on the required tasks alone. Do not use this CITY-S1 release.
+
 ---
 
 ## Run your own evaluation on our output
@@ -207,7 +256,7 @@ The build checks its own output and refuses to release anything that fails. It p
 | `build needs data/proving-ground/...` | The data is not where the tool expects it | Redo Step 2 |
 | `pets-eval` not found, or a scorecard error | `pets-eval` is not installed in `.venv` at the repo root | Redo Step 3 |
 | A refusal that names a file in the submission folder | The release folder holds a file this build did not write | Use a fresh `--submission` folder, or move that file away |
-| A refusal about the policy, its signature or the contract hash | Only the five scenarios above have signed rules, and only with the contract shown | Use one of the five commands exactly as written |
+| A refusal about the policy, its signature or the contract hash | Only the five scenarios above have signed rules, and only with the contract shown | Use one of the five commands exactly as written; for a new scenario see "How to run a new scenario" |
 
 ---
 
@@ -255,8 +304,8 @@ One row per top-level file and folder. Files inside `context/` and `team/` are l
 | `context/` | The official brief, one-pager, video transcript, source file list, challenge digest, and the organiser docs in `context/proving-ground/`. `context/README.md` indexes every file here and in `team/` |
 | `team/` | The submission checklist |
 | `data/` | The proving-ground data, gitignored; `data/README.md` says how to restore it |
-| `contracts/` | One JSON contract per scenario: recipient, purpose, role rules (by detected role), named column rules with their reasons, and the k target with its repair ladder. `HEALTH-S1.json` is the selector v2 output; `HEALTH-S1.handwritten.json` the hand-written start; `HEALTH-S1-noflag.json`, `HEALTH-S1-pseudonym.json` and `HEALTH-S1-informed.json` are variants for team decisions (`docs/technical-details.md`); `PUB-S3.json` is the selector's PUB-S3 contract after a reviewer's edit; `generated/` holds the contracts the selector wrote for HEALTH-S3, EDU-S2, ENERGY-S3 and PUB-S3 |
-| `policy/` | One JSON policy per scenario we build, with the limits the release must meet, the recipient, the purpose and the contract hashes the data steward allows. `build` runs only when the policy's signature verifies against `policy/allowed_signers` (see "Signing a policy" in `docs/technical-details.md`) |
+| `contracts/` | One JSON contract per scenario: recipient, purpose, role rules (by detected role), named column rules with their reasons, and the k target with its repair ladder. `HEALTH-S1.json` is the selector v2 output; `HEALTH-S1.handwritten.json` the hand-written start; `HEALTH-S1-noflag.json`, `HEALTH-S1-pseudonym.json` and `HEALTH-S1-informed.json` are variants for team decisions (`docs/technical-details.md`); `PUB-S3.json` is the selector's PUB-S3 contract after a reviewer's edit; `generated/` holds the contracts the selector wrote for HEALTH-S3, EDU-S2, ENERGY-S3, PUB-S3 and FIN-S2 |
+| `policy/` | One JSON policy per scenario we build, with the limits the release must meet, the recipient, the purpose and the contract hashes the data steward allows. `build` runs only when the policy's signature verifies against `policy/allowed_signers` (see "Signing a policy" in `docs/technical-details.md`), or with `--skip-signature` for demo runs. `draft-policy` writes an unsigned one for a new scenario; `FIN-S2.policy.json` is unsigned, for the first FIN-S2 run |
 | `src/pets_transformer/` | The code: `detect` (labels), `selector` (writes the contract), `pets` and `protect` (the transformations), `repair` (k and l on the rows at risk), `generalise` (what a coarsened value can stand for), `score` (the organisers' scorecard), `checks` and `redteam` (attacks the scorecard does not run), `policy` (the signed limits and the release record), `build` (one command for all of it), `contract`, `sweep` and the command line `cli`; `semantic/` is the optional column-type model (type list, decision rule, features, offline loader and the committed head in `semantic/models/`); by default it only flags columns for review (advisor mode) |
 | `tests/` | pytest suite for detect (word lists and the hybrid type model), protect, score, checks, the repair sweep, the release gate (tokens, shuffle, repair, hour ranges, selector, new PETs, attacks), what the gate refuses (`test_gate.py`) and the command-line wiring |
 | `scripts/` | `scripts/semantic/` makes the fake EU test tables and training corpus, the Featherless word lists (`llm_values/`), trains the type model (`train.py`, runbook `TRAINING.md`) and evaluates it |
