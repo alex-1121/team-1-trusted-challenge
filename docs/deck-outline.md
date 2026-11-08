@@ -2,7 +2,7 @@
 
 One line per slide: title - what it says - the one number or picture it carries (source file). Scorecard numbers are our self-assessment from the organisers' `pets-eval` and are separate from the official judging score.
 
-1. **TrustED PETs Transformer** - one tool: detect, select, protect, repair, attack, then release or refuse - picture: the one build command (`README.md`, "How to run").
+1. **TrustED PETs Transformer** - one tool: detect, select, protect, repair, attack, then release or refuse - picture: the one build command (`README.md`, "Make a protected copy of the data for a scenario").
 2. **The problem** - raw emergency-department (ED) data re-identifies patients, and blanking it kills the research - number: raw linkage re-identification 0.5697 (`baseline-scores/health_HEALTH-S1_research-env_raw.json`).
 3. **The scenario: HEALTH-S1** - research group in a research environment, five analyses must still work - picture: recipient, purpose and the five tasks (`contracts/HEALTH-S1.json`). Demo item 5.
 4. **The official score was wrong** - our earlier release scored composite 0.9709 with linkage 0.0; our red team rebuilt every dropped date (1.0) and named 10 news-clip patients, all correctly (`results/redteam/before-7cf541b.json`). Picture: visit ids in order, the hour going back, a new day.

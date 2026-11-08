@@ -1,4 +1,4 @@
-"""Evaluate the column-type model against the word lists (E1-E5 of plans/2026-11-07-eu-column-types.md).
+"""Evaluate the column-type model against the word lists (E1-E5 of plans/2026-11-07-eu-column-types.md at commit 7d4a45c).
 
     python scripts/semantic/evaluate.py --split dev  --out results/detect-semantic
     python scripts/semantic/evaluate.py --split test --out results/detect-semantic   # once, see SPLIT.md

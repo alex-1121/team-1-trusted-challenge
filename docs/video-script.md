@@ -52,7 +52,7 @@ Our word lists know Finnish names, so a German surname looks harmless to them. A
 - Privacy 1.0, usefulness 0.97 (0.971), against the scorer's own attackers only: `results/health-s1-build/scorecard.json`, `results/health-s1-build/summary.md` ("the toolkit's shipped attackers only").
 - Almost every hidden date returns from row order (file order 0.9975; 1.0 sorted by visit_id), 10 of 220 reports name the right patient: `results/redteam/before-7cf541b.json`.
 - No attack works (all five pass, gate pass; dates rebuilt 0.0003, reports 0.0): `results/health-s1-build/redteam.json`.
-- Signed policy sets the risk limits, build stops when a threshold changes: `policy/HEALTH-S1.policy.json` and its signature, `plans/2026-11-07-release-gate.md`.
+- Signed policy sets the risk limits, build stops when a threshold changes: `policy/HEALTH-S1.policy.json` and its signature, `plans/2026-11-07-release-gate.md` at commit `7d4a45c`.
 - Label score 0.60 to 0.77 on Czech tables is macro-F1 (0.5963 to 0.7709), word lists alone then word lists plus model labelling (hybrid mode, test split run once on commit 68aa116); the detector line above uses accuracy, so the two are not comparable: `results/detect-semantic/e2_eu_test.json`, `results/detect-semantic/SPLIT.md`.
 - 28 flags, all real mistakes, on the locked fake EU tables only (advisor mode, `eu_locked`): `results/detect-semantic/advisor.json`. On the hospital tables the same advisor raised 7 flags, 3 real and 4 false alarms; over the three held-out proving-ground datasets 11 flags, 5 real (`datasets.health`, `datasets.public_admin`, `datasets.customer_service` in the same file).
 - Attribution wording: `AGENTS.md`.

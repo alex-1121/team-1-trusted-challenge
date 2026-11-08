@@ -1,6 +1,6 @@
 # Column-type model: development and test split
 
-Written before the first evaluation run, 2026-11-07. Source: `plans/2026-11-07-eu-column-types.md` ("Splits"), Task 7 of `plans/2026-11-07-eu-column-types-implementation.md`.
+Written before the first evaluation run, 2026-11-07. Source: `plans/2026-11-07-eu-column-types.md` at commit `7d4a45c` ("Splits"), Task 7 of `plans/2026-11-07-eu-column-types-implementation.md` at commit `7d4a45c`.
 
 ## Development set (fixes may look at these)
 

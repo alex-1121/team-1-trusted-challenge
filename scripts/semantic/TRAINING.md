@@ -1,6 +1,6 @@
 # Training the type model's head
 
-The runbook for Task 6 of `plans/2026-11-07-eu-column-types-implementation.md`. The model is a frozen multilingual sentence encoder (`intfloat/multilingual-e5-small`, MIT licence) plus a small classifier head (`head.npz` + `meta.json`, under 2 MB) that is committed. Only the head is trained.
+The runbook for Task 6 of `plans/2026-11-07-eu-column-types-implementation.md` at commit `7d4a45c`. The model is a frozen multilingual sentence encoder (`intfloat/multilingual-e5-small`, MIT licence) plus a small classifier head (`head.npz` + `meta.json`, under 2 MB) that is committed. Only the head is trained.
 
 Only fake data is used. The training corpus is made by `gen_corpus.py` from Faker and the committed word lists in `llm_values/`. `train.py` refuses any input that is not such a corpus, and any path under `data/proving-ground`.
 

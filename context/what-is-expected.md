@@ -47,7 +47,7 @@ Source: `brief-onepager.md` (Final demonstration), `proving-ground/START_HERE.md
 - The `pets-eval scorecard` score is our own self-assessment. The organisers say it is not the official judging score, so quote it as evidence, never as a grade.
 - Prizes for this challenge: EUR 2,000 / 750 / 250.
 
-Source: `brief.md` sections 06-08, `../team/plan.md` (Judging, Schedule), `../team/submission-checklist.md`.
+Source: `brief.md` sections 06-08, `team/plan.md` at commit `7d4a45c` (Judging, Schedule), `../team/submission-checklist.md`.
 
 ## What "good" means to the people who wrote the challenge
 
@@ -101,4 +101,4 @@ Source: `brief.md` sections 05-06, `proving-ground/START_HERE.md` ("Choose your 
 
 - How to hand `pets_submission/` to the organisers without publishing row maps (ask on the TrustED Discord channel).
 - What the full challenge text in sinceai.app adds beyond the zip (compare after Friday 19:30).
-- Which dataset and scenario we pick (the Friday-night decision; see `../team/plan.md`).
+- Which dataset and scenario we pick (the Friday-night decision; see `team/plan.md` at commit `7d4a45c`).
