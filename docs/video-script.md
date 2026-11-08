@@ -1,6 +1,6 @@
 # Demo video script
 
-Spoken English, about two and a half minutes, read by us in first person plural. Lines in square brackets are screen cues and are not spoken.
+Spoken English, about two minutes, read by us in first person plural. Lines in square brackets are screen cues and are not spoken.
 
 The paste-ready text for the voiceover tool is `docs/video-voiceover.txt`: the spoken lines only, one paragraph each, decimals written as words and the product name spelled Trusted so it is read as one word. Redo that file after any change to a spoken line here.
 
@@ -36,17 +36,6 @@ The hospital's data steward signs the policy that sets the risk limits. Change o
 
 Our word lists know Finnish names, so a German surname looks harmless to them. A small language model on the laptop catches those, and no data leaves it. On fake Czech tables it never saw, letting it label raised the score from 0.60 to 0.77. Today it only flags columns for a person to check, and on those tables all 28 flags were real mistakes. The build does not wait for that check. Both the word lists and the model come from made-up data, so a real hospital would rebuild the lists and retrain the model on its own data first.
 
-[results/health-s1-build/checks/informed_attacker.json]
-
-What our tool does not do yet
-
-Separate releases can be linked back together. When we provide multiple datasets to different researchers, each one of them scoring high on privacy, they can still be combined and enriched to the point where the data is not private anymore. Neither we nor the scorecard tested for this. Today the only safeguards are organisational - a secure processing environment and a data-use agreement that forbids linkage.
-
-When the tool is not sure, it asks a person. Before it protects anything, the tool reads each column and works out what kind of information it holds: a name, a date, a diagnosis, and so on. Messy data makes that harder. When the tool cannot tell, it marks the column for a person to check. Its best guess stands until that person looks, and the release does not wait for them. So someone has to read that list before the data goes out. The flag comes from our small language model, so it only appears when that model is installed.
-
-Built on made-up data. The word lists the tool uses to spot names, towns, occupations and the like were pulled out of the hackathon dataset, which is synthetic: invented people, not real ones. The small model was trained on fake tables only. Real data has other names, other spellings and other kinds of columns, so the tool as it stands would miss some of them. To use it on a real dataset, the word lists would have to be rebuilt from that data and the model retrained on it.
-
-
 [attribution card: TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0)]
 
 ## Sources of the spoken numbers
@@ -66,11 +55,9 @@ Built on made-up data. The word lists the tool uses to spot names, towns, occupa
 - Signed policy sets the risk limits, build stops when a threshold changes: `policy/HEALTH-S1.policy.json` and its signature, `plans/2026-11-07-release-gate.md`.
 - Label score 0.60 to 0.77 on Czech tables is macro-F1 (0.5963 to 0.7709), word lists alone then word lists plus model labelling (hybrid mode, test split run once on commit 68aa116); the detector line above uses accuracy, so the two are not comparable: `results/detect-semantic/e2_eu_test.json`, `results/detect-semantic/SPLIT.md`.
 - 28 flags, all real mistakes, on the locked fake EU tables only (advisor mode, `eu_locked`): `results/detect-semantic/advisor.json`. On the hospital tables the same advisor raised 7 flags, 3 real and 4 false alarms; over the three held-out proving-ground datasets 11 flags, 5 real (`datasets.health`, `datasets.public_admin`, `datasets.customer_service` in the same file).
-- One visit in ten (0.0971), 93 percent of them correctly (0.9294): `results/health-s1-build/checks/informed_attacker.json`.
-- Triage a detector error (catalogue sensitive_attribute, predicted non_sensitive): `results/detect/health.json` (errors). 15 percent after the repair (0.1547, line not met): `contracts/HEALTH-S1.json` (triage and arrival_ts reasons).
 - Attribution wording: `AGENTS.md`.
-- The three spoken limitations (releases combined, review flag does not stop the build, word lists and model from made-up data): `LIMITATIONS.md`.
+- The limitations are not spoken in the video; they live in `LIMITATIONS.md`.
 
 Numbers are rounded for speech. The scorecard is our own self-assessment and is separate from the official judging score. The 0.60 to 0.77 score is from the model labelling on its own (hybrid mode); the shipped default is advisor mode, where it only flags.
 
-<!-- spoken words: 457 (counted without the heading, the intro line, screen cues and the sources section) -->
+<!-- spoken words: 393 (counted without the heading, the intro line, screen cues and the sources section) -->
