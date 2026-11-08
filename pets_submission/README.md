@@ -15,5 +15,7 @@ No HMAC key is stored anywhere: a fresh key is drawn per build and lives only in
 
 ## Handling
 
-- The row maps are private. They live only on the `pets-submission` branch and never go to `main`, the source zip, a release or any public place.
+- This folder is where the organisers' guide asks for it (`context/proving-ground/docs/EVALUATION.md`, "Optional organiser checks"): in the repository, which stays private.
+- The row maps are the answer key. They must never be published: if the repository ever goes public, remove `pets_submission/health/` and `release_record.json` from it first.
+- `.gitattributes` marks the protected tables, the row maps and the release record `export-ignore`, so `git archive` (how the source zip is built) leaves them out. The two label files stay in the zip.
 - customer_service text redaction was not done.

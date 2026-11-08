@@ -1,0 +1,3 @@
+# Keep the organisers' protected tables and row maps out of `git archive` (the source zip); they stay in the private repo only.
+pets_submission/health/** export-ignore
+pets_submission/release_record.json export-ignore
