@@ -37,19 +37,19 @@ Goal: never lose or overwrite a teammate's work. Commit and push only when the t
 ## Licences and people
 
 - The proving ground is CC BY 4.0 (data) and MIT (code), (c) 2026 Since AI ry. Attribution line: "TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0)".
-- The brief, one-pager and video are organiser materials, redistributed for the team only.
-- The licence for our own code is an open decision (row in `decisions.md`).
+- The brief and one-pager are organiser materials, kept as converted copies with their Source line.
+- Our own code is MIT (`LICENSE`, row in `decisions.md`).
 
 ## Writing rules
 
 - No em-dash. Use " - ".
-- Verbatim organiser files (context/brief.md, context/brief-onepager.md, context/video-transcript.md, everything under context/proving-ground/ and context/originals/) keep their own text, em-dashes included.
+- Verbatim organiser files (context/brief.md, context/brief-onepager.md and everything under context/proving-ground/) keep their own text, em-dashes included.
 - Plain English, short sentences. Explain a term the first time it appears.
-- No secrets, tokens or real personal data in any file. The repo goes public for the submission.
+- No secrets, tokens or real personal data in any file. The repo is public.
 
 ## Where things go
 
 - Plans and notes: the `plans/` folder was removed before submission; the plans written during the event are at commit `7d4a45c` (`git show 7d4a45c:plans/README.md`). Put a new plan in a PR description.
 - Decisions: a row in `decisions.md`.
 - Context you discover about the challenge or the data: `context/`, with a "Source:" line.
-- Project index: the "Layout" table in `README.md` has one row per top-level file and folder. When you add, rename, move or delete one, update its row in the same commit. Files inside `context/` and `team/` are indexed in `context/README.md` instead; update that file when you change one of them.
+- Project index: the "Layout" table in `README.md` has one row per top-level file and folder. When you add, rename, move or delete one, update its row in the same commit. Files inside `context/` are indexed in `context/README.md` instead; update that file when you change one of them.

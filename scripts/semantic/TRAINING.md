@@ -39,11 +39,11 @@ Then copy the files as in step 6 (`out/models/` instead of the teammate's files)
 
 ## 3. Set up the M5 MacBook (teammate)
 
-Needs Python 3.10 or newer and read access to the private fork `zraycd/team-1-trusted`.
+Needs Python 3.10 or newer and a clone of this repository.
 
 ```bash
-git clone https://github.com/zraycd/team-1-trusted.git -b feat/semantic-types
-cd team-1-trusted
+git clone https://github.com/alex-1121/team-1-trusted-challenge.git
+cd team-1-trusted-challenge
 python3 -m venv v
 v/bin/pip install -e '.[semantic,train]'
 v/bin/python -m pets_transformer.semantic.model --download --encoder intfloat/multilingual-e5-small --revision $REVISION

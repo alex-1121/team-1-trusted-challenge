@@ -1,4 +1,4 @@
-Source: TrustED_PETs_Transformer_Challenge_Brief_FINAL_REVIEW.docx (the downloaded copy carried a ' (1)' suffix, see source-files.md) from the organiser zip, converted 2026-11-06. Verbatim text, only formatting added. One edit: the coordinator's email address on the last line is removed because this repository goes public.
+Source: TrustED_PETs_Transformer_Challenge_Brief_FINAL_REVIEW.docx (the downloaded copy carried a ' (1)' suffix, see `source-files.md` at commit `b9779f4`) from the organiser zip, converted 2026-11-06. Verbatim text, only formatting added. One edit: the coordinator's email address on the last line is removed because this repository goes public.
 
 # TrustED PETs Transformer
 

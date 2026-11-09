@@ -2,7 +2,7 @@
 
 Spoken English, about two minutes, read by us in first person plural. Lines in square brackets are screen cues and are not spoken.
 
-The paste-ready text for the voiceover tool is `docs/video-voiceover.txt`: the spoken lines only, one paragraph each, decimals written as words and the product name spelled Trusted so it is read as one word. Redo that file after any change to a spoken line here.
+The paste-ready text for the voiceover tool was `docs/video-voiceover.txt` (at commit `b9779f4`): the spoken lines only, decimals written as words and the product name spelled Trusted.
 
 [title card]
 

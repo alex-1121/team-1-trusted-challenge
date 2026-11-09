@@ -47,7 +47,7 @@ Source: `brief-onepager.md` (Final demonstration), `proving-ground/START_HERE.md
 - The `pets-eval scorecard` score is our own self-assessment. The organisers say it is not the official judging score, so quote it as evidence, never as a grade.
 - Prizes for this challenge: EUR 2,000 / 750 / 250.
 
-Source: `brief.md` sections 06-08, `team/plan.md` at commit `7d4a45c` (Judging, Schedule), `../team/submission-checklist.md`.
+Source: `brief.md` sections 06-08, `team/plan.md` at commit `7d4a45c` (Judging, Schedule), `team/submission-checklist.md` at commit `b9779f4`.
 
 ## What "good" means to the people who wrote the challenge
 
@@ -86,7 +86,7 @@ Source: `proving-ground/docs/BENCHMARK.md` (B1 table, "What the baselines teach"
 - A public repository link: no data files, no secrets, and never `rowmap_*.csv`, `truth/` or `holdout/`. Attribution line: "TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0)". Full list: `../team/submission-checklist.md`.
 - Optional, on request during the event: a `pets_submission/` folder so the organisers can run the hidden checks (stronger attackers, private `unseen` labels, hidden `customer_service` eval spans). This folder needs row maps, which must never be published, so how to hand it over is still an open question for the TrustED Discord channel.
 
-Source: `brief.md` section 07, `../team/submission-checklist.md`, `proving-ground/docs/EVALUATION.md` ("Optional organiser checks").
+Source: `brief.md` section 07, `team/submission-checklist.md` at commit `b9779f4`, `proving-ground/docs/EVALUATION.md` ("Optional organiser checks").
 
 ## What is not expected
 

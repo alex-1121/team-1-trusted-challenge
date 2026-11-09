@@ -29,8 +29,8 @@ All data here is the synthetic TrustED PETs Proving Ground. No real person's dat
 ### Step 1: Get the code
 
 ```bash
-git clone https://github.com/alex-1121/team-1-trusted.git
-cd team-1-trusted
+git clone https://github.com/alex-1121/team-1-trusted-challenge.git
+cd team-1-trusted-challenge
 ```
 
 Run every command in this README from this folder (the repo root).
@@ -295,37 +295,38 @@ The full write-up, with every number and the file it comes from: `docs/technical
 
 ## Organiser checks
 
-- `pets_submission/` holds what the organisers' guide asks for (`context/proving-ground/docs/EVALUATION.md`, "Optional organiser checks"): our labels for the unseen export (`unseen_field_labels.csv`) and the HEALTH-S1 protected tables with their row maps (`health/`). See `pets_submission/README.md`.
-- The repository is private, and the row maps must never be published. `.gitattributes` keeps the protected tables, the row maps and the release record out of the source zip.
+- `pets_submission/` holds what the organisers' guide asks for (`context/proving-ground/docs/EVALUATION.md`, "Optional organiser checks"): our labels for the unseen export (`unseen_field_labels.csv`) and for the health tables (`health_field_labels.csv`). See `pets_submission/README.md`.
+- During judging the repository was private and also held the HEALTH-S1 protected tables with their row maps (`pets_submission/health/`) for the organisers' checks. They were removed when judging ended, before the repository went public.
+- A build still writes the protected tables, row maps and release record into `pets_submission/`; `.gitignore` keeps them out of git and `.gitattributes` out of the source zip.
 - We did not do the customer_service redaction.
 
 ---
 
 ## What is in this repo
 
-One row per top-level file and folder. Files inside `context/` and `team/` are listed one by one in `context/README.md`.
+One row per top-level file and folder. Files inside `context/` are listed one by one in `context/README.md`.
 
 | Path | What it holds |
 |---|---|
-| `context/` | The official brief, one-pager, video transcript, source file list, challenge digest, and the organiser docs in `context/proving-ground/`. `context/README.md` indexes every file here and in `team/` |
-| `team/` | The submission checklist |
+| `context/` | The official brief and one-pager, our challenge digest and research notes, and the organiser docs in `context/proving-ground/`. `context/README.md` indexes every file here |
 | `data/` | The proving-ground data, gitignored; `data/README.md` says how to restore it |
 | `contracts/` | One JSON contract per scenario: recipient, purpose, role rules (by detected role), named column rules with their reasons, and the k target with its repair ladder. `HEALTH-S1.json` is the selector v2 output; `HEALTH-S1.handwritten.json` the hand-written start; `HEALTH-S1-noflag.json`, `HEALTH-S1-pseudonym.json` and `HEALTH-S1-informed.json` are variants for team decisions (`docs/technical-details.md`); `PUB-S3.json` is the selector's PUB-S3 contract after a reviewer's edit; `generated/` holds the contracts the selector wrote for HEALTH-S3, EDU-S2, ENERGY-S3, PUB-S3 and FIN-S2 |
 | `policy/` | One JSON policy per scenario we build, with the limits the release must meet, the recipient, the purpose and the contract hashes the data steward allows. `build` runs only when the policy's signature verifies against `policy/allowed_signers` (see "Signing a policy" in `docs/technical-details.md`), or with `--skip-signature` for demo runs. `draft-policy` writes an unsigned one for a new scenario; `FIN-S2.policy.json` is unsigned, for the first FIN-S2 run |
 | `src/pets_transformer/` | The code: `detect` (labels), `selector` (writes the contract), `pets` and `protect` (the transformations), `repair` (k and l on the rows at risk), `generalise` (what a coarsened value can stand for), `score` (the organisers' scorecard), `checks` and `redteam` (attacks the scorecard does not run), `policy` (the signed limits and the release record), `build` (one command for all of it), `contract`, `sweep` and the command line `cli`; `semantic/` is the optional column-type model (type list, decision rule, features, offline loader and the committed head in `semantic/models/`); by default it only flags columns for review (advisor mode) |
 | `tests/` | pytest suite for detect (word lists and the hybrid type model), protect, score, checks, the repair sweep, the release gate (tokens, shuffle, repair, hour ranges, selector, new PETs, attacks), what the gate refuses (`test_gate.py`) and the command-line wiring |
 | `scripts/` | `scripts/semantic/` makes the fake EU test tables and training corpus, the Featherless word lists (`llm_values/`), trains the type model (`train.py`, runbook `TRAINING.md`) and evaluates it |
-| `results/` | Committed evidence: detector results (`detect/`), the column-type model's evidence (`detect-semantic/`, indexed in its `README.md`), the selector's evidence (`selection/`), the red-team gate on the earlier release (`redteam/`), the repair sweep (`sweep/`), the repository audit of 2026-11-07 (`audit-2026-11-07/`), and one `<scenario>-build/` folder per build (scorecard, repair search, checks, red team), including the HEALTH-S1 variants |
+| `results/` | Committed evidence: detector results (`detect/`), the column-type model's evidence (`detect-semantic/`, indexed in its `README.md`), the selector's evidence (`selection/`), the red-team gate on the earlier release (`redteam/`), the repair sweep (`sweep/`), and one `<scenario>-build/` folder per build (scorecard, repair search summary, checks, red team), including the HEALTH-S1 variants. The per-order scorecards a build writes to `<scenario>-build/search/` are not committed |
 | `baseline-scores/` | "Before" scorecards: every original table scored unprotected, one HTML + JSON pair per scenario, named `<dataset>_<SCENARIO>_<recipient>_raw` |
-| `pets_submission/` | What goes to the organisers on request; only the two label files are committed |
+| `pets_submission/` | Our detector labels for the organisers' optional checks; only the two label files and a README are committed |
 | `demo/` | `the-er-register.html`: the demo-video sequence. A printed sheet of patient records is redacted in blue halftone, shuffled, stamped, folded, addressed and sent; it ends on the HEALTH-S1 numbers. One self-contained HTML file, no build step |
-| `docs/` | `technical-details.md` (the full write-up: method, every number with its source, every command option, policy signing), pitch deck outline, demo video script, what HEALTH-S1 guarantees and its residual risk, and the `pets_submission/` handover |
+| `docs/` | `technical-details.md` (the full write-up: method, every number with its source, every command option, policy signing), pitch deck outline, demo video script, and what HEALTH-S1 guarantees and its residual risk |
 | `attack_analysis.md` | What `pets-eval` actually measures: risk checks, utility tasks, how the score is aggregated, blind spots |
 | `LIMITATIONS.md` | What our tool does not do yet: separate releases can be linked, flagged columns do not stop the release, word lists and model come from synthetic data, a passed gate is not proof of safety (movement trails are not tested; public recipients are not treated more strictly) |
 | `decisions.md` | Team decision log |
 | `AGENTS.md` | Rules for every teammate's coding agent |
 | `CLAUDE.md` | One line that imports `AGENTS.md` for Claude Code; holds no rules |
 | `README.md` | This file: set up, run, evaluate |
+| `LICENSE` | MIT licence for our own code; the organiser docs and data keep their own licences (see Attribution) |
 | `pyproject.toml` | Package definition for `pets_transformer`; optional extras `semantic` (the type model at run time) and `train` (corpus and training) |
 | `.gitignore` | Keeps the proving-ground data, the attack answer keys (row maps, truth, holdout), protected tables, bulky outputs (including `out/`), the fake corpus and EU test tables (`data/semantic-*`) and secrets out of git |
 
@@ -335,4 +336,4 @@ The rules live in `AGENTS.md` (data, claims, writing). Short version: synthetic 
 
 ## Attribution
 
-TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0). The challenge is inspired by the European project TrustED (Horizon Europe grant agreement No. 101168467); this repository is not a TrustED deliverable.
+TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0). Our own code is MIT licensed (`LICENSE`). The challenge is inspired by the European project TrustED (Horizon Europe grant agreement No. 101168467); this repository is not a TrustED deliverable.

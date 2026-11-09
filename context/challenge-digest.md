@@ -59,7 +59,7 @@ Three separate things:
 
 - Self-assessment (ours): `pets-eval scorecard` gives privacy, utility and a composite score. It builds our before/after evidence. It is not the official judging score.
 - Official judging: Since AI's existing four criteria (brief section 06), with no weighted rubric. TrustED's own evaluators apply them remotely (sinceai.ai partner page). (1) Technical implementation: correct, reliable PET choices. (2) Innovation: an intelligent, explainable approach. (3) Impact: evidence of reduced disclosure risk with preserved utility. (4) Presentation: clear scenario, before/after comparison, honest limitations.
-- Optional organiser checks, on request: a stronger hidden attacker per domain, private labels for `unseen`, hidden eval spans for `customer_service`. Outputs go in a folder `pets_submission/`, and `docs/EVALUATION.md` asks for it in the repository together with the row maps. That collides with the rule never to publish row maps once the repo is public. Open question for the team: ask on the TrustED Discord channel how to hand `pets_submission/` over privately. Until answered, row maps stay out of git.
+- Optional organiser checks, on request: a stronger hidden attacker per domain, private labels for `unseen`, hidden eval spans for `customer_service`. Outputs go in a folder `pets_submission/`, and `docs/EVALUATION.md` asks for it in the repository together with the row maps. We kept that folder, row maps included, in the repository while it was private during judging, and removed the row maps before it went public.
 
 Scorecard maths: privacy = 1 - (0.5 x worst risk + 0.5 x mean risk). Composite = weighted harmonic mean of privacy (weight 30) and utility (weight 25). Releasing nothing or everything both score low.
 
@@ -84,7 +84,7 @@ Source: `proving-ground/README.md`, `proving-ground/docs/BENCHMARK.md`.
 - Licence line on anything we publish: "TrustED PETs Proving Ground 2026, synthetic data by Since AI ry (CC BY 4.0)".
 - Say what the guarantee is. "Anonymised" and "differentially private" need a method and parameters.
 
-Source: `../team/submission-checklist.md`, `team/plan.md` at commit `7d4a45c`, `proving-ground/START_HERE.md` ("Rules of the road"), `proving-ground/docs/EVALUATION.md`.
+Source: `team/submission-checklist.md` at commit `b9779f4`, `team/plan.md` at commit `7d4a45c`, `proving-ground/START_HERE.md` ("Rules of the road"), `proving-ground/docs/EVALUATION.md`.
 
 ## Quickstart commands
 
