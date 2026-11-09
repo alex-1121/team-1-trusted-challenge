@@ -162,7 +162,7 @@ It needs a signed policy (see "Signing a policy" below) and refuses without one.
 What comes out:
 
 - `results/health-s1-build/` (scorecards only, no labels): `scorecard.json` and `scorecard.html` (the organisers' scorecard), `check.txt` and `check.json` (identifier scan, the JSON is what the gate reads), `summary.md` (before and after per task and risk, k-anonymity, residual risk in plain words), `plan.md` (one row per column: detected role, PET, parameters, reason, and a note where a named rule overrides the detected role; tables not in the contract are listed as not released).
-- `pets_submission/health/`: the protected tables and their row maps. Never committed, never published.
+- `pets_submission/health/`: the protected tables and their row maps. Not committed (a copy for the organisers' checks was on main during judging and was removed on 2026-11-09).
 - `pets_submission/unseen_field_labels.csv` and `pets_submission/health_field_labels.csv`: the detector's labels for the unseen export and for the health tables. These are the only committed files in that folder.
 - `results/health-s1-build/repair_search.md` and `repair_report.json`: every repair order scored, and how many rows each step changed. `results/health-s1-build/redteam.json`: the gate. `results/health-s1-build/checks/`: l-diversity, informed attacker, joined-table k (a build whose contract has no k target writes `checks/not_run.txt` instead). `selection.json`: the selector's evidence, when the build ran it. `results/redteam/before-7cf541b.json`: the gate on the earlier release.
 - The random key behind the tokens exists only in memory during the build. No key file is written.

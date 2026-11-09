@@ -12,12 +12,16 @@ results/**/*.csv
 !results/detect/health_labels.csv
 !results/detect/unseen_field_labels.csv
 results/**/*.parquet
+# Per-order repair-search scorecards: bulky, cited nowhere, and their ':' names break Windows checkouts
+results/*/search/
 # Python
 __pycache__/
 .pytest_cache/
 *.pyc
 .venv/
 *.egg-info/
+build/
+dist/
 # OS and editors
 .DS_Store
 .idea/
@@ -25,8 +29,11 @@ __pycache__/
 # Secrets never belong here
 .env
 .env.*
-# Submission folder: only the two field-label files are committed; the protected tables and row maps are handed over by hand
+*.key
+*.pem
+# Submission folder: only the two field-label files and the README are committed; protected tables, row maps and the release record never are
 pets_submission/*
+!pets_submission/README.md
 !pets_submission/unseen_field_labels.csv
 !pets_submission/health_field_labels.csv
 
